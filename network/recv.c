@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 {
     int sockfd = 0;
     int n = 0;
-    char recvBuff[1024] = {0];
+    char recvBuff[1024] = {0};
     struct sockaddr_in serv_addr; 
 
     // Check for command line inputs
