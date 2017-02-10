@@ -16,7 +16,7 @@
 #include <netdb.h>
 #include <arpa/inet.h> 
 
-#include "network.c"
+#include "network.h"
 
 int main(int argc, char *argv[])
 {
