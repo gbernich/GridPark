@@ -5,3 +5,5 @@
 //-----------------------------------------------------------------------------
 
 int CreateNewSpot(int spot_id, int region, int distance, int * corners);
+
+int TestDB();
