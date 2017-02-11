@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
     char recvBuff[1024] = {0};
     struct sockaddr_in serv_addr; 
 
+    void * db;
+
     // Check for command line inputs
     if(argc != 2)
     {
@@ -76,7 +78,10 @@ int main(int argc, char *argv[])
         printf("\n Read error \n");
     } 
 
-    TestDB();
+    //TestDB();
+    db = void(OpenDB);
+    CreateTestEntry(MYSQL * conn, 2, 50);
+    CloseDB(db);
 
     return 0;
 }

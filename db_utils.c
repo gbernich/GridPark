@@ -9,6 +9,45 @@
 #include <mysql/mysql.h>
 //#include <my_global.h>
 
+MYSQL * OpenDB()
+{
+    MYSQL *conn = mysql_init(NULL);
+
+    if (conn == NULL) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return NULL;
+    }
+
+    if (mysql_real_connect(conn, "localhost", K_MYSQL_USER, K_MYSQL_PASS, 
+      NULL, 0, NULL, 0) == NULL) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        mysql_close(conn);
+        return NULL;
+    }
+
+    return conn;
+}
+
+void CloseDB(MYSQL * conn)
+{
+    mysql_close(conn);
+}
+
+int CreateTestEntry(MYSQL * conn, int id, int num)
+{
+    char * query;
+    sprintf(query, "INSERT INTO test VALUES(%d,%d)", id, num);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return 1;
+    }
+    return 0;
+}
+
 int CreateNewSpot(int spot_id, int region, int distance, int * corners)
 {
     return 0;
@@ -16,30 +55,30 @@ int CreateNewSpot(int spot_id, int region, int distance, int * corners)
 
 int TestDB()
 {
-    MYSQL *con = mysql_init(NULL);
+    MYSQL *conn = mysql_init(NULL);
 
-    if (con == NULL) 
+    if (conn == NULL) 
     {
-        fprintf(stderr, "%s\n", mysql_error(con));
+        fprintf(stderr, "%s\n", mysql_error(conn));
         return 1;
     }
 
-    if (mysql_real_connect(con, "localhost", "root", "1111light", 
+    if (mysql_real_connect(conn, "localhost", K_MYSQL_USER, K_MYSQL_PASS, 
       NULL, 0, NULL, 0) == NULL) 
     {
-        fprintf(stderr, "%s\n", mysql_error(con));
-        mysql_close(con);
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        mysql_close(conn);
         return 1;
     }  
 
-    if (mysql_query(con, "CREATE DATABASE testdb")) 
+    if (mysql_query(conn, "CREATE DATABASE testdb")) 
     {
-        fprintf(stderr, "%s\n", mysql_error(con));
-        mysql_close(con);
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        mysql_close(conn);
         return 1;
     }
 
-    mysql_close(con);
+    mysql_close(conn);
 
     return 0;
 }
