@@ -17,6 +17,7 @@
 #include <arpa/inet.h> 
 
 #include "db_utils.h"
+#include "constants.h"
 
 int main(int argc, char *argv[])
 {
@@ -79,8 +80,8 @@ int main(int argc, char *argv[])
     } 
 
     //TestDB();
-    db = void(OpenDB);
-    CreateTestEntry(MYSQL * conn, 2, 50);
+    db = (void *)OpenDB(K_TEST_DB);
+    CreateTestEntry(db, 2, 50);
     CloseDB(db);
 
     return 0;

@@ -4,6 +4,8 @@
 // Function:            Provide functions to interact with the mySQL databases.
 //-----------------------------------------------------------------------------
 
+#include <mysql/mysql.h>
+
 #define K_MYSQL_USER    "root"
 #define K_MYSQL_PASS    "1111light"
 

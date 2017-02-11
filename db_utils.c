@@ -6,10 +6,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include <mysql/mysql.h>
-//#include <my_global.h>
+#include "db_utils.h"
 
-MYSQL * OpenDB()
+MYSQL * OpenDB(char * dbName)
 {
     MYSQL *conn = mysql_init(NULL);
 
@@ -20,7 +19,7 @@ MYSQL * OpenDB()
     }
 
     if (mysql_real_connect(conn, "localhost", K_MYSQL_USER, K_MYSQL_PASS, 
-      NULL, 0, NULL, 0) == NULL) 
+      dbName, 0, NULL, 0) == NULL) 
     {
         fprintf(stderr, "%s\n", mysql_error(conn));
         mysql_close(conn);
@@ -37,7 +36,7 @@ void CloseDB(MYSQL * conn)
 
 int CreateTestEntry(MYSQL * conn, int id, int num)
 {
-    char * query;
+    char query[80];
     sprintf(query, "INSERT INTO test VALUES(%d,%d)", id, num);
 
     if (mysql_query(conn, query)) 
