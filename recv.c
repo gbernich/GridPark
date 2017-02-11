@@ -16,7 +16,7 @@
 #include <netdb.h>
 #include <arpa/inet.h> 
 
-#include "network.h"
+#include "db_utils.h"
 
 int main(int argc, char *argv[])
 {
@@ -75,6 +75,8 @@ int main(int argc, char *argv[])
     {
         printf("\n Read error \n");
     } 
+
+    TestDB();
 
     return 0;
 }
