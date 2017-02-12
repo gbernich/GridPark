@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <unistd.h>
 #include "db_utils.h"
 #include "constants.h"
 
@@ -86,6 +87,77 @@ int ClearTable(MYSQL * conn, char * table)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
+// Table locking //////////////////////////////////////////////////////////////
+void WaitForLock(MYSQL * conn, char * table)
+{
+    while(TableIsLocked(conn, table))
+    {
+        usleep(K_LOCK_SLEEP_MICROSECONDS);
+    }
+    LockTableForRead(conn, table);
+}
+
+int LockTableForRead(MYSQL * conn, char * table)
+{
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "LOCK TABLES %s READ", table);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return 1;
+    }
+    return 0;
+}
+
+int UnlockTable(MYSQL * conn, char * table)
+{
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "UNLOCK TABLES", table);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return 1;
+    }
+    return 0;
+}
+
+int TableIsLocked(MYSQL * conn, char * table)
+{
+    MYSQL_ROW row;
+    int num_fields;
+    MYSQL_RES * result;
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "SHOW OPEN TABLES LIKE \"%s\"", table);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return 1;
+    }
+
+    result = mysql_store_result(conn);
+    if (result == NULL) 
+    {
+        finish_with_error(conn);
+    }
+
+    num_fields = mysql_num_fields(result);    
+
+    while ((row = mysql_fetch_row(result))) 
+    { 
+        for(int i = 0; i < num_fields; i++) 
+        { 
+            printf("%s ", row[i] ? row[i] : "NULL"); 
+        } 
+        printf("\n"); 
+    }
+
+    return row[2];
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 // Experimenting ///////////////////////////////////////////////////////////////
 int CreateTestEntry(MYSQL * conn, int id, int num)

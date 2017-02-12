@@ -84,7 +84,8 @@ int main(int argc, char *argv[])
     db = (void *)OpenDB(K_DB);
     //FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING, 0, 1, 2, 3, 4, 5, 6);
     //InsertEntry(db, queryString); 
-    ClearTable(db, K_TBL_OPEN_PARKING);
+    //ClearTable(db, K_TBL_OPEN_PARKING);
+    TableIsLocked(conn, K_TBL_OPEN_PARKING);
     CloseDB(db);
 
     return 0;

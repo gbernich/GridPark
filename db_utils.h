@@ -9,6 +9,9 @@
 #define K_MYSQL_USER    "root"
 #define K_MYSQL_PASS    "1111light"
 
+#define K_LOCK_INDEX                2
+#define K_LOCK_SLEEP_MICROSECONDS   10000 // 10 milliseconds
+
 // MYSQL admin
 MYSQL * OpenDB();
 void CloseDB(MYSQL * conn);
@@ -29,13 +32,13 @@ int InsertEntry(MYSQL * conn, char * query);
 // Table clearing
 int ClearTable(MYSQL * conn, char * table);
 
-
-
-
+// Table locking
+void WaitForLock(MYSQL * conn, char * table);
+int UnlockTable(MYSQL * conn, char * table);
+int TableIsLocked(MYSQL * conn, char * table);
+int LockTableForRead(MYSQL * conn, char * table);
 
 // Experimenting
 int CreateTestEntry(MYSQL * conn, int id, int num);
-
 int CreateNewSpot(int spot_id, int region, int distance, int * corners);
-
 int TestDB();
