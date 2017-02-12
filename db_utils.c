@@ -3,12 +3,11 @@
 // Author:              Garrett Bernichon
 // Function:            Provide functions to interact with the mySQL databases.
 //-----------------------------------------------------------------------------
-
+#include "db_utils.h"
+#include "constants.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
-#include "db_utils.h"
-#include "constants.h"
 
 // MYSQL admin /////////////////////////////////////////////////////////////////
 MYSQL * OpenDB(char * dbName)
@@ -125,6 +124,7 @@ int UnlockTable(MYSQL * conn, char * table)
 
 int TableIsLocked(MYSQL * conn, char * table)
 {
+    int i;
     MYSQL_ROW row;
     int num_fields;
     MYSQL_RES * result;
@@ -140,21 +140,25 @@ int TableIsLocked(MYSQL * conn, char * table)
     result = mysql_store_result(conn);
     if (result == NULL) 
     {
-        finish_with_error(conn);
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return 1;
     }
 
     num_fields = mysql_num_fields(result);    
 
-    while ((row = mysql_fetch_row(result))) 
-    { 
-        for(int i = 0; i < num_fields; i++) 
-        { 
-            printf("%s ", row[i] ? row[i] : "NULL"); 
-        } 
-        printf("\n"); 
-    }
+    //while ((row = mysql_fetch_row(result))) 
+    //{ 
+    //    for(i = 0; i < num_fields; i++) 
+    //    { 
+    //        printf("%s %d ", row[i] ? row[i] : "NULL", i); 
+    //    } 
+    //    printf("\n"); 
+    //}
 
-    return row[2];
+    row = mysql_fetch_row(result);
+    mysql_free_result(result);
+
+    return atoi(row[K_LOCK_INDEX]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -194,7 +198,7 @@ int TestDB()
         fprintf(stderr, "%s\n", mysql_error(conn));
         mysql_close(conn);
         return 1;
-    }  
+    }
 
     if (mysql_query(conn, "CREATE DATABASE testdb")) 
     {

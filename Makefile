@@ -19,7 +19,7 @@ recv.o: recv.c
 
 
 db_utils.o: db_utils.c
-	gcc -c db_utils.c -std=c99 `mysql_config --cflags --libs`
+	gcc -c db_utils.c `mysql_config --cflags --libs`
 
 
 

@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in serv_addr; 
 
     void * db;
+    int i;
 
     // Check for command line inputs
     if(argc != 2)
@@ -85,7 +86,14 @@ int main(int argc, char *argv[])
     //FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING, 0, 1, 2, 3, 4, 5, 6);
     //InsertEntry(db, queryString); 
     //ClearTable(db, K_TBL_OPEN_PARKING);
-    TableIsLocked(conn, K_TBL_OPEN_PARKING);
+    //i = TableIsLocked(db, K_TBL_OPEN_PARKING);
+    //printf("%d\n", i);
+
+    WaitForLock(db, K_TBL_OPEN_PARKING);
+    printf("Got the lock!\n");
+    UnlockTable(db, K_TBL_OPEN_PARKING);
+    printf("Released the lock!\n");
+
     CloseDB(db);
 
     return 0;
