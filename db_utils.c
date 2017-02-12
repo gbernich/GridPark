@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "db_utils.h"
+#include "constants.h"
 
+// MYSQL admin /////////////////////////////////////////////////////////////////
 MYSQL * OpenDB(char * dbName)
 {
     MYSQL *conn = mysql_init(NULL);
@@ -33,30 +35,29 @@ void CloseDB(MYSQL * conn)
 {
     mysql_close(conn);
 }
+////////////////////////////////////////////////////////////////////////////////
 
-char * FormatInsertForOpenParking(char * s, char * table, int spot_id,
+// Table insertion /////////////////////////////////////////////////////////////
+void FormatInsertForOpenParking(char * s, char * table, int spot_id,
         int region, int distance, int corner0, int corner1, int corner2,
         int corner3)
 {
     sprintf(s, "INSERT INTO %s VALUES(%d,%d,%d,%d,%d,%d,%d)", table, spot_id,
         region, distance, corner0, corner1, corner2, corner3);
-    return s;
 }
 
-char * FormatInsertForParkedCars(char * s, char * table, int car_id,
+void FormatInsertForParkedCars(char * s, char * table, int car_id,
         int susp_activity, int corner0, int corner1, int corner2, int corner3)
 {
     sprintf(s, "INSERT INTO %s VALUES(%d,%d,%d,%d,%d,%d)", table, car_id,
         susp_activity, corner0, corner1, corner2, corner3);
-    return s;
 }
 
-char * FormatInsertForSuspActivity((char * s, char * table, int car_id,
+void FormatInsertForSuspActivity(char * s, char * table, int car_id,
         int time_of_detect, int length_of_activity)
 {
     sprintf(s, "INSERT INTO %s VALUES(%d,%d,%d)", table, car_id,
         time_of_detect, length_of_activity);
-    return s;
 }
 
 int InsertEntry(MYSQL * conn, char * query)
@@ -68,7 +69,9 @@ int InsertEntry(MYSQL * conn, char * query)
     }
     return 0;
 }
+////////////////////////////////////////////////////////////////////////////////
 
+// Table clearing //////////////////////////////////////////////////////////////
 int ClearTable(MYSQL * conn, char * table)
 {
     char query[K_QUERY_STRING_LENGTH];
@@ -81,10 +84,10 @@ int ClearTable(MYSQL * conn, char * table)
     }
     return 0;
 }
+////////////////////////////////////////////////////////////////////////////////
 
 
-
-
+// Experimenting ///////////////////////////////////////////////////////////////
 int CreateTestEntry(MYSQL * conn, int id, int num)
 {
     char query[80];
@@ -132,3 +135,4 @@ int TestDB()
 
     return 0;
 }
+////////////////////////////////////////////////////////////////////////////////

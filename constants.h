@@ -13,3 +13,10 @@
 #define K_TBL_SUSP_ACTIVITY  "susp_activity"
 
 #define K_QUERY_STRING_LENGTH   128
+
+
+
+
+
+// Experimenting
+#define K_TEST_DB "testdb"

@@ -19,6 +19,8 @@
 #include "db_utils.h"
 #include "constants.h"
 
+char queryString[K_QUERY_STRING_LENGTH] = {0};
+
 int main(int argc, char *argv[])
 {
     int sockfd = 0;
@@ -79,9 +81,10 @@ int main(int argc, char *argv[])
         printf("\n Read error \n");
     } 
 
-    //TestDB();
-    db = (void *)OpenDB(K_TEST_DB);
-    CreateTestEntry(db, 2, 50);
+    db = (void *)OpenDB(K_DB);
+    //FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING, 0, 1, 2, 3, 4, 5, 6);
+    //InsertEntry(db, queryString); 
+    ClearTable(db, K_TBL_OPEN_PARKING);
     CloseDB(db);
 
     return 0;

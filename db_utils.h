@@ -9,19 +9,19 @@
 #define K_MYSQL_USER    "root"
 #define K_MYSQL_PASS    "1111light"
 
+// MYSQL admin
 MYSQL * OpenDB();
 void CloseDB(MYSQL * conn);
 
-
 // Table insertion
-char * FormatInsertForOpenParking(char * s, char * table, int spot_id,
+void FormatInsertForOpenParking(char * s, char * table, int spot_id,
         int region, int distance, int corner0, int corner1, int corner2,
         int corner3);
 
-char * FormatInsertForParkedCars(char * s, char * table, int car_id,
+void FormatInsertForParkedCars(char * s, char * table, int car_id,
         int susp_activity, int corner0, int corner1, int corner2, int corner3);
 
-char * FormatInsertForSuspActivity((char * s, char * table, int car_id,
+void FormatInsertForSuspActivity(char * s, char * table, int car_id,
         int time_of_detect, int length_of_activity);
 
 int InsertEntry(MYSQL * conn, char * query);
