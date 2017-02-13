@@ -4,7 +4,7 @@
 // Function:            Provide functions to interact with the mySQL databases.
 //-----------------------------------------------------------------------------
 #include "db_utils.h"
-#include "constants.h"
+#include "common.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -160,7 +160,44 @@ int TableIsLocked(MYSQL * conn, char * table)
 
     return atoi(row[K_LOCK_INDEX]);
 }
+////////////////////////////////////////////////////////////////////////////////
 
+// Read Tables /////////////////////////////////////////////////////////////////
+OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
+{
+    OPEN_SPOT_T * head = NULL;
+    int i;
+    MYSQL_ROW row;
+    int num_fields;
+    MYSQL_RES * result;
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "SELECT * FROM \"%s\"", table);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return 1;
+    }
+
+    result = mysql_store_result(conn);
+    if (result == NULL) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return 1;
+    }
+
+    num_fields = mysql_num_fields(result);    
+
+    while ((row = mysql_fetch_row(result))) 
+    { 
+        InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]), 
+            atoi(row[3]), atoi(row[4]), atoi(row[5]), atoi(row[6]));
+    }
+
+    mysql_free_result(result);
+
+    return head;
+}
 ////////////////////////////////////////////////////////////////////////////////
 
 // Experimenting ///////////////////////////////////////////////////////////////

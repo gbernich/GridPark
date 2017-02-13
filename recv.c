@@ -17,7 +17,7 @@
 #include <arpa/inet.h> 
 
 #include "db_utils.h"
-#include "constants.h"
+#include "common.h"
 
 char queryString[K_QUERY_STRING_LENGTH] = {0};
 
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
 
     void * db;
     int i;
+    OPEN_SPOT_T * list = NULL;
 
     // Check for command line inputs
     if(argc != 2)
@@ -89,10 +90,14 @@ int main(int argc, char *argv[])
     //i = TableIsLocked(db, K_TBL_OPEN_PARKING);
     //printf("%d\n", i);
 
-    WaitForLock(db, K_TBL_OPEN_PARKING);
-    printf("Got the lock!\n");
-    UnlockTable(db, K_TBL_OPEN_PARKING);
-    printf("Released the lock!\n");
+    //WaitForLock(db, K_TBL_OPEN_PARKING);
+    //printf("Got the lock!\n");
+    //UnlockTable(db, K_TBL_OPEN_PARKING);
+    //printf("Released the lock!\n");
+
+    list = GetOpenSpots(db, K_TBL_OPEN_PARKING);
+    PrintOpenSpots(list);
+    DeleteOpenSpots(list);
 
     CloseDB(db);
 
