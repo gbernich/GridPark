@@ -7,7 +7,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-typedef struct
+typedef struct spotnode
 {
     int spot_id;
     int region;
@@ -16,10 +16,10 @@ typedef struct
     int corner1;
     int corner2;
     int corner3;
-
+    struct spotnode * next;
 } OPEN_SPOT_T;
 
-typedef struct
+typedef struct carnode
 {
     int car_id;
     int susp_activity;
@@ -28,15 +28,15 @@ typedef struct
     int corner1;
     int corner2;
     int corner3;
-    
+    struct carnode * next;
 } PARKED_CAR_T;
 
-typedef struct
+typedef struct suspnode
 {
     int car_id;
     int time_of_detect;
     int length_of_activity;
-    
+    struct suspnode * next;
 } SUSP_ACTIVITY_T;
 
 

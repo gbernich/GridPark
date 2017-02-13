@@ -3,7 +3,7 @@ all: send recv
 
 
 send: send.o db_utils.o
-	gcc send.o db_utils.o -o send -L/usr/lib/mysql -lmysqlclient
+	gcc send.o db_utils.o common.c -o send -L/usr/lib/mysql -lmysqlclient
 
 recv: recv.o db_utils.o common.o
 	gcc recv.o db_utils.o common.o -o recv -L/usr/lib/mysql -lmysqlclient

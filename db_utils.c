@@ -171,7 +171,7 @@ OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
     int num_fields;
     MYSQL_RES * result;
     char query[K_QUERY_STRING_LENGTH];
-    sprintf(query, "SELECT * FROM \"%s\"", table);
+    sprintf(query, "SELECT * FROM %s", table);
 
     if (mysql_query(conn, query)) 
     {
@@ -190,8 +190,8 @@ OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
 
     while ((row = mysql_fetch_row(result))) 
     { 
-        head = InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]), 
-            atoi(row[3]), atoi(row[4]), atoi(row[5]), atoi(row[6]));
+        head = InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]), atoi(row[3]),
+                                atoi(row[4]), atoi(row[5]), atoi(row[6]));
     }
 
     mysql_free_result(result);
