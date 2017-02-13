@@ -4,6 +4,9 @@
 // Function:            Global structs
 //-----------------------------------------------------------------------------
 
+#ifndef COMMON_H
+#define COMMON_H
+
 typedef struct
 {
     int spot_id;
@@ -41,8 +44,7 @@ typedef struct
 OPEN_SPOT_T * CreateOpenSpot(int a, int b, int c, int d, int e, int f, int g);
 void DeleteOpenSpot(OPEN_SPOT_T * spot);
 void DeleteOpenSpots(OPEN_SPOT_T * head);
-OPEN_SPOT_T * InsertOpenSpot(OPEN_SPOT_T * head, int a, int b, int c, int d,
-                                int e, int f, int g)''
+OPEN_SPOT_T * InsertOpenSpot(OPEN_SPOT_T * head, int a, int b, int c, int d, int e, int f, int g);
 void PrintOpenSpots(OPEN_SPOT_T * head);
 
 // PARKED_CAR_T
@@ -55,3 +57,4 @@ void PrintOpenSpots(OPEN_SPOT_T * head);
 
 
 
+#endif

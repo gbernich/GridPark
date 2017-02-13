@@ -4,6 +4,8 @@
 // Function:            Global structs
 //-----------------------------------------------------------------------------
 
+#include "common.h"
+
 // OPEN_SPOT_T
 OPEN_SPOT_T * CreateOpenSpot(int a, int b, int c, int d, int e, int f, int g)
 {
@@ -62,6 +64,11 @@ OPEN_SPOT_T * InsertOpenSpot(OPEN_SPOT_T * head, int a, int b, int c, int d, int
 void PrintOpenSpots(OPEN_SPOT_T * head)
 {
     OPEN_SPOT_T * spot = head;
+
+    if (head == NULL)
+    {
+        return;
+    }
 
     do {
         printf("spot_id= %d, region= %d, dist= %d, corners= %d %d %d %d\n",

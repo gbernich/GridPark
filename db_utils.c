@@ -176,21 +176,21 @@ OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
     if (mysql_query(conn, query)) 
     {
         fprintf(stderr, "%s\n", mysql_error(conn));
-        return 1;
+        return NULL;
     }
 
     result = mysql_store_result(conn);
     if (result == NULL) 
     {
         fprintf(stderr, "%s\n", mysql_error(conn));
-        return 1;
+        return NULL;
     }
 
-    num_fields = mysql_num_fields(result);    
+    num_fields = mysql_num_fields(result);
 
     while ((row = mysql_fetch_row(result))) 
     { 
-        InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]), 
+        head = InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]), 
             atoi(row[3]), atoi(row[4]), atoi(row[5]), atoi(row[6]));
     }
 

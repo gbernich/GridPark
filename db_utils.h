@@ -4,7 +4,11 @@
 // Function:            Provide functions to interact with the mySQL databases.
 //-----------------------------------------------------------------------------
 
+#ifndef DB_UTILS_H
+#define DB_UTILS_H
+
 #include <mysql/mysql.h>
+#include "common.h"
 
 // Admin
 #define K_MYSQL_USER    "root"
@@ -63,3 +67,6 @@ OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table);
 int CreateTestEntry(MYSQL * conn, int id, int num);
 int CreateNewSpot(int spot_id, int region, int distance, int * corners);
 int TestDB();
+
+
+#endif
