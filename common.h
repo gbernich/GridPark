@@ -48,10 +48,10 @@ OPEN_SPOT_T * InsertOpenSpot(OPEN_SPOT_T * head, int a, int b, int c, int d, int
 void PrintOpenSpots(OPEN_SPOT_T * head);
 
 // PARKED_CAR_T
-PARKED_CAR_T * CreateParkedCar(int a, int b, int c);
+PARKED_CAR_T * CreateParkedCar(int a, int b, int c, int d, int e, int f);
 void DeleteParkedCar(PARKED_CAR_T * car);
 void DeleteParkedCars(PARKED_CAR_T * head);
-PARKED_CAR_T * InsertParkedCar(PARKED_CAR_T * head, int a, int b, int c);
+PARKED_CAR_T * InsertParkedCar(PARKED_CAR_T * head, int a, int b, int c, int d, int e, int f);
 void PrintParkedCars(PARKED_CAR_T * head);
 
 // SUSP_ACTIVITY_T
@@ -59,7 +59,7 @@ SUSP_ACTIVITY_T * CreateSuspActivity(int a, int b, int c);
 void DeleteSuspActivity(SUSP_ACTIVITY_T * act);
 void DeleteSuspActivities(SUSP_ACTIVITY_T * head);
 SUSP_ACTIVITY_T * InsertSuspActivity(SUSP_ACTIVITY_T * head, int a, int b, int c);
-void PrintSuspActivitys(SUSP_ACTIVITY_T * head);
+void PrintSuspActivities(SUSP_ACTIVITY_T * head);
 
 
 #endif

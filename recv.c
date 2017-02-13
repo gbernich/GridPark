@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     void * db;
     int i;
     OPEN_SPOT_T * spots = NULL;
-    PARKED_CARS_T * cars = NULL;
+    PARKED_CAR_T * cars = NULL;
     SUSP_ACTIVITY_T * acts = NULL;
 
     // Check for command line inputs
@@ -106,8 +106,8 @@ int main(int argc, char *argv[])
     DeleteParkedCars(cars);
 
     acts = GetSuspActivity(db, K_TBL_SUSP_ACTIVITY);
-    PrintSuspActivity(acts);
-    DeleteSuspActivity(acts);
+    PrintSuspActivities(acts);
+    DeleteSuspActivities(acts);
 
     CloseDB(db);
 

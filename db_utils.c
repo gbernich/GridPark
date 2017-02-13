@@ -226,7 +226,7 @@ PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table)
 
     while ((row = mysql_fetch_row(result))) 
     { 
-        head = InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]), atoi(row[3]),
+        head = InsertParkedCar(head, atoi(row[0]), atoi(row[1]), atoi(row[2]), atoi(row[3]),
                                 atoi(row[4]), atoi(row[5]));
     }
 
@@ -235,7 +235,7 @@ PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table)
     return head;
 }
 
-SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table);
+SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table)
 {
     SUSP_ACTIVITY_T * head = NULL;
     int i;
@@ -262,7 +262,7 @@ SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table);
 
     while ((row = mysql_fetch_row(result))) 
     { 
-        head = InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]));
+        head = InsertSuspActivity(head, atoi(row[0]), atoi(row[1]), atoi(row[2]));
     }
 
     mysql_free_result(result);

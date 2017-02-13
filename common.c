@@ -86,12 +86,12 @@ PARKED_CAR_T * CreateParkedCar(int a, int b, int c, int d, int e, int f)
 {
     PARKED_CAR_T * car = NULL;
     car = malloc(sizeof(PARKED_CAR_T));
-    car -> spot_id = a;
+    car -> car_id = a;
     car -> susp_activity = b;
-    car -> corner0 = d;
-    car -> corner1 = e;
-    car -> corner2 = f;
-    car -> corner3 = g;
+    car -> corner0 = c;
+    car -> corner1 = d;
+    car -> corner2 = e;
+    car -> corner3 = f;
     car -> next = NULL;
     return car;
 }
@@ -131,7 +131,7 @@ PARKED_CAR_T * InsertParkedCar(PARKED_CAR_T * head, int a, int b, int c, int d, 
     {
         ptr = ptr -> next;
     }
-    ptr -> next = spot;
+    ptr -> next = car;
     return head;
 }
 
@@ -145,7 +145,7 @@ void PrintParkedCars(PARKED_CAR_T * head)
     }
 
     do {
-        printf("car_id= %d, susp_act= %d, dist= %d, corners= %d %d %d %d\n",
+        printf("car_id= %d, susp_act= %d, corners= %d %d %d %d\n",
             car->car_id, car->susp_activity, car->corner0,
             car->corner1, car->corner2, car->corner3);
         car = car -> next;
@@ -159,9 +159,9 @@ SUSP_ACTIVITY_T * CreateSuspActivity(int a, int b, int c)
 {
     SUSP_ACTIVITY_T * act = NULL;
     act = malloc(sizeof(SUSP_ACTIVITY_T));
-    car -> car_id = a;
-    car -> time_of_detect = b;
-    car -> length_of_activity = c;
+    act -> car_id = a;
+    act -> time_of_detect = b;
+    act -> length_of_activity = c;
     act -> next = NULL;
     return act;
 }
@@ -201,11 +201,11 @@ SUSP_ACTIVITY_T * InsertSuspActivity(SUSP_ACTIVITY_T * head, int a, int b, int c
     {
         ptr = ptr -> next;
     }
-    ptr -> next = spot;
+    ptr -> next = act;
     return head;
 }
 
-void PrintSuspActivitys(SUSP_ACTIVITY_T * head)
+void PrintSuspActivities(SUSP_ACTIVITY_T * head)
 {
     SUSP_ACTIVITY_T * act = head;
 
