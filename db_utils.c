@@ -198,6 +198,77 @@ OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
 
     return head;
 }
+
+PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table)
+{
+    PARKED_CAR_T * head = NULL;
+    int i;
+    MYSQL_ROW row;
+    int num_fields;
+    MYSQL_RES * result;
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "SELECT * FROM %s", table);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return NULL;
+    }
+
+    result = mysql_store_result(conn);
+    if (result == NULL) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return NULL;
+    }
+
+    num_fields = mysql_num_fields(result);
+
+    while ((row = mysql_fetch_row(result))) 
+    { 
+        head = InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]), atoi(row[3]),
+                                atoi(row[4]), atoi(row[5]));
+    }
+
+    mysql_free_result(result);
+
+    return head;
+}
+
+SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table);
+{
+    SUSP_ACTIVITY_T * head = NULL;
+    int i;
+    MYSQL_ROW row;
+    int num_fields;
+    MYSQL_RES * result;
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "SELECT * FROM %s", table);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return NULL;
+    }
+
+    result = mysql_store_result(conn);
+    if (result == NULL) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return NULL;
+    }
+
+    num_fields = mysql_num_fields(result);
+
+    while ((row = mysql_fetch_row(result))) 
+    { 
+        head = InsertOpenSpot(head, atoi(row[0]), atoi(row[1]), atoi(row[2]));
+    }
+
+    mysql_free_result(result);
+
+    return head;
+}
 ////////////////////////////////////////////////////////////////////////////////
 
 // Experimenting ///////////////////////////////////////////////////////////////

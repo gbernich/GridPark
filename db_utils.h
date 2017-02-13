@@ -62,6 +62,8 @@ int LockTableForRead(MYSQL * conn, char * table);
 
 // Table reading
 OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table);
+PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table);
+SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table);
 
 // Experimenting
 int CreateTestEntry(MYSQL * conn, int id, int num);

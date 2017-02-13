@@ -82,10 +82,144 @@ void PrintOpenSpots(OPEN_SPOT_T * head)
 }
 
 // PARKED_CAR_T
+PARKED_CAR_T * CreateParkedCar(int a, int b, int c, int d, int e, int f)
+{
+    PARKED_CAR_T * car = NULL;
+    car = malloc(sizeof(PARKED_CAR_T));
+    car -> spot_id = a;
+    car -> susp_activity = b;
+    car -> corner0 = d;
+    car -> corner1 = e;
+    car -> corner2 = f;
+    car -> corner3 = g;
+    car -> next = NULL;
+    return car;
+}
 
+void DeleteParkedCar(PARKED_CAR_T * car)
+{
+    free(car);
+}
+
+void DeleteParkedCars(PARKED_CAR_T * head)
+{
+    PARKED_CAR_T * p = NULL;
+    PARKED_CAR_T * q = NULL;
+    
+    p = head;
+    while(p != NULL)
+    {
+        q = p -> next;
+        DeleteParkedCar(p);
+        p = q;
+    }
+}
+
+PARKED_CAR_T * InsertParkedCar(PARKED_CAR_T * head, int a, int b, int c, int d, int e, int f)
+{
+    PARKED_CAR_T * car = NULL;
+    car = CreateParkedCar(a, b, c, d, e, f);
+
+    // List head is null, this spot is new head
+    if (head == NULL)
+    {
+        return car;
+    }
+
+    PARKED_CAR_T * ptr = head;
+    while(ptr -> next != NULL)
+    {
+        ptr = ptr -> next;
+    }
+    ptr -> next = spot;
+    return head;
+}
+
+void PrintParkedCars(PARKED_CAR_T * head)
+{
+    PARKED_CAR_T * car = head;
+
+    if (head == NULL)
+    {
+        return;
+    }
+
+    do {
+        printf("car_id= %d, susp_act= %d, dist= %d, corners= %d %d %d %d\n",
+            car->car_id, car->susp_activity, car->corner0,
+            car->corner1, car->corner2, car->corner3);
+        car = car -> next;
+    } while(car != NULL);
+    printf("\n");
+}
 
 
 // SUSP_ACTIVITY_T
+SUSP_ACTIVITY_T * CreateSuspActivity(int a, int b, int c)
+{
+    SUSP_ACTIVITY_T * act = NULL;
+    act = malloc(sizeof(SUSP_ACTIVITY_T));
+    car -> car_id = a;
+    car -> time_of_detect = b;
+    car -> length_of_activity = c;
+    act -> next = NULL;
+    return act;
+}
 
+void DeleteSuspActivity(SUSP_ACTIVITY_T * act)
+{
+    free(act);
+}
+
+void DeleteSuspActivities(SUSP_ACTIVITY_T * head)
+{
+    SUSP_ACTIVITY_T * p = NULL;
+    SUSP_ACTIVITY_T * q = NULL;
+    
+    p = head;
+    while(p != NULL)
+    {
+        q = p -> next;
+        DeleteSuspActivity(p);
+        p = q;
+    }
+}
+
+SUSP_ACTIVITY_T * InsertSuspActivity(SUSP_ACTIVITY_T * head, int a, int b, int c)
+{
+    SUSP_ACTIVITY_T * act = NULL;
+    act = CreateSuspActivity(a, b, c);
+
+    // List head is null, this spot is new head
+    if (head == NULL)
+    {
+        return act;
+    }
+
+    SUSP_ACTIVITY_T * ptr = head;
+    while(ptr -> next != NULL)
+    {
+        ptr = ptr -> next;
+    }
+    ptr -> next = spot;
+    return head;
+}
+
+void PrintSuspActivitys(SUSP_ACTIVITY_T * head)
+{
+    SUSP_ACTIVITY_T * act = head;
+
+    if (head == NULL)
+    {
+        return;
+    }
+
+    do {
+        printf("spot_id= %d, time_of_detect= %d, length_of_act= %d\n",
+            act->car_id, act->time_of_detect, act->length_of_activity);
+        act = act -> next;
+    } while(act != NULL);
+    printf("\n");
+}
 
 

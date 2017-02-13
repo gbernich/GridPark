@@ -30,7 +30,9 @@ int main(int argc, char *argv[])
 
     void * db;
     int i;
-    OPEN_SPOT_T * list = NULL;
+    OPEN_SPOT_T * spots = NULL;
+    PARKED_CARS_T * cars = NULL;
+    SUSP_ACTIVITY_T * acts = NULL;
 
     // Check for command line inputs
     if(argc != 2)
@@ -95,9 +97,17 @@ int main(int argc, char *argv[])
     //UnlockTable(db, K_TBL_OPEN_PARKING);
     //printf("Released the lock!\n");
 
-    list = GetOpenSpots(db, K_TBL_OPEN_PARKING);
-    PrintOpenSpots(list);
-    DeleteOpenSpots(list);
+    spots = GetOpenSpots(db, K_TBL_OPEN_PARKING);
+    PrintOpenSpots(spots);
+    DeleteOpenSpots(spots);
+
+    cars = GetParkedCars(db, K_TBL_PARKED_CARS);
+    PrintParkedCars(cars);
+    DeleteParkedCars(cars);
+
+    acts = GetSuspActivity(db, K_TBL_SUSP_ACTIVITY);
+    PrintSuspActivity(acts);
+    DeleteSuspActivity(acts);
 
     CloseDB(db);
 
