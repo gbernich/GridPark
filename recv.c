@@ -28,18 +28,28 @@ int main(int argc, char *argv[])
     char recvBuff[1024] = {0};
     struct sockaddr_in serv_addr; 
 
-    void * db;
+    void * db = NULL;
     int i;
     OPEN_SPOT_T * spots = NULL;
     PARKED_CAR_T * cars = NULL;
     SUSP_ACTIVITY_T * acts = NULL;
+    int port_type = 0;
+
+    //inserting data
+    int num_entries = 0;
+    int entry_type = 0;
+    int j = 0;
 
     // Check for command line inputs
-    if(argc != 2)
+    if(argc != 3)
     {
-        printf("\n Usage: %s <ip of server> \n",argv[0]);
+        printf("\n Usage: %s <server IP addr> <server port number> \n",argv[0]);
         return 1;
-    } 
+    }
+    else
+    {
+        port_type = atoi(argv[2]) + K_PORT_OFFSET;
+    }
 
     // Create the socket
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -53,7 +63,7 @@ int main(int argc, char *argv[])
 
     // Set up socket
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(5000); 
+    serv_addr.sin_port = htons(port_type); 
 
     // Convert IP address to binary
     if(inet_pton(AF_INET, argv[1], &serv_addr.sin_addr)<=0)
@@ -69,23 +79,56 @@ int main(int argc, char *argv[])
        return 1;
     } 
 
+    // Open database
+    db = (void *)OpenDB(K_DB);
+
     // Receive the packets until done, write to command line
     while ( (n = read(sockfd, recvBuff, sizeof(recvBuff)-1)) > 0)
     {
-        recvBuff[n] = 0;
+        //insert data
+        num_entries = recvBuff[0];
+        entry_type = recvBuff[1];
+        j = 2;
+
+        for (i = 0; i < num_entries; i++){
+            if (entry_type == K_PACKET_OPEN_PARKING)
+            {
+                FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING,
+                    recvBuff[j++], recvBuff[j++], recvBuff[j++], recvBuff[j++]
+                    recvBuff[j++], recvBuff[j++], recvBuff[j++]);
+                InsertEntry(db, queryString);
+            }
+            else if (entry_type == K_PACKET_PARKED_CARS)
+            {
+                FormatInsertForParkedCars(queryString, K_TBL_PARKED_CARS,
+                    recvBuff[j++], recvBuff[j++], recvBuff[j++], recvBuff[j++]
+                    recvBuff[j++], recvBuff[j++]);
+                InsertEntry(db, queryString);
+            }
+            else // K_PACKET_SUSP_ACTIVITY
+            {
+                FormatInsertForSuspActivity(queryString, K_TBL_SUSP_ACTIVITY,
+                    recvBuff[j++], recvBuff[j++], recvBuff[j++]);
+                InsertEntry(db, queryString);
+            }
+        }
+        /*recvBuff[n] = 0;
         if(fputs(recvBuff, stdout) == EOF)
         {
             printf("\n Error : Fputs error\n");
-        }
+        }*/
     } 
 
     // Error reading from socket
     if(n < 0)
     {
         printf("\n Read error \n");
-    } 
+    }
 
-    db = (void *)OpenDB(K_DB);
+    // close database
+    CloseDB(db);
+
+    //db = (void *)OpenDB(K_DB);
     //FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING, 0, 1, 2, 3, 4, 5, 6);
     //InsertEntry(db, queryString); 
     //ClearTable(db, K_TBL_OPEN_PARKING);
@@ -97,6 +140,7 @@ int main(int argc, char *argv[])
     //UnlockTable(db, K_TBL_OPEN_PARKING);
     //printf("Released the lock!\n");
 
+    /*
     spots = GetOpenSpots(db, K_TBL_OPEN_PARKING);
     PrintOpenSpots(spots);
     DeleteOpenSpots(spots);
@@ -108,8 +152,8 @@ int main(int argc, char *argv[])
     acts = GetSuspActivity(db, K_TBL_SUSP_ACTIVITY);
     PrintSuspActivities(acts);
     DeleteSuspActivities(acts);
-
-    CloseDB(db);
+    */
+    //CloseDB(db);
 
     return 0;
 }

@@ -7,6 +7,15 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#define K_PACKET_OPEN_PARKING   0
+#define K_PACKET_PARKED_CARS    1
+#define K_PACKET_SUSP_ACTIVITY  2
+
+#define K_PORT_OFFSET           5000
+#define K_PORT_OPEN_PARKING     5000
+#define K_PORT_PARKED_CARS      5001
+#define K_PORT_SUSP_ACTIVITY    5002
+
 typedef struct spotnode
 {
     int spot_id;
