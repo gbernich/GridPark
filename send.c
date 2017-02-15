@@ -31,9 +31,12 @@ int main(int argc, char *argv[])
     void * db = NULL;
     char packet_type = 0;
     int port_type = 0;
-    OPEN_SPOT_T * spots, s = NULL;
-    PARKED_CAR_T * cars, c = NULL;
-    SUSP_ACTIVITY_T * acts, a = NULL;
+    OPEN_SPOT_T * spots = NULL;
+    OPEN_SPOT_T * s = NULL;
+    PARKED_CAR_T * cars = NULL;
+    PARKED_CAR_T * c = NULL;
+    SUSP_ACTIVITY_T * acts = NULL;
+    SUSP_ACTIVITY_T * a = NULL;
     int j = 0;
     int count = 0;
 

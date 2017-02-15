@@ -94,14 +94,14 @@ int main(int argc, char *argv[])
             if (entry_type == K_PACKET_OPEN_PARKING)
             {
                 FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING,
-                    recvBuff[j++], recvBuff[j++], recvBuff[j++], recvBuff[j++]
+                    recvBuff[j++], recvBuff[j++], recvBuff[j++], recvBuff[j++],
                     recvBuff[j++], recvBuff[j++], recvBuff[j++]);
                 InsertEntry(db, queryString);
             }
             else if (entry_type == K_PACKET_PARKED_CARS)
             {
                 FormatInsertForParkedCars(queryString, K_TBL_PARKED_CARS,
-                    recvBuff[j++], recvBuff[j++], recvBuff[j++], recvBuff[j++]
+                    recvBuff[j++], recvBuff[j++], recvBuff[j++], recvBuff[j++],
                     recvBuff[j++], recvBuff[j++]);
                 InsertEntry(db, queryString);
             }
