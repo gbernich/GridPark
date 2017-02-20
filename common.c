@@ -33,7 +33,7 @@ void DeleteOpenSpots(OPEN_SPOT_T * head)
 {
     OPEN_SPOT_T * p = NULL;
     OPEN_SPOT_T * q = NULL;
-    
+
     p = head;
     while(p != NULL)
     {
@@ -222,4 +222,11 @@ void PrintSuspActivities(SUSP_ACTIVITY_T * head)
     printf("\n");
 }
 
-
+// Packet
+void PackIntoPacket(char * buff, int offset, int size, int value)
+{
+    buff[offset++] = (char)(value & K_MASK_0);
+    buff[offset++] = (char)((value & K_MASK_1) >> 8);
+    buff[offset++] = (char)((value & K_MASK_2) >> 16);
+    buff[offset++] = (char)((value & K_MASK_3) >> 24);
+}

@@ -89,10 +89,12 @@ int main(int argc, char *argv[])
         num_entries = recvBuff[0];
         entry_type = recvBuff[1];
         j = 2;
-
+        printf("num_entries = %d\n", num_entries);
         for (i = 0; i < num_entries; i++){
+            printf("entry type = %d\n", entry_type);
             if (entry_type == K_PACKET_OPEN_PARKING)
             {
+                printf("OPEN_PARKING\n");
                 FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING,
                     recvBuff[j++], recvBuff[j++], recvBuff[j++], recvBuff[j++],
                     recvBuff[j++], recvBuff[j++], recvBuff[j++]);

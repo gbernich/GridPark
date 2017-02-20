@@ -81,18 +81,19 @@ int main(int argc, char *argv[])
             // get open spots from DB
             spots = GetOpenSpots(db, K_TBL_OPEN_PARKING);
             s = spots;
+            PrintOpenSpots(spots);
             do
             {   // pack into buffer
                 count++;
-                memset(sendBuff + j, s -> spot_id,  sizeof(int));   j += sizeof(int);
-                memset(sendBuff + j, s -> region,   sizeof(int));   j += sizeof(int);
-                memset(sendBuff + j, s -> distance, sizeof(int));   j += sizeof(int);
-                memset(sendBuff + j, s -> corner0,  sizeof(int));   j += sizeof(int);
-                memset(sendBuff + j, s -> corner1,  sizeof(int));   j += sizeof(int);
-                memset(sendBuff + j, s -> corner2,  sizeof(int));   j += sizeof(int);
-                memset(sendBuff + j, s -> corner3,  sizeof(int));   j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), s->spot_id);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), s->region);   j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), s->distance); j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), s->corner0);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), s->corner1);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), s->corner2);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), s->corner3);  j += sizeof(int);
                 s = s -> next;
-            } while (s->next != NULL);
+            } while (s != NULL);
 
             // free memory
             DeleteOpenSpots(spots);
@@ -134,20 +135,20 @@ int main(int argc, char *argv[])
             // free memory
             DeleteSuspActivities(acts);
         }
-
+        printf("6\n");
         // Create a packet to send
-        sendBuff[0] = packet_type;
-        sendBuff[1] = count;
-
+        sendBuff[0] = (char)packet_type;
+        sendBuff[1] = (char)count;
+        printf("7\n");
         // close database
         CloseDB(db);
-
+        printf("8\n");
         //ticks = time(NULL);
         //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
 
         // Send packet over socket
         write(connfd, sendBuff, strlen(sendBuff)); 
-
+        printf("9\n");
         // Close connection
         close(connfd);
 

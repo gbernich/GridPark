@@ -16,6 +16,12 @@
 #define K_PORT_PARKED_CARS      5001
 #define K_PORT_SUSP_ACTIVITY    5002
 
+#define K_MASK_0 0x000000FF // LSB
+#define K_MASK_1 0x0000FF00 // LSB
+#define K_MASK_2 0x00FF0000 // LSB
+#define K_MASK_3 0xFF000000 // LSB
+
+
 typedef struct spotnode
 {
     int spot_id;
@@ -70,5 +76,7 @@ void DeleteSuspActivities(SUSP_ACTIVITY_T * head);
 SUSP_ACTIVITY_T * InsertSuspActivity(SUSP_ACTIVITY_T * head, int a, int b, int c);
 void PrintSuspActivities(SUSP_ACTIVITY_T * head);
 
+// Packet
+void PackIntoPacket(char * buff, int offset, int size, int value);
 
 #endif
