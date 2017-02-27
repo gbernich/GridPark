@@ -106,14 +106,14 @@ int main(int argc, char *argv[])
             do
             {   // pack into buffer
                 count++;
-                memset(sendBuff + j, c -> car_id,        sizeof(int)); j += sizeof(int);
-                memset(sendBuff + j, c -> susp_activity, sizeof(int)); j += sizeof(int);
-                memset(sendBuff + j, c -> corner0,       sizeof(int)); j += sizeof(int);
-                memset(sendBuff + j, c -> corner1,       sizeof(int)); j += sizeof(int);
-                memset(sendBuff + j, c -> corner2,       sizeof(int)); j += sizeof(int);
-                memset(sendBuff + j, c -> corner3,       sizeof(int)); j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), c->car_id);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), c->susp_activity);   j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), c->corner0);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), c->corner1);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), c->corner2);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), c->corner3);  j += sizeof(int);
                 c = c -> next;
-            } while (c->next != NULL);
+            } while (c != NULL);
 
             // free memory
             DeleteParkedCars(cars);
@@ -126,29 +126,26 @@ int main(int argc, char *argv[])
             do
             {   // pack into buffer
                 count++;
-                memset(sendBuff + j, a -> car_id,             sizeof(int)); j += sizeof(int);
-                memset(sendBuff + j, a -> time_of_detect,     sizeof(int)); j += sizeof(int);
-                memset(sendBuff + j, a -> length_of_activity, sizeof(int)); j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), a->car_id);  j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), a->time_of_detect);   j += sizeof(int);
+                PackIntoPacket(sendBuff, j, sizeof(int), a->length_of_activity);  j += sizeof(int);
                 a = a -> next;
-            } while (a->next != NULL);
+            } while (a != NULL);
 
             // free memory
             DeleteSuspActivities(acts);
         }
-        printf("6\n");
+
         // Create a packet to send
         sendBuff[0] = (char)packet_type;
         sendBuff[1] = (char)count;
-        printf("7\n");
         // close database
         CloseDB(db);
-        printf("8\n");
         //ticks = time(NULL);
         //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
 
         // Send packet over socket
-        write(connfd, sendBuff, strlen(sendBuff)); 
-        printf("9\n");
+        write(connfd, sendBuff, j); 
         // Close connection
         close(connfd);
 
