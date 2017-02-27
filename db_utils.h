@@ -22,6 +22,11 @@
 #define K_TBL_PARKED_CARS    "parked_cars"
 #define K_TBL_SUSP_ACTIVITY  "susp_activity"
 
+// Table columns
+#define K_TBL_OPEN_PARKING_COLUMNS   7
+#define K_TBL_PARKED_CARS_COLUMNS    6
+#define K_TBL_SUSP_ACTIVITY_COLUMNS  3
+
 // Global Strings
 #define K_QUERY_STRING_LENGTH   128
 

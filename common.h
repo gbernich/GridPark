@@ -78,5 +78,6 @@ void PrintSuspActivities(SUSP_ACTIVITY_T * head);
 
 // Packet
 void PackIntoPacket(char * buff, int offset, int size, int value);
+void GetSocketArgs(int * args, char * buff, int offset, int packet_type);
 
 #endif

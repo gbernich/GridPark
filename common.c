@@ -73,9 +73,6 @@ void PrintOpenSpots(OPEN_SPOT_T * head)
     }
 
     do {
-        printf("spot_id= %d, region= %d, dist= %d, corners= %d %d %d %d\n",
-            spot->spot_id, spot->region, spot->distance, spot->corner0,
-            spot->corner1, spot->corner2, spot->corner3);
         spot = spot -> next;
     } while(spot != NULL);
     printf("\n");
@@ -145,9 +142,6 @@ void PrintParkedCars(PARKED_CAR_T * head)
     }
 
     do {
-        printf("car_id= %d, susp_act= %d, corners= %d %d %d %d\n",
-            car->car_id, car->susp_activity, car->corner0,
-            car->corner1, car->corner2, car->corner3);
         car = car -> next;
     } while(car != NULL);
     printf("\n");
@@ -215,8 +209,6 @@ void PrintSuspActivities(SUSP_ACTIVITY_T * head)
     }
 
     do {
-        printf("spot_id= %d, time_of_detect= %d, length_of_act= %d\n",
-            act->car_id, act->time_of_detect, act->length_of_activity);
         act = act -> next;
     } while(act != NULL);
     printf("\n");
@@ -229,4 +221,31 @@ void PackIntoPacket(char * buff, int offset, int size, int value)
     buff[offset++] = (char)((value & K_MASK_1) >> 8);
     buff[offset++] = (char)((value & K_MASK_2) >> 16);
     buff[offset++] = (char)((value & K_MASK_3) >> 24);
+}
+
+void GetSocketArgs(int * args, char * buff, int offset, int packet_type)
+{
+    int i = 0;
+    int ind = 0;
+    int max_ind = 0;
+
+    if (packet_type == K_PACKET_OPEN_PARKING)
+    {
+        max_ind = 7;
+    }
+    else if (packet_type == K_PACKET_PARKED_CARS)
+    {
+        max_ind = 6;
+    }
+    else // K_PACKET_SUSP_ACTIVITY
+    {
+        max_ind = 3;
+    }
+
+
+    for(i = 0; i < max_ind; i++)
+    {
+       ind = offset + i*4;
+       args[i] =  buff[ind] + (buff[ind+1] << 8) + (buff[ind+2] << 16) + (buff[ind+3] << 24);
+    }
 }
