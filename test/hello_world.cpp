@@ -77,6 +77,7 @@ void cornerHarris_demo( int, void* )
 
   Mat dst, dst_norm, dst_norm_scaled;
   dst = Mat::zeros( src.size(), CV_32FC1 );
+  int count = 0;
 
   // Detector parameters
   int blockSize = 2;
@@ -100,10 +101,12 @@ void cornerHarris_demo( int, void* )
             if( (int) dst_norm.at<float>(j,i) > thresh )
               {
                circle( dst_norm_scaled, Point( i, j ), 5,  Scalar(0), 2, 8, 0 );
+               count++;
               }
           }
      }
   /// Showing the result
+  printf("Found %d corners\n", count);
   namedWindow( corners_window, CV_WINDOW_AUTOSIZE );
   imshow( corners_window, dst_norm_scaled );
 }
