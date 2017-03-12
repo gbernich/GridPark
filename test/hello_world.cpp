@@ -1,75 +1,86 @@
 #include <stdio.h>
 #include <cv.hpp>
+#include <time.h>
+#include <iostream>
+
+#include "ip.h"
 
 using namespace cv;
 using namespace std;
-
-/// Global variables
-Mat src, src_gray;
-int thresh = 200;
-int max_thresh = 255;
-
-Mat dst, detected_edges;
-
-int edgeThresh = 1;
-int lowThreshold;
-int max_lowThreshold = 250;
-int ratio1 = 3;
-int kernel_size = 3;
 
 
 #define source_window   "Source image"
 #define corners_window  "Corners detected"
 #define window_name     "Edge Map"
 
-
 void cornerHarris_demo( int, void* );
 void CannyThreshold(int, void*);
 
+/// Global variables
+Mat src, src_gray;
+Mat dst, detected_edges;
+
+// Corner Detection
+int thresh = IP_CORNERS_THRESH_INIT;
+
+// Edge Detection
+int edgeThresh = 2;
+int lowThreshold = 100;
+int max_lowThreshold = 255;
+int ratio1 = 3;
+int kernel_size = 3;
+
 int main(int argc, char** argv )
-{   
-    if ( argc != 2 )
-    {
-        printf("usage: DisplayImage.out <Image_Path>\n");
-        return -1;
-    }
-/*
-    Mat img;
-    img = imread( argv[1], 1 );
+{  
+  struct timespec start, finish;
+  double elapsed;
+  int i;
 
-    if ( !img.data )
-    {
-        printf("No image data \n");
-        return -1;
-    }
+  // Corner Detection
+  int thresh = IP_CORNERS_THRESH_INIT;
+  //int max_thresh = 255;
+  vector<Corner> corners;
 
-    // create a window
-    cvNamedWindow("mainWin"); 
-    cvMoveWindow("mainWin", 100, 100);
-    cvResizeWindow("mainWin", 800, 600);
+  // Check for number of arguments
+  if ( argc != 2 )
+  {
+      printf("usage: DisplayImage.out <Image_Path>\n");
+      return -1;
+  }
 
-    namedWindow("Display Image");
-    imshow("Display Image", img);
+  /// Load source image and convert it to gray
+  src = imread( argv[1], 1 );
+  cvtColor( src, src_gray, CV_BGR2GRAY );
 
-    waitKey(0);*/
+  // Create a window and a trackbar
+  namedWindow( source_window, CV_WINDOW_AUTOSIZE );
+  //createTrackbar( "Threshold: ", source_window, &thresh, max_thresh, cornerHarris_demo );
+  createTrackbar( "Threshold:", source_window, &lowThreshold, max_lowThreshold, CannyThreshold );
+  imshow( source_window, src );
 
-    /// Load source image and convert it to gray
-    src = imread( argv[1], 1 );
-    cvtColor( src, src_gray, CV_BGR2GRAY );
+  // for (i = 0; i < 4; i++)
+  // {
+  //   clock_gettime(CLOCK_MONOTONIC, &start);
+  //   corners = GetOptimalCorners(src_gray, &thresh);
+  //   clock_gettime(CLOCK_MONOTONIC, &finish);
+  //   elapsed = (finish.tv_sec - start.tv_sec);
+  //   elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+  //   cout << elapsed * 1000.0 << " ms" << endl;
+  // }
 
-    /// Create a window and a trackbar
-    namedWindow( source_window, CV_WINDOW_AUTOSIZE );
-    createTrackbar( "Threshold: ", source_window, &thresh, max_thresh, cornerHarris_demo );
-    //createTrackbar( "Threshold:", source_window, &lowThreshold, max_lowThreshold, CannyThreshold );
-    imshow( source_window, src );
 
-    cornerHarris_demo(0, 0);
-    //CannyThreshold(0, 0);
 
-    waitKey(0);
 
-    return 0;
+  CannyThreshold(0, 0);
+
+  waitKey(0);
+  return 0;
 }
+
+
+
+ // command for image
+ // fswebcam -r 1920x1080 image.jpg -S 20
 
 
 void cornerHarris_demo( int, void* )
@@ -80,12 +91,12 @@ void cornerHarris_demo( int, void* )
   int count = 0;
 
   // Detector parameters
-  int blockSize = 2;
-  int apertureSize = 5;
-  double k = 0.1005;
   // int blockSize = 2;
-  // int apertureSize = 3;
-  // double k = 0.04;
+  // int apertureSize = 5;
+  // double k = 0.1005;
+  int blockSize = 2;
+  int apertureSize = 3;
+  double k = 0.05;
 
   /// Detecting corners
   cornerHarris( src_gray, dst, blockSize, apertureSize, k, BORDER_DEFAULT );
@@ -100,15 +111,16 @@ void cornerHarris_demo( int, void* )
           {
             if( (int) dst_norm.at<float>(j,i) > thresh )
               {
-               circle( dst_norm_scaled, Point( i, j ), 5,  Scalar(0), 2, 8, 0 );
-               count++;
+                circle( dst_norm_scaled, Point( i, j ), 5,  Scalar(0), 2, 8, 0 );
+                count++;
               }
           }
      }
+
   /// Showing the result
-  printf("Found %d corners\n", count);
-  namedWindow( corners_window, CV_WINDOW_AUTOSIZE );
-  imshow( corners_window, dst_norm_scaled );
+  printf("Thresh = %d, corners = %d\n", thresh, count);
+  //namedWindow( corners_window, CV_WINDOW_AUTOSIZE );
+  //imshow( corners_window, dst_norm_scaled );
 }
 
 void CannyThreshold(int, void*)
@@ -123,5 +135,6 @@ void CannyThreshold(int, void*)
   dst = Scalar::all(0);
 
   src.copyTo( dst, detected_edges);
-  imshow( window_name, dst );
+  imshow( window_name, detected_edges );
  }
+
