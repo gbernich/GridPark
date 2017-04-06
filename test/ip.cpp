@@ -88,11 +88,16 @@ Mat GetEdges(Mat src, int lowThreshold, int ratio, int kernelSize)
 int CountMeaningfulEdges(Window win, Mat edges, float minDiff, int edge)
 {
   ImgPoint currPos, startPos, endPos;
-  if (edge == K_LEFT_EDGE)
+
+  if (edge == K_LEFT_EDGE){
     startPos.x = win.tl.x;
-  else
-    startPos.x = win.br.x; // ONLY WORKS WHEN THETA = 0.0
-  startPos.y = win.tl.y; // ONLY WORKS WHEN THETA = 0.0
+    startPos.y = win.tl.y;
+  }
+  else{
+    startPos.x = win.tl.x + win.width * cos(Degrees2Radians(win.theta));
+    startPos.y = win.tl.y + win.width * sin(Degrees2Radians(win.theta));
+  }
+  
   currPos = startPos;
   int count = 0;
 
@@ -107,19 +112,27 @@ int CountMeaningfulEdges(Window win, Mat edges, float minDiff, int edge)
     {
       //printf("3\n");
       endPos = TraverseEdge(win, edges, currPos, edge);
-      if (IsOnStartingEdge(endPos, win, edge))
-      {
-        //cout << "start " << currPos.y << " end " << endPos.y << endl;
-        if ((float)(endPos.y - currPos.y) >= minDiff * (float)(win.br.y - win.tl.y))
+      if (endPos.x != -1){
+        //cout << "start " << currPos.x << " " << currPos.y << endl;
+        //cout << "end " << endPos.x << " " << endPos.y << endl;
+
+        if (IsOnStartingEdge(endPos, win, edge))
         {
-          count++;
-          //cout << "counted" << endl;
+          // cout << "start " << currPos.y << " end " << endPos.y << endl;
+          // if ((float)(endPos.y - currPos.y) >= minDiff * (float)(win.br.y - win.tl.y))
+          // printf("dist = %f\n", GetDistance(currPos, endPos));
+          if (GetDistance(currPos, endPos) >= minDiff * (float)(win.height))
+          //if (GetDistance(currPos, endPos) >= 2)
+          {
+            count++;
+            //cout << "counted, dist " << GetDistance(currPos, endPos) << endl;
+          }
         }
       }
     }
 
     // Move along the window edge
-    currPos = GetNextStartingPoint(currPos, win);
+    currPos = GetNextStartingPoint(currPos, win, edge);
   }
   //cout << count << endl;
   return count;
@@ -128,63 +141,95 @@ int CountMeaningfulEdges(Window win, Mat edges, float minDiff, int edge)
 bool IsOnStartingEdge(ImgPoint pos, Window win, int edge)
 {
   if (edge == K_LEFT_EDGE){
-    if (pos.x == win.tl.x) // ONLY WORKS WHEN THETA = 0.0
+    //printf("expected %d, actual %d\n", (int)((float)win.tl.x + (pos.y - win.tl.y) * tan(Degrees2Radians(win.theta))),pos.x);
+    if (pos.x == (int)((float)win.tl.x + (pos.y - win.tl.y) * tan(Degrees2Radians(win.theta))))
       return true;
   }else{
-    if (pos.x == win.br.x) // ONLY WORKS WHEN THETA = 0.0
+    if (pos.x == (int)((float)win.tr.x + (pos.y - win.tr.y) * tan(Degrees2Radians(win.theta))))
       return true;
   }
 
   return false;
 }
 
-ImgPoint GetNextStartingPoint(ImgPoint currPos, Window win)
+ImgPoint GetNextStartingPoint(ImgPoint currPos, Window win, int edge)
 {
   ImgPoint nextPos;
-  nextPos.x = currPos.x;
   nextPos.y = currPos.y + 1;
 
-  if (nextPos.y > win.br.y)
-  {
-    nextPos.x = -1;
-    nextPos.y = -1;
+  if (edge == K_LEFT_EDGE){
+    nextPos.x = win.tl.x + (nextPos.y - win.tl.y) * tan(Degrees2Radians(win.theta));
+    if (nextPos.y > win.bl.y)
+    {
+      nextPos.x = -1;
+      nextPos.y = -1;
+    }
+  }else{
+    nextPos.x = win.tr.x + (nextPos.y - win.tr.y) * tan(Degrees2Radians(win.theta));
+    if (nextPos.y > win.br.y)
+    {
+      nextPos.x = -1;
+      nextPos.y = -1;
+    }
   }
+  //printf("start x %d, y %d\n", nextPos.x, nextPos.y);
   return nextPos;
 }
 
-ImgPoint TraverseEdge(Window win, Mat edges, ImgPoint currPos, int edge)
+ImgPoint TraverseEdge(Window win, Mat edges, ImgPoint startPos, int edge)
 {
-  ImgPoint lastPos = currPos;
+  int front = 0;
+  int edgeLength = 0;
+  ImgPoint lastPos[9] = {{-2,-2}};
+  ImgPoint currPos = startPos;
+  lastPos[front++] = currPos;
   ImgPoint nextPos = GetNextPos(win, edges, currPos, lastPos);
-  //cout << nextPos.x << " " << nextPos.y << endl;
+  if (nextPos.x == -1)
+    currPos = nextPos;
   //printf("4\n");
   while (nextPos.x != -1)
   {
     //printf("5\n");
-    lastPos = currPos;
+    //lastPos.push_front(currPos);
     currPos = nextPos;
 
-    if ((currPos.x == win.tl.x && edge == K_LEFT_EDGE) ||
-        (currPos.x == win.br.x && edge == K_RIGHT_EDGE))
+    // if ((currPos.x == win.tl.x && edge == K_LEFT_EDGE) ||
+    //     (currPos.x == win.br.x && edge == K_RIGHT_EDGE))
+    if (IsOnStartingEdge(currPos, win, edge))
       break;
     nextPos = GetNextPos(win, edges, currPos, lastPos);
+    
+    if(edgeLength++ >= K_MAX_EDGE_LENGTH) // prevent infinite loops
+    {
+      currPos.x = -1;
+      currPos.y = -1;
+      break;
+    }
 
+    lastPos[front++] = currPos;
+    if (front > 8)
+      front = 0;
     //cout << nextPos.x << " " << nextPos.y << endl;
   }
+  //printf("finished edge, length %d\n", edgeLength);
 
   return currPos;
 }
 
-ImgPoint GetNextPos(Window win, Mat edges, ImgPoint currPos, ImgPoint lastPos)
+ImgPoint GetNextPos(Window win, Mat edges, ImgPoint currPos, ImgPoint* lastPos)
 {
   ImgPoint nextPos, tryPos;
-  int attemptedPos[3][3] = {{1, 1, 1}, {0, 1, 0}, {0, 0, 0}};
+  int attemptedPos[3][3] = {{0, 0, 0}, {0, 1, 0}, {0, 0, 0}}; // only for vertical
   int xDiff, yDiff;
 
-  // Mark Last position
-  xDiff = (lastPos.x - currPos.x) + 1;
-  yDiff = (lastPos.y - currPos.y) + 1;
-  attemptedPos[yDiff][xDiff] = 1;
+  // Mark last positions so that we don't go in a circle forever
+  for(int i = 0; i < 9; i++)
+  {
+    xDiff = (lastPos[i].x - currPos.x) + 1;
+    yDiff = (lastPos[i].y - currPos.y) + 1;
+    if (0 <= xDiff && xDiff <= 2 && 0 <= yDiff && yDiff <= 2)
+      attemptedPos[yDiff][xDiff] = 1;
+  }
 
   // Init to null
   nextPos.x = -1;
@@ -203,18 +248,39 @@ ImgPoint GetNextPos(Window win, Mat edges, ImgPoint currPos, ImgPoint lastPos)
       }
     }
   }
-  //printf("7\n");
+  //if(nextPos.x == -1)
+    //printf("GetNext is null\n");
   return nextPos;
 
 }
 
 bool IsInsideWindow(Window win, ImgPoint pos)
-{
-  if (win.tl.x <= pos.x && pos.x <= win.br.x &&
-      win.tl.y <= pos.y && pos.y <= win.br.y)
-    return true;
-  else
-    return false; 
+{  
+  float top, bottom, left, right;
+
+  // if theta ~0.0 then treat as a vertical rectangle
+  if (-0.0001 <= win.theta && win.theta <= 0.0001)
+  {
+    if (win.tl.x <= pos.x && pos.x <= win.br.x &&
+        win.tl.y <= pos.y && pos.y <= win.br.y)
+      return true;
+    else
+      return false; 
+  }
+
+  // Create a slope for each edge
+  top     = (float)(win.tr.y - win.tl.y)/(float)(win.tr.x - win.tl.x);
+  bottom  = (float)(win.br.y - win.bl.y)/(float)(win.br.x - win.bl.x);
+  left    = (float)(win.bl.y - win.tl.y)/(float)(win.bl.x - win.tl.x);
+  right   = (float)(win.br.y - win.tr.y)/(float)(win.br.x - win.tr.x);
+  
+  // might only work for theta > 0
+  if (pos.y < win.tl.y + top    * (pos.x - win.tl.x))  { return false; }
+  if (pos.y > win.bl.y + bottom * (pos.x - win.bl.x))  { return false; }
+  if (pos.y > win.tl.y + left   * (pos.x - win.tl.x))  { return false; }
+  if (pos.y < win.tr.y + right  * (pos.x - win.tr.x))  { return false; }
+
+  return true;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -234,24 +300,77 @@ vector<int> GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWin
   for (i = 0; i < windows.size(); i++)
   {
     win = windows.at(i);
-    sum = 0;
 
-    // Horizontal
-    for (x = win.tl.x; x < win.br.x; x++)
-    {
-      // Vertical
-      for (y = win.tl.y; y < win.br.y; y++)
-      {
-        pixel = (int)img.at<float>(y, x);
-        if (pixel > thresh)
-        {
-          sum += 1;
-        }
-      }
-    }
+    sum = GetSumOfWindow(img, windows.at(i), thresh);
+
     sums.push_back(sum);
   }
   return sums;
+}
+
+vector<float> GetNormalizedSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow)
+{
+  vector<Window> windows;
+  Window win;
+  vector<float> sums;
+  int sum, i, x, y = 0;
+  int pixel;
+
+  windows = GetSlidingWindow(startWindow, endWindow, img.rows, img.cols);
+  //cout << img.rows << endl;
+  // Sum
+  for (i = 0; i < windows.size(); i++)
+  {
+    win = windows.at(i);
+
+    sum = GetSumOfWindow(img, windows.at(i), thresh);
+
+    sums.push_back(sum / (float)windows.at(i).height);
+  }
+  return sums;
+}
+
+int GetSumOfWindow(Mat img, Window win, int thresh)
+{ // ONLY SUPPORTS A LINE //
+  
+  int sum = 0;
+  int x = win.tl.x;
+  int y = win.tl.y;
+  int pixel = 0;
+  int ylimit = win.bl.y;
+  int xlimit = 0;
+  ImgPoint tmpPoint;
+
+  // Traverse down the left edge of the winow
+  while (y <= ylimit)
+  {
+    // Get X limit
+    xlimit = (int)(win.tr.x + (y - win.tr.y) * tan(win.theta));
+
+    while (x <= xlimit)
+    {
+      tmpPoint.x = x;
+      tmpPoint.y = y;
+
+      // Check the image
+      if (IsInsideWindow(win, tmpPoint)){
+        pixel = (int)img.at<float>(y, x);
+        if (pixel > thresh)
+          sum++;
+      }
+      x++;
+    }
+
+
+
+    // Update y position
+    y++;
+
+    // Update x position
+    x = (int)(win.tl.x + (y - win.tl.y) * tan(win.theta));
+  }
+
+  return sum;
 }
 
 vector<int> GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, float minDiff, int edge)
@@ -263,7 +382,7 @@ vector<int> GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, flo
   int pixel;
 
   windows = GetSlidingWindow(startWindow, endWindow, edges.rows, edges.cols);
-
+  //printf("window size %lu\n", windows.size());
   // Sum
   for (i = 0; i < windows.size(); i++)
   {
@@ -272,6 +391,134 @@ vector<int> GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, flo
     sums.push_back(sum);
   }
   return sums;
+}
+
+vector<Opening> GetOpeningsFromSums(vector<int> sums, int regionId)
+{
+  vector<Opening> openings;
+  Opening newOpening;
+  int aboveCount = 0;
+  int belowCount = 0;
+  bool activeBelow = false;
+  int startBelow = 0;
+  int thresh = (int)GetThresholdFromRegionId(regionId);
+
+  // Slide across the sums and count for consecutive points above/below a threshold
+  for (int i = 0; i < sums.size(); i++)
+  {
+    // if below threshold, mark it as active and record the index
+    if (sums.at(i) < thresh)
+    {
+      //cout << "below " << sums.at(i) << endl;
+      if (!activeBelow){
+        activeBelow = true;
+        startBelow = i;
+      }
+      aboveCount = 0;
+    }
+    // if above the threshold, count number of consecutive samples above it.
+    // if we have consecutive samples above the threshold, reset the below vars
+    // and record the opening
+    else
+    {
+      if (++aboveCount >= K_SUMS_THRESHOLD_CONSECUTIVE)
+      {
+        //cout << "above " << i << " " << startBelow << endl;
+        activeBelow = false;
+        newOpening.start = startBelow;
+        newOpening.length = i - startBelow - aboveCount + 1;
+        openings.push_back(newOpening);
+      }
+    }
+  }
+
+  return openings;
+}
+
+vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
+{
+  vector<Opening> openings;
+  Opening newOpening;
+  int aboveCount = 0;
+  int belowCount = 0;
+  bool activeBelow = false;
+  bool added = false;
+  int startBelow = 0;
+  float thresh = GetThresholdFromRegionId(regionId);
+
+  // Slide across the sums and count for consecutive points above/below a threshold
+  for (int i = 0; i < sums.size(); i++)
+  {
+    // if below threshold, mark it as active and record the index
+    if (sums.at(i) < thresh)
+    {
+      //cout << "below " << sums.at(i) << endl;
+      if (!activeBelow){
+        activeBelow = true;
+        startBelow = i;
+        added = false;
+      }
+      aboveCount = 0;
+    }
+    // if above the threshold, count number of consecutive samples above it.
+    // if we have consecutive samples above the threshold, reset the below vars
+    // and record the opening
+    else
+    {
+      if (++aboveCount >= K_SUMS_THRESHOLD_CONSECUTIVE && not added)
+      {
+        //cout << "above " << i << " " << startBelow << endl;
+        activeBelow = false;
+        newOpening.start = startBelow;
+        newOpening.length = i - startBelow - aboveCount + 1;
+        openings.push_back(newOpening);
+        added = true;
+      }
+    }
+  }
+
+  return openings;
+}
+
+vector<Opening> GetOpenParkingSpaces(vector<Opening> openings, int regionId)
+{
+  vector<Opening> spaces;
+
+  for (int i = 0; i < openings.size(); i++)
+  {
+    if (IsOpeningLargeEnough(openings.at(i), regionId))
+      spaces.push_back(openings.at(i));
+  }
+
+  return spaces;
+}
+
+bool IsOpeningLargeEnough(Opening opening, int regionId)
+{
+  int result = false;
+  int min = 10000;
+  switch(regionId){
+    case (K_BEASON_NE_ID):
+      //min = 180 - (int)(opening.start * 0.25);
+      return true;
+      break;
+    case (K_BEASON_SE_ID):
+      min = 250 - (int)(opening.start * 0.5);
+      break;
+    case (K_BEASON_SW_ID):
+      break;
+    case (K_BEASON_NW_ID):
+      break;
+    case (K_COOKSIE_NW_ID):
+      break;
+    case (K_COOKSIE_SW_ID):
+      break;
+  }
+
+  if (opening.length >= min)
+    return true;
+  else
+    return false;
 }
 
 vector<Opening> GetOpenings(vector<int> leftEdges, vector<int> rightEdges)
@@ -292,7 +539,8 @@ vector<Opening> GetOpenings(vector<int> leftEdges, vector<int> rightEdges)
       endInd = i-1;
       newOpening.start = startInd;
       newOpening.length = endInd - startInd + 1;
-      openings.push_back(newOpening);
+      if (newOpening.length > K_MINIMUM_OPENING_LENGTH)
+        openings.push_back(newOpening);
       activeOpening = false;
     }
     else
@@ -311,24 +559,25 @@ vector<Opening> GetOpenings(vector<int> leftEdges, vector<int> rightEdges)
 
 vector<Window> GetSlidingWindow(Window startWindow, Window endWindow, int imgHeight, int imgWidth)
 {
-    int stepCount = endWindow.br.x - startWindow.tl.x;  // ONLY WORKS WHEN THETA = 0.0
+    int stepCount = endWindow.tl.x - startWindow.tl.x;
     vector<Window> windows;
     Window currWindow = startWindow;
     Window diffWindow;
-    float dx0, dx1, dy0, dy1;
-    float tlx, tly, brx, bry;
+    float dx0, dy0, dtheta, dheight;
+    float tlx, tly, theta, height;
+    Corner tmp;
     
     // Initial values (as floats)
     tlx = (float)startWindow.tl.x;
     tly = (float)startWindow.tl.y;
-    brx = (float)startWindow.br.x;
-    bry = (float)startWindow.br.y;
+    theta = startWindow.theta;
+    height = startWindow.height;
 
     // Calculate the step size between each window
     dx0 = float(endWindow.tl.x - startWindow.tl.x) / (float)stepCount;
     dy0 = float(endWindow.tl.y - startWindow.tl.y) / (float)stepCount;
-    dx1 = float(endWindow.br.x - startWindow.br.x) / (float)stepCount;
-    dy1 = float(endWindow.br.y - startWindow.br.y) / (float)stepCount;
+    dtheta = float(endWindow.theta - startWindow.theta) / (float)stepCount;
+    dheight = float(endWindow.height - startWindow.height) / (float)stepCount;
 
     while (IsWithinBounds(imgHeight, imgWidth, currWindow) && stepCount > -1)
     {
@@ -338,13 +587,19 @@ vector<Window> GetSlidingWindow(Window startWindow, Window endWindow, int imgHei
         // update window
         tlx += dx0;
         tly += dy0;
-        brx += dx1;
-        bry += dy1;
-        //printf("%d %d, %d %d\n", (int)tlx, (int)tly, (int)brx, (int)bry);
+        theta += dtheta;
+        height += dheight;
+        //printf("%d %d %f %d\n", (int)tlx, (int)tly, theta, (int)height);
         
         // convert back to integers to save window
-        currWindow.tl.x = (int)tlx; currWindow.tl.y = (int)tly;
-        currWindow.br.x = (int)brx; currWindow.br.y = (int)bry;
+        tmp.x = tlx;
+        tmp.y = tly;
+        currWindow = CreateWindow(tmp, startWindow.width, height, theta);
+        // printf("%d %d   %d %d   %d %d   %d %d\n",
+        //   currWindow.tl.x, currWindow.tl.y,
+        //   currWindow.tr.x, currWindow.tr.y,
+        //   currWindow.bl.x, currWindow.bl.y,
+        //   currWindow.br.x, currWindow.br.y);
 
         stepCount--;
     }
@@ -354,18 +609,26 @@ vector<Window> GetSlidingWindow(Window startWindow, Window endWindow, int imgHei
 
 bool IsWithinBounds(int imgHeight, int imgWidth, Window win)
 {
-  // ONLY WORKS WHEN THETA = 0.0
-  if (win.tl.x > imgWidth-1) { return false; }
-  if (win.br.x > imgWidth-1) { return false; }
-  if (win.tl.y > imgHeight-1){ return false; }
-  if (win.br.y > imgHeight-1){ return false; }
+  // Check all four corners
+  if (0 > win.tl.x || win.tl.x > imgWidth-1)  { return false; }
+  if (0 > win.tl.y || win.tl.y > imgHeight-1) { return false; }
 
+  if (0 > win.tr.x || win.tr.x > imgWidth-1)  { return false; }
+  if (0 > win.tr.y || win.tr.y > imgHeight-1) { return false; }
+
+  if (0 > win.bl.x || win.bl.x > imgWidth-1)  { return false; }
+  if (0 > win.bl.y || win.bl.y > imgHeight-1) { return false; }
+
+  if (0 > win.br.x || win.br.x > imgWidth-1)  { return false; }
+  if (0 > win.br.y || win.br.y > imgHeight-1) { return false; }
+  
   return true;
 }
 
 Mat GetSubRegionImage(Mat original, int regionId)
 {
   Rect roi(0,0,0,0);
+  regionId = 0;
   switch(regionId){
     case (K_BEASON_NE_ID):
       roi += Point(K_BEASON_NE_X, K_BEASON_NE_Y);
@@ -392,7 +655,6 @@ Mat GetSubRegionImage(Mat original, int regionId)
       roi += Size(K_COOKSIE_SW_WIDTH, K_COOKSIE_SW_HEIGHT);
       break;
   }
-
   Mat crop = original(roi);
   return crop;
 }
@@ -400,48 +662,55 @@ Mat GetSubRegionImage(Mat original, int regionId)
 Window GetStartWindow(int regionId)
 {
   Window win;
+  Corner tl;
   switch(regionId){
     case (K_BEASON_NE_ID):
-      win.tl.x  = K_BEASON_NE_WIN_START_TP_X;
-      win.tl.y  = K_BEASON_NE_WIN_START_TP_Y; 
-      win.br.x  = K_BEASON_NE_WIN_START_TP_X + K_BEASON_NE_WIN_START_WIDTH;
-      win.br.y  = K_BEASON_NE_WIN_START_TP_Y + K_BEASON_NE_WIN_START_HEIGHT;
-      win.theta = K_BEASON_NE_WIN_START_THETA;
+      tl.x = K_BEASON_NE_WIN_START_TP_X;
+      tl.y = K_BEASON_NE_WIN_START_TP_Y;
+      win = CreateWindow( tl,
+                          K_BEASON_NE_WIN_START_WIDTH,
+                          K_BEASON_NE_WIN_START_HEIGHT,
+                          K_BEASON_NE_WIN_START_THETA);
       break;
     case (K_BEASON_SE_ID):
-      win.tl.x  = K_BEASON_SE_WIN_START_TP_X;
-      win.tl.y  = K_BEASON_SE_WIN_START_TP_Y; 
-      win.br.x  = K_BEASON_SE_WIN_START_TP_X + K_BEASON_SE_WIN_START_WIDTH;
-      win.br.y  = K_BEASON_SE_WIN_START_TP_Y + K_BEASON_SE_WIN_START_HEIGHT;
-      win.theta = K_BEASON_SE_WIN_START_THETA;
+      tl.x = K_BEASON_SE_WIN_START_TP_X;
+      tl.y = K_BEASON_SE_WIN_START_TP_Y;
+      win = CreateWindow( tl,
+                          K_BEASON_SE_WIN_START_WIDTH,
+                          K_BEASON_SE_WIN_START_HEIGHT,
+                          K_BEASON_SE_WIN_START_THETA);
       break;
     case (K_BEASON_SW_ID):
-      win.tl.x  = K_BEASON_SW_WIN_START_TP_X;
-      win.tl.y  = K_BEASON_SW_WIN_START_TP_Y; 
-      win.br.x  = K_BEASON_SW_WIN_START_TP_X + K_BEASON_SW_WIN_START_WIDTH;
-      win.br.y  = K_BEASON_SW_WIN_START_TP_Y + K_BEASON_SW_WIN_START_HEIGHT;
-      win.theta = K_BEASON_SW_WIN_START_THETA;
+      tl.x = K_BEASON_SW_WIN_START_TP_X;
+      tl.y = K_BEASON_SW_WIN_START_TP_Y;
+      win = CreateWindow( tl,
+                          K_BEASON_SW_WIN_START_WIDTH,
+                          K_BEASON_SW_WIN_START_HEIGHT,
+                          K_BEASON_SW_WIN_START_THETA);
       break;
     case (K_BEASON_NW_ID):
-      win.tl.x  = K_BEASON_NW_WIN_START_TP_X;
-      win.tl.y  = K_BEASON_NW_WIN_START_TP_Y; 
-      win.br.x  = K_BEASON_NW_WIN_START_TP_X + K_BEASON_NW_WIN_START_WIDTH;
-      win.br.y  = K_BEASON_NW_WIN_START_TP_Y + K_BEASON_NW_WIN_START_HEIGHT;
-      win.theta = K_BEASON_NW_WIN_START_THETA;
+      tl.x = K_BEASON_NW_WIN_START_TP_X;
+      tl.y = K_BEASON_NW_WIN_START_TP_Y;
+      win = CreateWindow( tl,
+                          K_BEASON_NW_WIN_START_WIDTH,
+                          K_BEASON_NW_WIN_START_HEIGHT,
+                          K_BEASON_NW_WIN_START_THETA);
       break;
     case (K_COOKSIE_NW_ID):
-      win.tl.x  = K_COOKSIE_NW_WIN_START_TP_X;
-      win.tl.y  = K_COOKSIE_NW_WIN_START_TP_Y; 
-      win.br.x  = K_COOKSIE_NW_WIN_START_TP_X + K_COOKSIE_NW_WIN_START_WIDTH;
-      win.br.y  = K_COOKSIE_NW_WIN_START_TP_Y + K_COOKSIE_NW_WIN_START_HEIGHT;
-      win.theta = K_COOKSIE_NW_WIN_START_THETA;
+      tl.x = K_COOKSIE_NW_WIN_START_TP_X;
+      tl.y = K_COOKSIE_NW_WIN_START_TP_Y;
+      win = CreateWindow( tl,
+                          K_COOKSIE_NW_WIN_START_WIDTH,
+                          K_COOKSIE_NW_WIN_START_HEIGHT,
+                          K_COOKSIE_NW_WIN_START_THETA);
       break;
     case (K_COOKSIE_SW_ID):
-      win.tl.x  = K_COOKSIE_SW_WIN_START_TP_X;
-      win.tl.y  = K_COOKSIE_SW_WIN_START_TP_Y; 
-      win.br.x  = K_COOKSIE_SW_WIN_START_TP_X + K_COOKSIE_SW_WIN_START_WIDTH;
-      win.br.y  = K_COOKSIE_SW_WIN_START_TP_Y + K_COOKSIE_SW_WIN_START_HEIGHT;
-      win.theta = K_COOKSIE_SW_WIN_START_THETA;
+      tl.x = K_COOKSIE_SW_WIN_START_TP_X;
+      tl.y = K_COOKSIE_SW_WIN_START_TP_Y;
+      win = CreateWindow( tl,
+                          K_COOKSIE_SW_WIN_START_WIDTH,
+                          K_COOKSIE_SW_WIN_START_HEIGHT,
+                          K_COOKSIE_SW_WIN_START_THETA);
       break;
     }
   return win;
@@ -450,57 +719,156 @@ Window GetStartWindow(int regionId)
 Window GetEndWindow(int regionId)
 {
   Window win;
+  Corner tl;
   switch(regionId){
     case (K_BEASON_NE_ID):
-      win.tl.x  = K_BEASON_NE_WIN_END_TP_X;
-      win.tl.y  = K_BEASON_NE_WIN_END_TP_Y;
-      win.br.x  = K_BEASON_NE_WIN_END_TP_X + K_BEASON_NE_WIN_END_WIDTH;
-      win.br.y  = K_BEASON_NE_WIN_END_TP_Y + K_BEASON_NE_WIN_END_HEIGHT;
-      win.theta = K_BEASON_NE_WIN_END_THETA;
+      tl.x = K_BEASON_NE_WIN_END_TP_X;
+      tl.y = K_BEASON_NE_WIN_END_TP_Y;
+      win = CreateWindow( tl,
+                          K_BEASON_NE_WIN_END_WIDTH,
+                          K_BEASON_NE_WIN_END_HEIGHT,
+                          K_BEASON_NE_WIN_END_THETA);
+
       break;
     case (K_BEASON_SE_ID):
-      win.tl.x  = K_BEASON_SE_WIN_END_TP_X;
-      win.tl.y  = K_BEASON_SE_WIN_END_TP_Y; 
-      win.br.x  = K_BEASON_SE_WIN_END_TP_X + K_BEASON_SE_WIN_END_WIDTH;
-      win.br.y  = K_BEASON_SE_WIN_END_TP_Y + K_BEASON_SE_WIN_END_HEIGHT;
-      win.theta = K_BEASON_SE_WIN_END_THETA;
+      tl.x = K_BEASON_SE_WIN_END_TP_X;
+      tl.y = K_BEASON_SE_WIN_END_TP_Y;
+      win = CreateWindow( tl,
+                          K_BEASON_SE_WIN_END_WIDTH,
+                          K_BEASON_SE_WIN_END_HEIGHT,
+                          K_BEASON_SE_WIN_END_THETA);
       break;
     case (K_BEASON_SW_ID):
-      win.tl.x  = K_BEASON_SW_WIN_END_TP_X;
-      win.tl.y  = K_BEASON_SW_WIN_END_TP_Y; 
-      win.br.x  = K_BEASON_SW_WIN_END_TP_X + K_BEASON_SW_WIN_END_WIDTH;
-      win.br.y  = K_BEASON_SW_WIN_END_TP_Y + K_BEASON_SW_WIN_END_HEIGHT;
-      win.theta = K_BEASON_SW_WIN_END_THETA;
+      tl.x = K_BEASON_SW_WIN_END_TP_X;
+      tl.y = K_BEASON_SW_WIN_END_TP_Y;
+      win = CreateWindow( tl,
+                          K_BEASON_SW_WIN_END_WIDTH,
+                          K_BEASON_SW_WIN_END_HEIGHT,
+                          K_BEASON_SW_WIN_END_THETA);
       break;
     case (K_BEASON_NW_ID):
-      win.tl.x  = K_BEASON_NW_WIN_END_TP_X;
-      win.tl.y  = K_BEASON_NW_WIN_END_TP_Y; 
-      win.br.x  = K_BEASON_NW_WIN_END_TP_X + K_BEASON_NW_WIN_END_WIDTH;
-      win.br.y  = K_BEASON_NW_WIN_END_TP_Y + K_BEASON_NW_WIN_END_HEIGHT;
-      win.theta = K_BEASON_NW_WIN_END_THETA;
+      tl.x = K_BEASON_NW_WIN_END_TP_X;
+      tl.y = K_BEASON_NW_WIN_END_TP_Y;
+      win = CreateWindow( tl,
+                          K_BEASON_NW_WIN_END_WIDTH,
+                          K_BEASON_NW_WIN_END_HEIGHT,
+                          K_BEASON_NW_WIN_END_THETA);
       break;
     case (K_COOKSIE_NW_ID):
-      win.tl.x  = K_COOKSIE_NW_WIN_END_TP_X;
-      win.tl.y  = K_COOKSIE_NW_WIN_END_TP_Y; 
-      win.br.x  = K_COOKSIE_NW_WIN_END_TP_X + K_COOKSIE_NW_WIN_END_WIDTH;
-      win.br.y  = K_COOKSIE_NW_WIN_END_TP_Y + K_COOKSIE_NW_WIN_END_HEIGHT;
-      win.theta = K_COOKSIE_NW_WIN_END_THETA;
+      tl.x = K_COOKSIE_NW_WIN_END_TP_X;
+      tl.y = K_COOKSIE_NW_WIN_END_TP_Y;
+      win = CreateWindow( tl,
+                          K_COOKSIE_NW_WIN_END_WIDTH,
+                          K_COOKSIE_NW_WIN_END_HEIGHT,
+                          K_COOKSIE_NW_WIN_END_THETA);
       break;
     case (K_COOKSIE_SW_ID):
-      win.tl.x  = K_COOKSIE_SW_WIN_END_TP_X;
-      win.tl.y  = K_COOKSIE_SW_WIN_END_TP_Y; 
-      win.br.x  = K_COOKSIE_SW_WIN_END_TP_X + K_COOKSIE_SW_WIN_END_WIDTH;
-      win.br.y  = K_COOKSIE_SW_WIN_END_TP_Y + K_COOKSIE_SW_WIN_END_HEIGHT;
-      win.theta = K_COOKSIE_SW_WIN_END_THETA;
+      tl.x = K_COOKSIE_SW_WIN_END_TP_X;
+      tl.y = K_COOKSIE_SW_WIN_END_TP_Y;
+      win = CreateWindow( tl,
+                          K_COOKSIE_SW_WIN_END_WIDTH,
+                          K_COOKSIE_SW_WIN_END_HEIGHT,
+                          K_COOKSIE_SW_WIN_END_THETA);
       break;
     }
   return win;
+}
+
+float GetThresholdFromRegionId(int regionId)
+{
+  float threshold = 0.0;
+  switch(regionId){
+    case (K_BEASON_NE_ID):
+      threshold = K_BEASON_NE_SUMS_THRESHOLD;
+      break;
+    case (K_BEASON_SE_ID):
+      threshold = K_BEASON_SE_SUMS_THRESHOLD;
+      break;
+    case (K_BEASON_SW_ID):
+      threshold = K_BEASON_SW_SUMS_THRESHOLD;
+      break;
+    case (K_BEASON_NW_ID):
+      threshold = K_BEASON_NW_SUMS_THRESHOLD;
+      break;
+    case (K_COOKSIE_NW_ID):
+      threshold = K_COOKSIE_NW_SUMS_THRESHOLD;
+      break;
+    case (K_COOKSIE_SW_ID):
+      threshold = K_COOKSIE_SW_SUMS_THRESHOLD;
+      break;
+  }
+  return threshold;
+}
+
+float GetDistance(ImgPoint a, ImgPoint b)
+{
+  float xDiff = (float)a.x - (float)b.x;
+  float yDiff = (float)a.y - (float)b.y;
+  //printf("xDiff %f, yDiff %f\n", xDiff,yDiff);
+  return sqrt(pow(xDiff, 2) + pow(yDiff, 2));
+}
+
+Window CreateWindow(Corner topLeft, int width, int height, float theta)
+{
+  Window win;
+
+  win.width = width;
+  win.height = height;
+  win.theta = theta;
+
+  // top left
+  win.tl.x = topLeft.x;
+  win.tl.y = topLeft.y;
+
+  // top right
+  win.tr.x = topLeft.x + (int)(width * cos(Degrees2Radians(theta)));
+  win.tr.y = topLeft.y + (int)(width * sin(Degrees2Radians(theta)));
+
+  // bottom left
+  win.bl.x = topLeft.x + (int)(height * sin(Degrees2Radians(theta)));
+  win.bl.y = topLeft.y + (int)(height * cos(Degrees2Radians(theta)));
+
+  // bottom right
+  win.br.x = topLeft.x + (int)(height * sin(Degrees2Radians(theta))) + (int)(width * cos(Degrees2Radians(theta)));
+  win.br.y = topLeft.y + (int)(height * cos(Degrees2Radians(theta))) + (int)(width * sin(Degrees2Radians(theta)));
+
+  // printf("CreateWindow %d %d   %d %d   %d %d   %d %d\n",
+  //         win.tl.x, win.tl.y,
+  //         win.tr.x, win.tr.y,
+  //         win.bl.x, win.bl.y,
+  //         win.br.x, win.br.y);
+  // printf("%d %d   %d   %d   %f\n",
+  //         topLeft.x, topLeft.y,
+  //         width, height, theta);
+
+  return win;
+}
+
+double Degrees2Radians(double deg)
+{
+    return deg * M_PI / 180.0;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
 
 // Output ///////////////////////////////////////////////////////////////////
-void WriteSlidingWindow(char * fn, char * imgfn, vector<int> sums, int windowSizes)
+void WriteSlidingWindow(char * fn, char * imgfn, vector<int> sums)
+{
+    int i = 0;
+
+    // Write header
+    ofstream myfile;
+    myfile.open(fn);
+    myfile << imgfn << "\n"; // image name
+
+    for(i = 0; i < sums.size(); i++)
+    {
+      myfile << sums.at(i) << endl;
+    }
+    myfile.close();
+}
+
+void WriteSlidingWindowFloat(char * fn, char * imgfn, vector<float> sums)
 {
     int i = 0;
 
@@ -532,4 +900,17 @@ void WriteOpenings(char * fn, char * imgfn, vector<Opening> openings)
       myfile << openings.at(i).start << "," << openings.at(i).length << "\n";
     }
     myfile.close();
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+// System ///////////////////////////////////////////////////////////////////
+void TakeNewImage(char * fn, unsigned int num)
+{
+  char cmd[50];
+  sprintf(fn, "img_%04u.jpg", num);
+  sprintf(cmd, "fswebcam -r 1920x1080 %s -S 20", fn);
+  cout << cmd << endl;
+  //system(cmd);
 }
