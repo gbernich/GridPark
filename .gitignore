@@ -2,6 +2,7 @@
 send
 recv
 open_parking
+open_parking_test
 hello_world
 *.o
 

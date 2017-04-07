@@ -9,11 +9,11 @@ using namespace std;
 
 Mat dst, detected_edges;
 
-int edgeThresh = 1;
-int lowThreshold;
-int max_lowThreshold = 250;
-int ratio1 = 3;
-int kernel_size = 3;
+//int edgeThresh = 1;
+//int lowThreshold;
+//int max_lowThreshold = 250;
+//int ratio1 = 3;
+//int kernel_size = 3;
 
 char imgFn[80] = {0};
 char imgNum = 0;
