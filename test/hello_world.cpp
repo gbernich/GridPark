@@ -58,15 +58,15 @@ int main(int argc, char** argv )
     cvtColor( src, src_gray, CV_BGR2GRAY );
 
     /// Create a window and a trackbar
-    namedWindow( source_window, CV_WINDOW_AUTOSIZE );
-    createTrackbar( "Threshold: ", source_window, &thresh, max_thresh, cornerHarris_demo );
+    //namedWindow( source_window, CV_WINDOW_AUTOSIZE );
+    //createTrackbar( "Threshold: ", source_window, &thresh, max_thresh, cornerHarris_demo );
     //createTrackbar( "Threshold:", source_window, &lowThreshold, max_lowThreshold, CannyThreshold );
-    imshow( source_window, src );
+    //imshow( source_window, src );
 
     cornerHarris_demo(0, 0);
     //CannyThreshold(0, 0);
 
-    waitKey(0);
+    //waitKey(0);
 
     return 0;
 }
