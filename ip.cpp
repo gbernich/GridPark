@@ -823,7 +823,10 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
     if(*actCount > sus_thresh) {alert = true;}
     return alert;
   }
-  else {return;}
+  else
+  {
+    return alert;
+  }
 }
 
 int DetectActivity(Mat image, Window carWindow, int baseCount)
@@ -1011,16 +1014,16 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
   char query[120];
 
   // Lock table
-  WaitForLock(conn, K_TBL_OPEN_PARKING);
+  WaitForLock(conn, (char*)K_TBL_OPEN_PARKING);
 
   // Clear table
-  ClearTable(conn, K_TBL_OPEN_PARKING);
+  ClearTable(conn, (char*)K_TBL_OPEN_PARKING);
 
   // Make insertions
   for(i = 0; i < spaces_db.size(); i++)
   {
     // from db_utils
-    FormatInsertForOpenParking(query, K_TBL_OPEN_PARKING,
+    FormatInsertForOpenParking(query, (char*)K_TBL_OPEN_PARKING,
       spaces_db.at(i).spot_id,
       spaces_db.at(i).region,   // x
       spaces_db.at(i).distance, // y
