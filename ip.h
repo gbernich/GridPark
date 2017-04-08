@@ -226,9 +226,9 @@ double  Degrees2Radians(double deg);
 
 //Pedestrian Detection
 bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
-  int* actCount, int baseCount, Mat image, win carWindow);
-int DetectActivity(Mat image, win carWindow, int baseCount);
-int GetBaseCount(Mat image, win carWindow);
+  int* actCount, int baseCount, Mat image, Window carWindow);
+int DetectActivity(Mat image, Window carWindow, int baseCount);
+int GetBaseCount(Mat image, Window carWindow);
 
 
 // Database 

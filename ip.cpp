@@ -809,7 +809,7 @@ float GetDistance(ImgPoint a, ImgPoint b)
 }
 
 bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
-  int* actCount, int baseCount, Mat image, win carWindow)
+  int* actCount, int baseCount, Mat image, Window carWindow)
 {
   int sus_thresh = 20;
   int new_detect = 0;
@@ -826,7 +826,7 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
   else {return;}
 }
 
-int DetectActivity(Mat image, win carWindow, int baseCount)
+int DetectActivity(Mat image, Window carWindow, int baseCount)
 {
   int edgeSum;
   int activity;
@@ -839,7 +839,7 @@ int DetectActivity(Mat image, win carWindow, int baseCount)
   return activity;
 }
 
-int GetBaseCount(Mat image, win carWindow)
+int GetBaseCount(Mat image, Window carWindow)
 {
   int edgeSum;
   int thresh = 0;
