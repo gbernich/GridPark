@@ -237,7 +237,7 @@ int GetXPositionOfSpot(int regionId, int start);
 int GetYPositionOfSpot(int regionId, int start);
 void GetCornersOfSpot(Corner * corners, int regionId, int start);
 #ifdef __arm__
-void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db);
+void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn);
 #endif
 
 // Output
