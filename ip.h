@@ -224,6 +224,13 @@ float   GetDistance(ImgPoint a, ImgPoint b);
 Window  CreateWindow(Corner topLeft, int width, int height, float theta);
 double  Degrees2Radians(double deg);
 
+//Pedestrian Detection
+bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
+  int* actCount, int baseCount, Mat image, win carWindow);
+int DetectActivity(Mat image, win carWindow, int baseCount);
+int GetBaseCount(Mat image, win carWindow);
+
+
 // Database 
 vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region);
 int GetXPositionOfSpot(int regionId, int start);

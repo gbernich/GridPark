@@ -56,10 +56,16 @@ int main(int argc, char** argv )
   bool resetCount = false;
   bool justParked = true;
   bool alert = false;
+  Window carWindow;
+  int baseCount;
   int actCount = 0;
   int width;
   int height;
   Corner topLeft;
+  topLeft.x = 1200;
+  topLeft.y = 625;
+  width = 150;
+  height = 100;
 
 
   #ifdef __arm__
