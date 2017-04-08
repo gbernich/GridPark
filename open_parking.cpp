@@ -6,8 +6,8 @@
 #include "common.h"
 
 #ifdef __arm__
-#include <mysql/mysql.h>
-#include "db_utils.h"
+//#include <mysql/mysql.h>
+//#include "db_utils.h"
 #endif
 
 using namespace std;
@@ -70,7 +70,7 @@ int main(int argc, char** argv )
 
 
   #ifdef __arm__
-    MYSQL * conn = OpenDB();
+  //  MYSQL * conn = OpenDB();
   #endif
 
   // Main loop that will continue forever
@@ -128,10 +128,10 @@ int main(int argc, char** argv )
       
       #ifdef __arm__  // only on raspberry pi
         // Convert spaces to usable format
-        spaces_db = FormatSpacesForDB(spaces, regionId);
+    //    spaces_db = FormatSpacesForDB(spaces, regionId);
         
         // Write to database (blocking)
-        InsertOpenParking(spaces_db, conn);
+      //  InsertOpenParking(spaces_db, conn);
       #endif
       
     

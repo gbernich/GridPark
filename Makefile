@@ -7,7 +7,7 @@ parking: open_parking
 
 
 open_parking: db_utils.o common.o ip.o open_parking.o
-	g++ `pkg-config --cflags opencv` `pkg-config --libs opencv` `mysql_config --cflags --libs` open_parking.o ip.o db_utils.o common.o -o open_parking -L /usr/lib/mysql -lmysqlclient
+	g++ `pkg-config --cflags opencv` `pkg-config --libs opencv` `mysql_config --cflags --libs` open_parking.o ip.o db_utils.o common.o -o open_parking
 
 open_parking.o: open_parking.cpp
 	g++ `pkg-config --cflags opencv` `pkg-config --libs opencv` -c open_parking.cpp
@@ -39,7 +39,7 @@ common.o: common.c
 	gcc -c common.c
 
 db_utils.o: db_utils.c
-	gcc -c db_utils.c `mysql_config --cflags --libs`
+	gcc `mysql_config --cflags --libs` -c db_utils.c
 
 
 
