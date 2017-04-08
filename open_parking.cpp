@@ -125,6 +125,7 @@ int main(int argc, char** argv )
     alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     cout << alert << endl;
 
+    imwrite("./testimg/edges.jpg", edges);
       
       #ifdef __arm__  // only on raspberry pi
         // Convert spaces to usable format
@@ -143,6 +144,7 @@ int main(int argc, char** argv )
     cout << "Edge Detection: " << elapsed * 1000.0 << " ms" << endl;
 
     // Go to sleep
+    break;
     sleep(5);
   }
 
