@@ -6,6 +6,7 @@
 #include "common.h"
 
 #ifdef __arm__
+#include <mysql/mysql.h>
 #include "db_utils.h"
 #endif
 
