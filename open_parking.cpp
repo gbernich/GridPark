@@ -83,7 +83,7 @@ int main(int argc, char** argv )
     TakeNewImage(imgFn, imgNum++);
     
     // Load source image
-    sprintf(imgFn, "%s", "/Users/garrettbernichon/Desktop/image8_s50.jpg");
+    sprintf(imgFn, "%s", argv[1]);
     src = imread(imgFn, 1);
 
     // Loop through the subregions
