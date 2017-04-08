@@ -13,6 +13,11 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include "common.h"
+
+#ifdef __arm__
+#include "db_utils.h"
+#endif
 
 using namespace cv;
 using namespace std;
@@ -163,6 +168,11 @@ struct ImgPoint {
   int y;
 };
 
+struct xy {
+  int x;
+  int y;
+};
+
 struct Window {
     Corner tl; // top left
     Corner tr; // top right
@@ -213,6 +223,15 @@ float   GetThresholdFromRegionId(int regionId);
 float   GetDistance(ImgPoint a, ImgPoint b);
 Window  CreateWindow(Corner topLeft, int width, int height, float theta);
 double  Degrees2Radians(double deg);
+
+// Database 
+vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region);
+int GetXPositionOfSpot(int regionId, int start);
+int GetYPositionOfSpot(int regionId, int start);
+void GetCornersOfSpot(Corner * corners, int regionId, int start);
+#ifdef __arm__
+void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db);
+#endif
 
 // Output
 void WriteSlidingWindow(char * fn, char * imgfn, vector<int> sums);

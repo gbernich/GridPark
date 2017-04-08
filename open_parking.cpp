@@ -3,6 +3,11 @@
 #include <iostream>
 #include <unistd.h>
 #include "ip.h"
+#include "common.h"
+
+#ifdef __arm__
+#include "db_utils.h"
+#endif
 
 using namespace std;
 
@@ -17,6 +22,7 @@ Mat dst, detected_edges;
 
 char imgFn[80] = {0};
 char imgNum = 0;
+
 
 int main(int argc, char** argv )
 {  
@@ -42,6 +48,7 @@ int main(int argc, char** argv )
   vector< vector<int> > sumsVector, sumsVectorLeft, sumsVectorRight;
   vector<Opening> openings, spaces;
   vector<float> sumsNorm;
+  vector<OPEN_SPOT_T> spaces_db;
 
   //Suspicious Activity 
   bool carParked = true;
@@ -55,6 +62,9 @@ int main(int argc, char** argv )
   Corner topLeft;
 
 
+  #ifdef __arm__
+    MYSQL * conn = OpenDB();
+  #endif
 
   // Main loop that will continue forever
   while (true)
@@ -108,7 +118,18 @@ int main(int argc, char** argv )
     alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     cout << alert << endl;
 
-    // Capture Time
+      
+      #ifdef __arm__  // only on raspberry pi
+        // Convert spaces to usable format
+        spaces_db = FormatSpacesForDB(spaces, regionId);
+        
+        // Write to database (blocking)
+        InsertOpenParking(spaces_db, conn);
+      #endif
+      
+    
+
+    // Capture time
     clock_gettime(CLOCK_MONOTONIC, &finish);
     elapsed = (finish.tv_sec - start.tv_sec);
     elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
@@ -117,6 +138,8 @@ int main(int argc, char** argv )
     // Go to sleep
     sleep(5);
   }
+
+  //CloseDB(conn);
 
   return 0;
 

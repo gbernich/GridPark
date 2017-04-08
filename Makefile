@@ -1,4 +1,8 @@
-all: send recv
+all: open_parking send recv
+
+networking: send recv
+
+parking: open_parking
 
 
 
@@ -16,10 +20,10 @@ ip.o: ip.cpp
 
 
 send: send.o db_utils.o
-	gcc send.o db_utils.o common.c -o send -L/usr/lib/mysql -lmysqlclient
+	gcc send.o db_utils.o common.c -o send -L /usr/lib/mysql -lmysqlclient
 
 recv: recv.o db_utils.o common.o
-	gcc recv.o db_utils.o common.o -o recv -L/usr/lib/mysql -lmysqlclient
+	gcc recv.o db_utils.o common.o -o recv -L /usr/lib/mysql -lmysqlclient
 
 
 
@@ -40,4 +44,4 @@ db_utils.o: db_utils.c
 
 
 clean:
-	rm *.o send recv
+	rm *.o open_parking send recv

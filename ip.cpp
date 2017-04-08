@@ -886,8 +886,156 @@ Window CreateWindow(Corner topLeft, int width, int height, float theta)
 
 double Degrees2Radians(double deg)
 {
-    return deg * M_PI / 180.0;
+  return deg * M_PI / 180.0;
 }
+////////////////////////////////////////////////////////////////////////////////
+
+
+// Database ////////////////////////////////////////////////////////////////////
+vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * spot_id)
+{
+  vector<OPEN_SPOT_T> spaces_db;
+  OPEN_SPOT_T spot;
+  int i;
+  Corner corners[2] = {0};
+
+  for (i = 0; i < spaces.size(); i++)
+  {
+    spot.spot_id  = (*spot_id)++; // global counter
+    spot.region   = GetXPositionOfSpot(region, spaces.at(i).start); // really x percentage represented by an integer (50 means 50%)
+    spot.distance = GetYPositionOfSpot(region, spaces.at(i).start);; // really y percentage represented by an integer (50 means 50%)
+    
+    GetCornersOfSpot(corners, region, spaces.at(i).start);
+    spot.corner0  = corners[0].x; // top left x
+    spot.corner1  = corners[0].y; // top left y
+    spot.corner2  = corners[1].x; // bottom right x
+    spot.corner3  = corners[1].y; // bottom right y
+
+    spaces_db.push_back(spot);
+  }
+
+  return spaces_db;
+}
+
+// in development
+int GetXPositionOfSpot(int regionId, int start)
+{
+  int x = 0;
+
+  switch(regionId){
+  case (K_BEASON_NE_ID):
+    x = start;
+    break;
+  case (K_BEASON_SE_ID):
+    x = start;
+    break;
+  case (K_BEASON_SW_ID):
+    x = start;
+    break;
+  case (K_BEASON_NW_ID):
+    x = start;
+    break;
+  case (K_COOKSIE_NW_ID):
+    x = start;
+    break;
+  case (K_COOKSIE_SW_ID):
+    x = start;
+    break;
+  }
+  return x;
+}
+
+// in development
+int GetYPositionOfSpot(int regionId, int start)
+{
+  int y = 0;
+
+  switch(regionId){
+  case (K_BEASON_NE_ID):
+    y = start;
+    break;
+  case (K_BEASON_SE_ID):
+    y = start;
+    break;
+  case (K_BEASON_SW_ID):
+    y = start;
+    break;
+  case (K_BEASON_NW_ID):
+    y = start;
+    break;
+  case (K_COOKSIE_NW_ID):
+    y = start;
+    break;
+  case (K_COOKSIE_SW_ID):
+    y = start;
+    break;
+  }
+  return y;
+}
+
+// in development
+void GetCornersOfSpot(Corner * corners, int regionId, int start)
+{
+  Corner tl = {0}; // top left
+  Corner br = {0}; // bottom right
+
+  switch(regionId){
+    case (K_BEASON_NE_ID):
+
+      break;
+    case (K_BEASON_SE_ID):
+
+      break;
+    case (K_BEASON_SW_ID):
+
+      break;
+    case (K_BEASON_NW_ID):
+
+      break;
+    case (K_COOKSIE_NW_ID):
+
+      break;
+    case (K_COOKSIE_SW_ID):
+
+      break;
+  }
+
+  corners[0] = tl;
+  corners[1] = br;
+}
+
+#ifdef __arm__
+void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
+{
+  int i;
+  char query[120];
+
+  // Lock table
+  WaitForLock(conn, K_TBL_OPEN_PARKING);
+
+  // Clear table
+  ClearTable(conn, K_TBL_OPEN_PARKING);
+
+  // Make insertions
+  for(i = 0; i < spaces_db.size(); i++)
+  {
+    // from db_utils
+    FormatInsertForOpenParking(query, K_TBL_OPEN_PARKING,
+      spaces_db.at(i).spot_id,
+      spaces_db.at(i).region,   // x
+      spaces_db.at(i).distance, // y
+      spaces_db.at(i).corner0,
+      spaces_db.at(i).corner1,
+      spaces_db.at(i).corner2,
+      spaces_db.at(i).corner3
+    );
+    InsertEntry(conn, query);
+  }
+
+  // Unlock table
+  UnlockTable(conn, K_TBL_OPEN_PARKING);
+}
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 
 
