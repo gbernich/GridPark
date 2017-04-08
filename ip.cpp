@@ -808,6 +808,46 @@ float GetDistance(ImgPoint a, ImgPoint b)
   return sqrt(pow(xDiff, 2) + pow(yDiff, 2));
 }
 
+bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
+  int* actCount, int baseCount, Mat image, win carWindow)
+{
+  int sus_thresh = 20;
+  int new_detect = 0;
+  bool alert = false;
+
+  if(carParked && monitorON)
+  {
+    if(resetCount) {*actCount = 0;}
+    new_detect = DetectActivity(image, carWindow, baseCount);
+    *actCount = *actCount + new_detect;
+    if(*actCount > sus_thresh) {alert = true;}
+    return alert;
+  }
+  else {return;}
+}
+
+int DetectActivity(Mat image, win carWindow, int baseCount)
+{
+  int edgeSum;
+  int activity;
+  int thresh = 0;
+
+  edgeSum = GetSumOfWindow(image, carWindow, thresh);
+  if (edgeSum > 1.1 * baseCount) {activity = 1;}
+  else {activity = 0;}
+  cout << edgeSum << endl;
+  return activity;
+}
+
+int GetBaseCount(Mat image, win carWindow)
+{
+  int edgeSum;
+  int thresh = 0;
+
+  edgeSum = GetSumOfWindow(image, carWindow, thresh);
+  return edgeSum;
+}
+
 Window CreateWindow(Corner topLeft, int width, int height, float theta)
 {
   Window win;

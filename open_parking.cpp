@@ -26,7 +26,7 @@ int main(int argc, char** argv )
   int regionId;
 
   // Matrices
-  Mat src, roi, roi_gray, overlay;
+  Mat src, src_gray, roi, roi_gray, overlay;
 
   // Corner Detection
   int thresh = IP_CORNERS_THRESH_INIT;
@@ -42,6 +42,18 @@ int main(int argc, char** argv )
   vector< vector<int> > sumsVector, sumsVectorLeft, sumsVectorRight;
   vector<Opening> openings, spaces;
   vector<float> sumsNorm;
+
+  //Suspicious Activity 
+  bool carParked = true;
+  bool monitorON = true;
+  bool resetCount = false;
+  bool justParked = true;
+  bool alert = false;
+  int actCount = 0;
+  int width;
+  int height;
+  Corner topLeft;
+
 
 
   // Main loop that will continue forever
@@ -80,7 +92,21 @@ int main(int argc, char** argv )
 
       // Write to database
 
+
     }
+
+    if(justParked)
+    {
+      thresh   = 100;
+      cvtColor(src, src_gray, CV_BGR2GRAY);
+      edges    = GetEdges(src_gray, thresh, 3, 3);
+      carWindow = CreateWindow(topLeft, width, height, 0);
+      baseCount = GetBaseCount(edges, carWindow);
+      justParked = false;
+    }
+
+    alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
+    cout << alert << endl;
 
     // Capture Time
     clock_gettime(CLOCK_MONOTONIC, &finish);
