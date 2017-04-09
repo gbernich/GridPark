@@ -62,7 +62,7 @@ int main(int argc, char** argv )
 
 
   #ifdef __arm__
-  MYSQL * conn = OpenDB();
+  MYSQL * conn = OpenDB(K_DB);
   #endif
 
   // Main loop that will continue forever

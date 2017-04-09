@@ -7,7 +7,10 @@
 #ifndef DB_UTILS_H
 #define DB_UTILS_H
 
+#ifdef __arm__
 #include <mysql/mysql.h>
+#endif
+
 #include "common.h"
 
 // To make these functions usable in C++
