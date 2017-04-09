@@ -16,8 +16,8 @@
 #include "common.h"
 
 #ifdef __arm__
-#include <mysql/mysql.h>
-#include "db_utils.h"
+  #include <mysql/mysql.h>
+  #include "db_utils.h"
 #endif
 
 using namespace cv;
@@ -227,13 +227,13 @@ double  Degrees2Radians(double deg);
 
 //Pedestrian Detection
 bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
-  int* actCount, int baseCount, Mat image, Window carWindow);
+int* actCount, int baseCount, Mat image, Window carWindow);
 int DetectActivity(Mat image, Window carWindow, int baseCount);
 int GetBaseCount(Mat image, Window carWindow);
 
 
 // Database 
-vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region);
+vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * spot_id);
 int GetXPositionOfSpot(int regionId, int start);
 int GetYPositionOfSpot(int regionId, int start);
 void GetCornersOfSpot(Corner * corners, int regionId, int start);

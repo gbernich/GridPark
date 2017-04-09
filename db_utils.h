@@ -10,6 +10,11 @@
 #include <mysql/mysql.h>
 #include "common.h"
 
+// To make these functions usable in C++
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Admin
 #define K_MYSQL_USER    "root"
 #define K_MYSQL_PASS    "1111light"
@@ -75,5 +80,9 @@ int CreateTestEntry(MYSQL * conn, int id, int num);
 int CreateNewSpot(int spot_id, int region, int distance, int * corners);
 int TestDB();
 
+// Clos extern
+#ifdef __cplusplus
+};
+#endif
 
 #endif

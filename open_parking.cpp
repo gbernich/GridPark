@@ -6,31 +6,23 @@
 #include "common.h"
 
 #ifdef __arm__
-//#include <mysql/mysql.h>
-//#include "db_utils.h"
+#include <mysql/mysql.h>
+extern "C" {
+    #include "db_utils.h"
+}
 #endif
 
 using namespace std;
 
-
-Mat dst, detected_edges;
-
-//int edgeThresh = 1;
-//int lowThreshold;
-//int max_lowThreshold = 250;
-//int ratio1 = 3;
-//int kernel_size = 3;
-
-char imgFn[80] = {0};
-char imgNum = 0;
-
-
 int main(int argc, char** argv )
-{  
+{
   struct timespec start, finish;
   double elapsed;
   int i, count, x, y, x0, y0, x3, y3;
   int regionId;
+  int imgNum = 0;
+  char imgFn[80] = {0};
+  int spot_id = 0;
 
   // Matrices
   Mat src, src_gray, roi, roi_gray, overlay;
@@ -70,7 +62,7 @@ int main(int argc, char** argv )
 
 
   #ifdef __arm__
-  //  MYSQL * conn = OpenDB();
+  MYSQL * conn = OpenDB();
   #endif
 
   // Main loop that will continue forever
@@ -105,10 +97,13 @@ int main(int argc, char** argv )
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
       spaces   = GetOpenParkingSpaces(openings, regionId);
 
-      // Convert spaces to usable format
+      #ifdef __arm__  // only on raspberry pi
+        // Convert spaces to usable format
+        spaces_db = FormatSpacesForDB(spaces, regionId, &spot_id);
 
-      // Write to database
-
+        // Write to database (blocking)
+        InsertOpenParking(spaces_db, conn);
+      #endif
 
     }
 
@@ -125,17 +120,9 @@ int main(int argc, char** argv )
     alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     cout << alert << endl;
 
+    // Save edges image for debug use
     imwrite("./testimg/edges.jpg", edges);
-      
-      #ifdef __arm__  // only on raspberry pi
-        // Convert spaces to usable format
-    //    spaces_db = FormatSpacesForDB(spaces, regionId);
-        
-        // Write to database (blocking)
-      //  InsertOpenParking(spaces_db, conn);
-      #endif
-      
-    
+
 
     // Capture time
     clock_gettime(CLOCK_MONOTONIC, &finish);
@@ -144,11 +131,13 @@ int main(int argc, char** argv )
     cout << "Edge Detection: " << elapsed * 1000.0 << " ms" << endl;
 
     // Go to sleep
-    break;
+    break; // for development lets only run the loop once
     sleep(5);
   }
 
-  //CloseDB(conn);
+  #ifdef __arm__
+    CloseDB(conn);
+  #endif
 
   return 0;
 

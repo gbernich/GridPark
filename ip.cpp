@@ -1006,7 +1006,7 @@ void GetCornersOfSpot(Corner * corners, int regionId, int start)
   corners[0] = tl;
   corners[1] = br;
 }
-/*
+
 #ifdef __arm__
 void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
 {
@@ -1039,7 +1039,6 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
   UnlockTable(conn, K_TBL_OPEN_PARKING);
 }
 #endif
-*/
 ////////////////////////////////////////////////////////////////////////////////
 
 
