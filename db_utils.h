@@ -48,7 +48,7 @@ extern "C" {
 
 
 // MYSQL admin
-MYSQL * OpenDB();
+MYSQL * OpenDB(char * dbName);
 void CloseDB(MYSQL * conn);
 
 // Table insertion
@@ -69,9 +69,11 @@ int ClearTable(MYSQL * conn, char * table);
 
 // Table locking
 void WaitForLock(MYSQL * conn, char * table);
+void WaitForLockForWrite(MYSQL * conn, char * table);
 int UnlockTable(MYSQL * conn, char * table);
 int TableIsLocked(MYSQL * conn, char * table);
 int LockTableForRead(MYSQL * conn, char * table);
+int LockTableForWrite(MYSQL * conn, char * table);
 
 // Table reading
 OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table);

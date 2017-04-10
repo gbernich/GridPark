@@ -96,10 +96,32 @@ void WaitForLock(MYSQL * conn, char * table)
     LockTableForRead(conn, table);
 }
 
+void WaitForLockForWrite(MYSQL * conn, char * table)
+{
+    while(TableIsLocked(conn, table))
+    {
+        usleep(K_LOCK_SLEEP_MICROSECONDS);
+    }
+    LockTableForWrite(conn, table);
+}
+
 int LockTableForRead(MYSQL * conn, char * table)
 {
     char query[K_QUERY_STRING_LENGTH];
     sprintf(query, "LOCK TABLES %s READ", table);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return 1;
+    }
+    return 0;
+}
+
+int LockTableForWrite(MYSQL * conn, char * table)
+{
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "LOCK TABLES %s WRITE", table);
 
     if (mysql_query(conn, query)) 
     {

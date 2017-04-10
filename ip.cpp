@@ -1014,10 +1014,13 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
   char query[120];
 
   // Lock table
-  WaitForLock(conn, (char*)K_TBL_OPEN_PARKING);
+  cout << "before lock" << endl;
+  WaitForLockForWrite(conn, (char*)K_TBL_OPEN_PARKING);
+  cout << "got lock" << endl;
 
   // Clear table
   ClearTable(conn, (char*)K_TBL_OPEN_PARKING);
+  cout << "cleared table" << endl;
 
   // Make insertions
   for(i = 0; i < spaces_db.size(); i++)
@@ -1034,9 +1037,11 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
     );
     InsertEntry(conn, query);
   }
+  cout <<"made insertions" << endl;
 
   // Unlock table
-  UnlockTable(conn, K_TBL_OPEN_PARKING);
+  UnlockTable(conn, (char*)K_TBL_OPEN_PARKING);
+  cout << "unlocked table" << endl;
 }
 #endif
 ////////////////////////////////////////////////////////////////////////////////

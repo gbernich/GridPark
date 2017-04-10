@@ -62,7 +62,7 @@ int main(int argc, char** argv )
 
 
   #ifdef __arm__
-  MYSQL * conn = OpenDB(K_DB);
+  MYSQL * conn = OpenDB((char*)K_DB);
   #endif
 
   // Main loop that will continue forever
@@ -96,13 +96,16 @@ int main(int argc, char** argv )
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
       spaces   = GetOpenParkingSpaces(openings, regionId);
-
+      cout << "spaces " <<  openings.size() << endl;
       #ifdef __arm__  // only on raspberry pi
-        // Convert spaces to usable format
-        spaces_db = FormatSpacesForDB(spaces, regionId, &spot_id);
+        if (spaces.size() > 0)
+        {
+          // Convert spaces to usable format
+          spaces_db = FormatSpacesForDB(spaces, regionId, &spot_id);
 
-        // Write to database (blocking)
-        InsertOpenParking(spaces_db, conn);
+          // Write to database (blocking)
+          InsertOpenParking(spaces_db, conn);
+        }
       #endif
 
     }
