@@ -1,13 +1,18 @@
 //-----------------------------------------------------------------------------
-// File:                db_utils.c
-// Author:              Garrett Bernichon
-// Function:            Provide functions to interact with the mySQL databases.
+// File: db_utils.c
+// Author: Garrett Bernichon
+// Function: Provide functions to interact with the mySQL databases.
 //-----------------------------------------------------------------------------
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "db_utils.h"
 #include "common.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <string.h>
 
 // MYSQL admin /////////////////////////////////////////////////////////////////
 MYSQL * OpenDB(char * dbName)
@@ -112,7 +117,7 @@ int LockTableForRead(MYSQL * conn, char * table)
 
     if (mysql_query(conn, query)) 
     {
-        fprintf(stderr, "%s\n", mysql_error(conn));
+        printf("%s\n", mysql_error(conn));
         return 1;
     }
     return 0;
@@ -125,7 +130,7 @@ int LockTableForWrite(MYSQL * conn, char * table)
 
     if (mysql_query(conn, query)) 
     {
-        fprintf(stderr, "%s\n", mysql_error(conn));
+        printf("%s\n", mysql_error(conn));
         return 1;
     }
     return 0;
@@ -133,12 +138,12 @@ int LockTableForWrite(MYSQL * conn, char * table)
 
 int UnlockTable(MYSQL * conn, char * table)
 {
-    char query[K_QUERY_STRING_LENGTH];
-    sprintf(query, "UNLOCK TABLES", table);
+    char query[K_QUERY_STRING_LENGTH] = {0};
+    sprintf(query, "UNLOCK TABLES");
 
-    if (mysql_query(conn, query)) 
+    if (mysql_query(conn, query))
     {
-        fprintf(stderr, "%s\n", mysql_error(conn));
+        printf("%s\n", mysql_error(conn));
         return 1;
     }
     return 0;
@@ -146,41 +151,54 @@ int UnlockTable(MYSQL * conn, char * table)
 
 int TableIsLocked(MYSQL * conn, char * table)
 {
-    int i;
-    MYSQL_ROW row;
-    int num_fields;
-    MYSQL_RES * result;
-    char query[K_QUERY_STRING_LENGTH];
+    int i = 0;
+    MYSQL_ROW row = {0};
+    int num_fields = 0;
+    int result_int = 0;
+    MYSQL_RES * result = NULL;
+    char query[K_QUERY_STRING_LENGTH] = {0};
+    char result_char[8] = {0};
+
     sprintf(query, "SHOW OPEN TABLES LIKE \"%s\"", table);
+    printf("here1\n");
 
     if (mysql_query(conn, query)) 
     {
-        fprintf(stderr, "%s\n", mysql_error(conn));
+        printf("%s\n", mysql_error(conn));
         return 1;
     }
+    printf("here2\n");
 
     result = mysql_store_result(conn);
     if (result == NULL) 
     {
-        fprintf(stderr, "%s\n", mysql_error(conn));
+        printf("%s\n", mysql_error(conn));
         return 1;
     }
+    printf("here3\n");
 
-    num_fields = mysql_num_fields(result);    
+    num_fields = mysql_num_fields(result);
 
-    //while ((row = mysql_fetch_row(result))) 
-    //{ 
-    //    for(i = 0; i < num_fields; i++) 
-    //    { 
-    //        printf("%s %d ", row[i] ? row[i] : "NULL", i); 
-    //    } 
-    //    printf("\n"); 
-    //}
+    while ((row = mysql_fetch_row(result))) 
+    { 
+        /*for(i = 0; i < num_fields; i++) 
+        { 
+          printf("%s %d ", row[i] ? row[K_LOCK_INDEX] : "NULL", i); 
+        } 
+        printf("\n");*/ 
+        sprintf(result_char, "%s", row[K_LOCK_INDEX]);
+        break;
+    }
 
-    row = mysql_fetch_row(result);
+    if(!strcmp(result_char, (const char*)"0"))
+        result_int = 0;
+    else
+        result_int = 1;
+
     mysql_free_result(result);
+    printf("here4 result %d\n", result_int);
 
-    return atoi(row[K_LOCK_INDEX]);
+    return result_int;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -342,3 +360,7 @@ int TestDB()
     return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////
+
+#ifdef __cplusplus
+};
+#endif

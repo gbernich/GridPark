@@ -4,6 +4,7 @@
 // Function:    Provide functions to do the low level image processing.
 //-----------------------------------------------------------------------------
 #include "ip.h"
+#include <unistd.h>
 
 int debug = 0;
 
@@ -1011,12 +1012,12 @@ void GetCornersOfSpot(Corner * corners, int regionId, int start)
 void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
 {
   int i;
-  char query[120];
+  char query[120] = {0};
 
   // Lock table
-  cout << "before lock" << endl;
-  WaitForLockForWrite(conn, (char*)K_TBL_OPEN_PARKING);
-  cout << "got lock" << endl;
+//  cout << "before lock" << endl;
+//  WaitForLockForWrite(conn, (char*)K_TBL_OPEN_PARKING);
+//  cout << "got lock" << endl;
 
   // Clear table
   ClearTable(conn, (char*)K_TBL_OPEN_PARKING);
@@ -1035,13 +1036,18 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
       spaces_db.at(i).corner2,
       spaces_db.at(i).corner3
     );
-    InsertEntry(conn, query);
+//    printf("%s\n", query);
+    if(InsertEntry(conn, query))
+      cout << "error inserting" << endl;
   }
-  cout <<"made insertions" << endl;
+  cout << "made insertions" << endl;
 
   // Unlock table
-  UnlockTable(conn, (char*)K_TBL_OPEN_PARKING);
-  cout << "unlocked table" << endl;
+//  if (UnlockTable(conn, (char*)K_TBL_OPEN_PARKING))
+//      cout << "could not unlock" << endl;
+//  else
+//      cout << "unlocked table" << endl;
+
 }
 #endif
 ////////////////////////////////////////////////////////////////////////////////
