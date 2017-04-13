@@ -100,6 +100,9 @@ int main(int argc, char** argv )
       sums     = GetSlidingSum(edges, 0, startWin, endWin);
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
+      for (i = 0; i < openings.size(); i++)
+        cout << openings.at(i).start << " " << openings.at(i).length << endl;
+      
       spaces   = GetOpenParkingSpaces(openings, regionId);
       cout << "spaces " <<  openings.size() << endl;
       #ifdef __arm__  // only on raspberry pi
