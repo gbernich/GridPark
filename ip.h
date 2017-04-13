@@ -42,7 +42,7 @@ using namespace std;
 #define K_SUMS_THRESHOLD_CONSECUTIVE  20
 
 ///// REGION DIMENSIONS /////
-#define K_NUM_SUBREGIONS    6
+#define K_NUM_SUBREGIONS    5
 
 // Beason Northeast
 #define K_BEASON_NE_ID      0
@@ -50,13 +50,13 @@ using namespace std;
 #define K_BEASON_NE_Y       470
 #define K_BEASON_NE_WIDTH   720
 #define K_BEASON_NE_HEIGHT  115
-#define K_BEASON_NE_WIN_START_TP_X      0
-#define K_BEASON_NE_WIN_START_TP_Y      75//10
+#define K_BEASON_NE_WIN_START_TP_X      870
+#define K_BEASON_NE_WIN_START_TP_Y      708
 #define K_BEASON_NE_WIN_START_WIDTH     5
 #define K_BEASON_NE_WIN_START_HEIGHT    30//95
 #define K_BEASON_NE_WIN_START_THETA     0.0
-#define K_BEASON_NE_WIN_END_TP_X        K_BEASON_NE_WIDTH-K_BEASON_NE_WIN_START_WIDTH-1
-#define K_BEASON_NE_WIN_END_TP_Y        75//60
+#define K_BEASON_NE_WIN_END_TP_X        1400
+#define K_BEASON_NE_WIN_END_TP_Y        660
 #define K_BEASON_NE_WIN_END_WIDTH       5
 #define K_BEASON_NE_WIN_END_HEIGHT      30//50
 #define K_BEASON_NE_WIN_END_THETA       0.0//20.0
@@ -68,15 +68,15 @@ using namespace std;
 #define K_BEASON_SE_Y       640
 #define K_BEASON_SE_WIDTH   810
 #define K_BEASON_SE_HEIGHT  250
-#define K_BEASON_SE_WIN_START_TP_X    0
-#define K_BEASON_SE_WIN_START_TP_Y    150
+#define K_BEASON_SE_WIN_START_TP_X    870
+#define K_BEASON_SE_WIN_START_TP_Y    970
 #define K_BEASON_SE_WIN_START_WIDTH   5
-#define K_BEASON_SE_WIN_START_HEIGHT  99
+#define K_BEASON_SE_WIN_START_HEIGHT  30
 #define K_BEASON_SE_WIN_START_THETA   0.0//15.0
-#define K_BEASON_SE_WIN_END_TP_X      750
-#define K_BEASON_SE_WIN_END_TP_Y      0
+#define K_BEASON_SE_WIN_END_TP_X      1490
+#define K_BEASON_SE_WIN_END_TP_Y      760
 #define K_BEASON_SE_WIN_END_WIDTH     5
-#define K_BEASON_SE_WIN_END_HEIGHT    60
+#define K_BEASON_SE_WIN_END_HEIGHT    30
 #define K_BEASON_SE_WIN_END_THETA     0.0//35.0
 #define K_BEASON_SE_SUMS_THRESHOLD    0.1//150
 
@@ -86,17 +86,17 @@ using namespace std;
 #define K_BEASON_SW_Y       615
 #define K_BEASON_SW_WIDTH   220
 #define K_BEASON_SW_HEIGHT  175
-#define K_BEASON_SW_WIN_START_TP_X    20
-#define K_BEASON_SW_WIN_START_TP_Y    0
-#define K_BEASON_SW_WIN_START_WIDTH   1
-#define K_BEASON_SW_WIN_START_HEIGHT  50
-#define K_BEASON_SW_WIN_START_THETA   -10.0
-#define K_BEASON_SW_WIN_END_TP_X      220
-#define K_BEASON_SW_WIN_END_TP_Y      70
-#define K_BEASON_SW_WIN_END_WIDTH     1
-#define K_BEASON_SW_WIN_END_HEIGHT    80
-#define K_BEASON_SW_WIN_END_THETA     -10.0
-#define K_BEASON_SW_SUMS_THRESHOLD    50
+#define K_BEASON_SW_WIN_START_TP_X    335
+#define K_BEASON_SW_WIN_START_TP_Y    680
+#define K_BEASON_SW_WIN_START_WIDTH   5
+#define K_BEASON_SW_WIN_START_HEIGHT  30
+#define K_BEASON_SW_WIN_START_THETA   0.0
+#define K_BEASON_SW_WIN_END_TP_X      512
+#define K_BEASON_SW_WIN_END_TP_Y      790
+#define K_BEASON_SW_WIN_END_WIDTH     5
+#define K_BEASON_SW_WIN_END_HEIGHT    30
+#define K_BEASON_SW_WIN_END_THETA     0.0
+#define K_BEASON_SW_SUMS_THRESHOLD    0.1
 
 // Beason Northwest
 #define K_BEASON_NW_ID      3
@@ -104,17 +104,17 @@ using namespace std;
 #define K_BEASON_NW_Y       490
 #define K_BEASON_NW_WIDTH   280
 #define K_BEASON_NW_HEIGHT  80
-#define K_BEASON_NW_WIN_START_TP_X    0
-#define K_BEASON_NW_WIN_START_TP_Y    0
-#define K_BEASON_NW_WIN_START_WIDTH   0
-#define K_BEASON_NW_WIN_START_HEIGHT  0
+#define K_BEASON_NW_WIN_START_TP_X    430
+#define K_BEASON_NW_WIN_START_TP_Y    630
+#define K_BEASON_NW_WIN_START_WIDTH   5
+#define K_BEASON_NW_WIN_START_HEIGHT  30
 #define K_BEASON_NW_WIN_START_THETA   0.0
-#define K_BEASON_NW_WIN_END_TP_X      0
-#define K_BEASON_NW_WIN_END_TP_Y      0
+#define K_BEASON_NW_WIN_END_TP_X      666
+#define K_BEASON_NW_WIN_END_TP_Y      680
 #define K_BEASON_NW_WIN_END_WIDTH     5
-#define K_BEASON_NW_WIN_END_HEIGHT    115
+#define K_BEASON_NW_WIN_END_HEIGHT    30
 #define K_BEASON_NW_WIN_END_THETA     0.0
-#define K_BEASON_NW_SUMS_THRESHOLD    50
+#define K_BEASON_NW_SUMS_THRESHOLD    0.1
 
 // Cooksie Northwest
 #define K_COOKSIE_NW_ID     4
@@ -122,19 +122,19 @@ using namespace std;
 #define K_COOKSIE_NW_Y      310
 #define K_COOKSIE_NW_WIDTH  180
 #define K_COOKSIE_NW_HEIGHT 170
-#define K_COOKSIE_NW_WIN_START_TP_X    0
-#define K_COOKSIE_NW_WIN_START_TP_Y    0
-#define K_COOKSIE_NW_WIN_START_WIDTH   0
-#define K_COOKSIE_NW_WIN_START_HEIGHT  0
+#define K_COOKSIE_NW_WIN_START_TP_X    750
+#define K_COOKSIE_NW_WIN_START_TP_Y    600
+#define K_COOKSIE_NW_WIN_START_WIDTH   15
+#define K_COOKSIE_NW_WIN_START_HEIGHT  5
 #define K_COOKSIE_NW_WIN_START_THETA   0.0
-#define K_COOKSIE_NW_WIN_END_TP_X      0
-#define K_COOKSIE_NW_WIN_END_TP_Y      0
-#define K_COOKSIE_NW_WIN_END_WIDTH     5
-#define K_COOKSIE_NW_WIN_END_HEIGHT    115
+#define K_COOKSIE_NW_WIN_END_TP_X      665
+#define K_COOKSIE_NW_WIN_END_TP_Y      485
+#define K_COOKSIE_NW_WIN_END_WIDTH     15
+#define K_COOKSIE_NW_WIN_END_HEIGHT    5
 #define K_COOKSIE_NW_WIN_END_THETA     0.0
 #define K_COOKSIE_NW_SUMS_THRESHOLD    50
 
-// Cooksie Southwest
+// Cooksie Southwest (ignored)
 #define K_COOKSIE_SW_ID     5
 #define K_COOKSIE_SW_X      0
 #define K_COOKSIE_SW_Y      0
