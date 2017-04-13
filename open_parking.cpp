@@ -78,18 +78,23 @@ int main(int argc, char** argv )
     sprintf(imgFn, "%s", argv[1]);
     src = imread(imgFn, 1);
 
+    // Get edges
+    thresh   = 100;
+    cvtColor(src, src_gray, CV_BGR2GRAY);
+    edges    = GetEdges(src_gray, thresh, 3, 3);
+
     // Loop through the subregions
     for (regionId = 0; regionId < K_NUM_SUBREGIONS; regionId++)
     {
       // Crop for subregion
-      roi = GetSubRegionImage(src, regionId);
+      //roi = GetSubRegionImage(src, regionId);
 
       // Convert to grayscale
-      cvtColor(roi, roi_gray, CV_BGR2GRAY);
+      //cvtColor(roi, roi_gray, CV_BGR2GRAY);
 
       // Main Image Processing
-      thresh   = 100;
-      edges    = GetEdges(roi_gray, thresh, 3, 3);
+      //thresh   = 100;
+      //edges    = GetEdges(roi_gray, thresh, 3, 3);
       startWin = GetStartWindow(regionId);
       endWin   = GetEndWindow(regionId);
       sums     = GetSlidingSum(edges, 0, startWin, endWin);
@@ -112,9 +117,6 @@ int main(int argc, char** argv )
 
     if(justParked)
     {
-      thresh   = 100;
-      cvtColor(src, src_gray, CV_BGR2GRAY);
-      edges    = GetEdges(src_gray, thresh, 3, 3);
       carWindow = CreateWindow(topLeft, width, height, 0);
       baseCount = GetBaseCount(edges, carWindow);
       justParked = false;
