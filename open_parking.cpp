@@ -79,30 +79,32 @@ int main(int argc, char** argv )
     src = imread(imgFn, 1);
 
     // Get edges
-    // thresh   = 100;
-    // cvtColor(src, src_gray, CV_BGR2GRAY);
-    // edges    = GetEdges(src_gray, thresh, 3, 3);
+    thresh   = 100;
+    cvtColor(src, src_gray, CV_BGR2GRAY);
+    edges    = GetEdges(src_gray, thresh, 3, 3);
 
     // Loop through the subregions
     for (regionId = 0; regionId < K_NUM_SUBREGIONS; regionId++)
     {
       // Crop for subregion
-      roi = GetSubRegionImage(src, regionId);
+      //roi = GetSubRegionImage(src, regionId);
 
       // Convert to grayscale
-      cvtColor(roi, roi_gray, CV_BGR2GRAY);
+      //cvtColor(roi, roi_gray, CV_BGR2GRAY);
 
       // Main Image Processing
-      thresh   = 100;
-      edges    = GetEdges(roi_gray, thresh, 3, 3);
+      //thresh   = 100;
+      //edges    = GetEdges(roi_gray, thresh, 3, 3);
       startWin = GetStartWindow(regionId);
       endWin   = GetEndWindow(regionId);
       sums     = GetSlidingSum(edges, 0, startWin, endWin);
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
+
+      cout << "region " << regionId << endl;
       for (i = 0; i < openings.size(); i++)
         cout << openings.at(i).start << " " << openings.at(i).length << endl;
-      
+
       spaces   = GetOpenParkingSpaces(openings, regionId);
       cout << "spaces " <<  openings.size() << endl;
       #ifdef __arm__  // only on raspberry pi
@@ -120,9 +122,9 @@ int main(int argc, char** argv )
 
     if(justParked)
     {
-      thresh   = 100;
-      cvtColor(src, src_gray, CV_BGR2GRAY);
-      edges    = GetEdges(src_gray, thresh, 3, 3);
+      //thresh   = 100;
+      //cvtColor(src, src_gray, CV_BGR2GRAY);
+      //edges    = GetEdges(src_gray, thresh, 3, 3);
       carWindow = CreateWindow(topLeft, width, height, 0);
       baseCount = GetBaseCount(edges, carWindow);
       justParked = false;
