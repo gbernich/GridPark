@@ -221,6 +221,7 @@ Mat     GetSubRegionImage(Mat original, int regionId);
 Window  GetStartWindow(int regionId);
 Window  GetEndWindow(int regionId);
 float   GetThresholdFromRegionId(int regionId);
+int     GetStartingXOffsetFromRegionId(int regionId)
 float   GetDistance(ImgPoint a, ImgPoint b);
 Window  CreateWindow(Corner topLeft, int width, int height, float theta);
 double  Degrees2Radians(double deg);

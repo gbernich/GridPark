@@ -440,12 +440,13 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
 {
   vector<Opening> openings;
   Opening newOpening;
-  int aboveCount = 0;
-  int belowCount = 0;
+  int aboveCount   = 0;
+  int belowCount   = 0;
   bool activeBelow = false;
-  bool added = false;
-  int startBelow = 0;
-  float thresh = GetThresholdFromRegionId(regionId);
+  bool added       = false;
+  int startBelow   = 0;
+  float thresh     = GetThresholdFromRegionId(regionId);
+  int offset       = GetStartingXOffsetFromRegionId(regionId);
 
   // Slide across the sums and count for consecutive points above/below a threshold
   for (int i = 0; i < sums.size(); i++)
@@ -470,7 +471,7 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
       {
         //cout << "above " << i << " " << startBelow << endl;
         activeBelow = false;
-        newOpening.start = startBelow;
+        newOpening.start = startBelow + offset;
         newOpening.length = i - startBelow - aboveCount + 1;
         openings.push_back(newOpening);
         added = true;
@@ -796,6 +797,32 @@ float GetThresholdFromRegionId(int regionId)
       break;
     case (K_COOKSIE_SW_ID):
       threshold = K_COOKSIE_SW_SUMS_THRESHOLD;
+      break;
+  }
+  return threshold;
+}
+
+int GetStartingXOffsetFromRegionId(int regionId)
+{
+  int offset = 0;
+  switch(regionId){
+    case (K_BEASON_NE_ID):
+      threshold = K_BEASON_NE_WIN_START_TP_X;
+      break;
+    case (K_BEASON_SE_ID):
+      threshold = K_BEASON_SE_WIN_START_TP_X;
+      break;
+    case (K_BEASON_SW_ID):
+      threshold = K_BEASON_SW_WIN_START_TP_X;
+      break;
+    case (K_BEASON_NW_ID):
+      threshold = K_BEASON_NW_WIN_START_TP_X;
+      break;
+    case (K_COOKSIE_NW_ID):
+      threshold = K_COOKSIE_NW_WIN_START_TP_X;
+      break;
+    case (K_COOKSIE_SW_ID):
+      threshold = K_COOKSIE_SW_WIN_START_TP_X;
       break;
   }
   return threshold;
