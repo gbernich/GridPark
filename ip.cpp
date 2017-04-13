@@ -807,25 +807,25 @@ int GetStartingXOffsetFromRegionId(int regionId)
   int offset = 0;
   switch(regionId){
     case (K_BEASON_NE_ID):
-      threshold = K_BEASON_NE_WIN_START_TP_X;
+      offset = K_BEASON_NE_WIN_START_TP_X;
       break;
     case (K_BEASON_SE_ID):
-      threshold = K_BEASON_SE_WIN_START_TP_X;
+      offset = K_BEASON_SE_WIN_START_TP_X;
       break;
     case (K_BEASON_SW_ID):
-      threshold = K_BEASON_SW_WIN_START_TP_X;
+      offset = K_BEASON_SW_WIN_START_TP_X;
       break;
     case (K_BEASON_NW_ID):
-      threshold = K_BEASON_NW_WIN_START_TP_X;
+      offset = K_BEASON_NW_WIN_START_TP_X;
       break;
     case (K_COOKSIE_NW_ID):
-      threshold = K_COOKSIE_NW_WIN_START_TP_X;
+      offset = K_COOKSIE_NW_WIN_START_TP_X;
       break;
     case (K_COOKSIE_SW_ID):
-      threshold = K_COOKSIE_SW_WIN_START_TP_X;
+      offset = K_COOKSIE_SW_WIN_START_TP_X;
       break;
   }
-  return threshold;
+  return offset;
 }
 
 float GetDistance(ImgPoint a, ImgPoint b)

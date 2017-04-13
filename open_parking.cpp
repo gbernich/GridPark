@@ -41,7 +41,7 @@ int main(int argc, char** argv )
   vector< vector<int> > sumsVector, sumsVectorLeft, sumsVectorRight;
   vector<Opening> openings, spaces;
   vector<float> sumsNorm;
-  vector<OPEN_SPOT_T> spaces_db;
+  vector<OPEN_SPOT_T> spaces_db, spaces_db_all;
 
   //Suspicious Activity 
   bool carParked = true;
@@ -99,26 +99,31 @@ int main(int argc, char** argv )
       endWin   = GetEndWindow(regionId);
       sums     = GetSlidingSum(edges, 0, startWin, endWin);
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
-      openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
+      openings   = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
 
       cout << "region " << regionId << endl;
       for (i = 0; i < openings.size(); i++)
-        cout << openings.at(i).start << " " << openings.at(i).length << endl;
+        cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
 
       spaces   = GetOpenParkingSpaces(openings, regionId);
-      cout << "spaces " <<  openings.size() << endl;
-      #ifdef __arm__  // only on raspberry pi
-        if (spaces.size() > 0)
-        {
-          // Convert spaces to usable format
-          spaces_db = FormatSpacesForDB(spaces, regionId, &spot_id);
+      for (i = 0; i < spaces.size(); i++)
+        cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
 
-          // Write to database (blocking)
-          InsertOpenParking(spaces_db, conn);
-        }
-      #endif
-
+      if (spaces.size() > 0)
+      {
+        // Convert spaces to usable format
+        spaces_db = FormatSpacesForDB(spaces, regionId, &spot_id);
+        spaces_db_all.insert(spaces_db_all.end(), spaces_db.begin(), spaces_db.end());
+        cout << "all " << spaces_db_all.size() << endl;
+      }
     }
+
+
+    #ifdef __arm__  // only on raspberry pi
+      // Write to database (blocking)
+      InsertOpenParking(spaces_db_all, conn);
+      spaces_db_all.clear();
+    #endif
 
     if(justParked)
     {
