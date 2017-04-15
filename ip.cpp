@@ -1169,7 +1169,7 @@ void TakeNewImage(char * fn, unsigned int num)
 {
   char cmd[50];
   sprintf(fn, "img_%04u.jpg", num);
-  sprintf(cmd, "fswebcam -r 1920x1080 %s -S 20", fn);
+  sprintf(cmd, "fswebcam -r 1920x1080 %s -S 50", fn);
   cout << cmd << endl;
   //system(cmd);
 }

@@ -96,7 +96,7 @@ int main(int argc, char** argv )
     src = imread(imgFn, 1);
 
     // Get edges
-    thresh = 100;
+    thresh = 30;
     cvtColor(src, src_gray, CV_BGR2GRAY);
     edges = GetEdges(src_gray, thresh, 3, 3);
     clock_gettime(CLOCK_MONOTONIC, &finish_edges);
@@ -111,20 +111,22 @@ int main(int argc, char** argv )
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
 
+      /*
       cout << "region " << regionId << endl;
       for (i = 0; i < openings.size(); i++)
         cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
+      */
 
       spaces   = GetOpenParkingSpaces(openings, regionId);
       for (i = 0; i < spaces.size(); i++)
-        cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
+        //cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
 
       if (spaces.size() > 0)
       {
         // Convert spaces to usable format
         spaces_db = FormatSpacesForDB(spaces, regionId, &spot_id);
         spaces_db_all.insert(spaces_db_all.end(), spaces_db.begin(), spaces_db.end());
-        cout << "all " << spaces_db_all.size() << endl;
+        //cout << "all " << spaces_db_all.size() << endl;
       }
     }
     clock_gettime(CLOCK_MONOTONIC, &finish_parking);
@@ -163,11 +165,11 @@ int main(int argc, char** argv )
     cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
 
     // Save edges image for DEBUG USE ONLY (REMOVE THIS)
-    imwrite("./testimg/edges.jpg", edges);
+    //imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
     break; // for development lets only run the loop once
-    sleep(5);
+    sleep(1);
   }
 
   #ifdef __arm__
