@@ -149,7 +149,8 @@ int main(int argc, char *argv[])
 
         // close database
         CloseDB(db);
-	    printf("here5\n");
+        printf("here5\n");
+        close(sockfd);
 
         // Sleep
         sleep(5);
