@@ -869,7 +869,7 @@ float GetDistance(ImgPoint a, ImgPoint b)
 bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
   int* actCount, int baseCount, Mat image, Window carWindow)
 {
-  int sus_thresh = 20;
+  int sus_thresh = 5;
   int new_detect = 0;
   bool alert = false;
 
@@ -887,16 +887,19 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
   }
 }
 
-int DetectActivity(Mat image, Window carWindow, int baseCount)
+int DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
 {
   int edgeSum;
   int activity;
   int thresh = 0;
 
   edgeSum = GetSumOfWindow(image, carWindow, thresh);
-  if (edgeSum > 1.02 * baseCount) {activity = 1;}
+  edgeAvg = UpdateEdgeList(edgeList, edgeSum);
+  if (edgeAvg > 1.02 * baseCount) {activity = 1;}
   else {activity = 0;}
-  cout << edgeSum << endl;
+  cout << "Base Count" baseCount << endl;
+  cout << "New Sum" edgeSum << endl;
+  cout << "Edge Avg" edgeAvg << endl;
   return activity;
 }
 
@@ -908,6 +911,20 @@ int GetBaseCount(Mat image, Window carWindow)
   edgeSum = GetSumOfWindow(image, carWindow, thresh);
   return edgeSum;
 }
+
+int UpdateEdgeList(int* edgeList, int newSum)
+{
+  int avgSum;
+  for(int i=4; i > 0; i-1)
+  {
+    *edgeList[i] = *edgeList[i-1];
+  }
+  *edgeList[0] = newSum;
+  avgSum = (*edgeList[0] + *edgeList[1] + *edgeList[2] + *edgeList[3] + *edgeList[4])/5;
+  return avgSum;
+}
+
+
 
 Window CreateWindow(Corner topLeft, int width, int height, float theta)
 {
