@@ -67,11 +67,11 @@ int main(int argc, char *argv[])
     // Listen for up to 10 connections
     listen(listenfd, 10); 
 
-    // Accept request to connect
-    connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
-
     while(1)
     {
+        // Accept request to connect
+        connfd = accept(listenfd, (struct sockaddr*)NULL, NULL); 
+
         // Connect to database
         db = (void *)OpenDB(K_DB);
         printf("1\n");
@@ -153,11 +153,12 @@ int main(int argc, char *argv[])
         write(connfd, sendBuff, j);
         printf("4\n");
 
+        // Close connection
+        close(connfd);
+
         // Sleep for some time
         sleep(1);
     }
-        // Close connection
-        close(connfd);
 
 
     return 0;
