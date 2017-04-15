@@ -7,8 +7,16 @@
 #ifndef DB_UTILS_H
 #define DB_UTILS_H
 
+#ifdef __arm__
 #include <mysql/mysql.h>
+#endif
+
 #include "common.h"
+
+// To make these functions usable in C++
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Admin
 #define K_MYSQL_USER    "root"
@@ -40,7 +48,7 @@
 
 
 // MYSQL admin
-MYSQL * OpenDB();
+MYSQL * OpenDB(char * dbName);
 void CloseDB(MYSQL * conn);
 
 // Table insertion
@@ -61,9 +69,11 @@ int ClearTable(MYSQL * conn, char * table);
 
 // Table locking
 void WaitForLock(MYSQL * conn, char * table);
+void WaitForLockForWrite(MYSQL * conn, char * table);
 int UnlockTable(MYSQL * conn, char * table);
 int TableIsLocked(MYSQL * conn, char * table);
 int LockTableForRead(MYSQL * conn, char * table);
+int LockTableForWrite(MYSQL * conn, char * table);
 
 // Table reading
 OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table);
@@ -75,5 +85,9 @@ int CreateTestEntry(MYSQL * conn, int id, int num);
 int CreateNewSpot(int spot_id, int region, int distance, int * corners);
 int TestDB();
 
+// Clos extern
+#ifdef __cplusplus
+};
+#endif
 
 #endif

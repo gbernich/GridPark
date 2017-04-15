@@ -6,30 +6,33 @@
 #include "common.h"
 
 #ifdef __arm__
-#include "db_utils.h"
+#include <mysql/mysql.h>
+extern "C" {
+    #include "db_utils.h"
+}
 #endif
 
 using namespace std;
 
+static float x_vals_init[] = {1, 2, 3, 4};
+static vector<float> x_vals(x_vals_init, x_vals_init + sizeof(x_vals_init) / sizeof(x_vals_init[0]));
 
-Mat dst, detected_edges;
-
-//int edgeThresh = 1;
-//int lowThreshold;
-//int max_lowThreshold = 250;
-//int ratio1 = 3;
-//int kernel_size = 3;
-
-char imgFn[80] = {0};
-char imgNum = 0;
-
+static float y_vals_init[] = {0, 10, 25, 40};
+static vector<float> y_vals(y_vals_init, y_vals_init + sizeof(y_vals_init) / sizeof(y_vals_init[0]));
 
 int main(int argc, char** argv )
-{  
-  struct timespec start, finish;
+{
+  struct timespec start,         finish,
+                  start_edges,   finish_edges,
+                  start_db,      finish_db,
+                  start_parking, finish_parking,
+                  start_suspact, finish_suspact;
   double elapsed;
   int i, count, x, y, x0, y0, x3, y3;
   int regionId;
+  int imgNum = 0;
+  char imgFn[80] = {0};
+  int spot_id = 0;
 
   // Matrices
   Mat src, src_gray, roi, roi_gray, overlay;
@@ -48,7 +51,7 @@ int main(int argc, char** argv )
   vector< vector<int> > sumsVector, sumsVectorLeft, sumsVectorRight;
   vector<Opening> openings, spaces;
   vector<float> sumsNorm;
-  vector<OPEN_SPOT_T> spaces_db;
+  vector<OPEN_SPOT_T> spaces_db, spaces_db_all;
 
   //Suspicious Activity 
   bool carParked = true;
@@ -67,9 +70,15 @@ int main(int argc, char** argv )
   width = 150;
   height = 100;
 
+  // testing
+  cout << "interpolate " << Interpolate(1.5, x_vals, y_vals) << endl;
+  cout << "interpolate " << Interpolate(1.8, x_vals, y_vals) << endl;
+  cout << "interpolate " << Interpolate(3.1, x_vals, y_vals) << endl;
+  cout << "interpolate " << Interpolate(3.5, x_vals, y_vals) << endl;
+  cout << "interpolate " << Interpolate(3.9, x_vals, y_vals) << endl;
 
   #ifdef __arm__
-    MYSQL * conn = OpenDB();
+    MYSQL * conn = OpenDB((char*)K_DB);
   #endif
 
   // Main loop that will continue forever
@@ -82,70 +91,88 @@ int main(int argc, char** argv )
     TakeNewImage(imgFn, imgNum++);
     
     // Load source image
-    sprintf(imgFn, "%s", "/Users/garrettbernichon/Desktop/image8_s50.jpg");
+    clock_gettime(CLOCK_MONOTONIC, &start_edges);
+    sprintf(imgFn, "%s", argv[1]);
     src = imread(imgFn, 1);
 
+    // Get edges
+    thresh = 100;
+    cvtColor(src, src_gray, CV_BGR2GRAY);
+    edges = GetEdges(src_gray, thresh, 3, 3);
+    clock_gettime(CLOCK_MONOTONIC, &finish_edges);
+
     // Loop through the subregions
+    clock_gettime(CLOCK_MONOTONIC, &start_parking);
     for (regionId = 0; regionId < K_NUM_SUBREGIONS; regionId++)
     {
-      // Crop for subregion
-      roi = GetSubRegionImage(src, regionId);
-
-      // Convert to grayscale
-      cvtColor(roi, roi_gray, CV_BGR2GRAY);
-
-      // Main Image Processing
-      thresh   = 100;
-      edges    = GetEdges(roi_gray, thresh, 3, 3);
       startWin = GetStartWindow(regionId);
       endWin   = GetEndWindow(regionId);
       sums     = GetSlidingSum(edges, 0, startWin, endWin);
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
+
+      cout << "region " << regionId << endl;
+      for (i = 0; i < openings.size(); i++)
+        cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
+
       spaces   = GetOpenParkingSpaces(openings, regionId);
+      for (i = 0; i < spaces.size(); i++)
+        cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
 
-      // Convert spaces to usable format
-
-      // Write to database
-
-
+      if (spaces.size() > 0)
+      {
+        // Convert spaces to usable format
+        spaces_db = FormatSpacesForDB(spaces, regionId, &spot_id);
+        spaces_db_all.insert(spaces_db_all.end(), spaces_db.begin(), spaces_db.end());
+        cout << "all " << spaces_db_all.size() << endl;
+      }
     }
+    clock_gettime(CLOCK_MONOTONIC, &finish_parking);
 
+    // Write to database (blocking)
+    #ifdef __arm__  // only on raspberry pi
+      clock_gettime(CLOCK_MONOTONIC, &start_db);
+      InsertOpenParking(spaces_db_all, conn);
+      spaces_db_all.clear();
+      clock_gettime(CLOCK_MONOTONIC, &finish_db);
+    #endif
+
+    // Suspicious Activity
+    clock_gettime(CLOCK_MONOTONIC, &start_suspact);
     if(justParked)
     {
-      thresh   = 100;
-      cvtColor(src, src_gray, CV_BGR2GRAY);
-      edges    = GetEdges(src_gray, thresh, 3, 3);
       carWindow = CreateWindow(topLeft, width, height, 0);
       baseCount = GetBaseCount(edges, carWindow);
       justParked = false;
     }
-
     alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
+    clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
     cout << alert << endl;
-
-      
-      #ifdef __arm__  // only on raspberry pi
-        // Convert spaces to usable format
-        spaces_db = FormatSpacesForDB(spaces, regionId);
-        
-        // Write to database (blocking)
-        InsertOpenParking(spaces_db, conn);
-      #endif
-      
-    
 
     // Capture time
     clock_gettime(CLOCK_MONOTONIC, &finish);
-    elapsed = (finish.tv_sec - start.tv_sec);
-    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-    cout << "Edge Detection: " << elapsed * 1000.0 << " ms" << endl;
+    elapsed = (finish_edges.tv_sec - start_edges.tv_sec); elapsed += (finish_edges.tv_nsec - start_edges.tv_nsec) / 1000000000.0;
+    cout << "Edge Detect: " << elapsed * 1000.0 << " ms" << endl;
+    elapsed = (finish_parking.tv_sec - start_parking.tv_sec); elapsed += (finish_parking.tv_nsec - start_parking.tv_nsec) / 1000000000.0;
+    cout << "Parking:     " << elapsed * 1000.0 << " ms" << endl;
+    elapsed = (finish_suspact.tv_sec - start_suspact.tv_sec); elapsed += (finish_suspact.tv_nsec - start_suspact.tv_nsec) / 1000000000.0;
+    cout << "Suspicious:  " << elapsed * 1000.0 << " ms" << endl;
+    elapsed = (finish_db.tv_sec - start_db.tv_sec); elapsed += (finish_db.tv_nsec - start_db.tv_nsec) / 1000000000.0;
+    cout << "Database:    " << elapsed * 1000.0 << " ms" << endl;
+    elapsed = (finish.tv_sec - start.tv_sec); elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
+
+    // Save edges image for DEBUG USE ONLY (REMOVE THIS)
+    imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
+    break; // for development lets only run the loop once
     sleep(5);
   }
 
-  //CloseDB(conn);
+  #ifdef __arm__
+    CloseDB(conn);
+  #endif
 
   return 0;
 

@@ -4,10 +4,15 @@ networking: send recv
 
 parking: open_parking
 
+parking_lite: open_parking_lite
 
 
-open_parking: open_parking.o ip.o
-	g++ `pkg-config --cflags opencv` `pkg-config --libs opencv` open_parking.o ip.o -o open_parking
+
+open_parking: db_utils.o common.o ip.o open_parking.o
+	g++ -Wall `pkg-config --cflags opencv` `pkg-config --libs opencv` `mysql_config --cflags --libs` open_parking.o ip.o db_utils.o common.o -o open_parking
+
+open_parking_lite: common.o ip.o open_parking.o
+	g++ `pkg-config --cflags opencv` `pkg-config --libs opencv` open_parking.o ip.o common.o -o open_parking
 
 open_parking.o: open_parking.cpp
 	g++ `pkg-config --cflags opencv` `pkg-config --libs opencv` -c open_parking.cpp
@@ -39,7 +44,7 @@ common.o: common.c
 	gcc -c common.c
 
 db_utils.o: db_utils.c
-	gcc -c db_utils.c `mysql_config --cflags --libs`
+	gcc -Wall `mysql_config --cflags --libs` -c db_utils.c
 
 
 

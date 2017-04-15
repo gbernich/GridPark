@@ -4,6 +4,7 @@
 // Function:    Provide functions to do the low level image processing.
 //-----------------------------------------------------------------------------
 #include "ip.h"
+#include <unistd.h>
 
 int debug = 0;
 
@@ -439,12 +440,13 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
 {
   vector<Opening> openings;
   Opening newOpening;
-  int aboveCount = 0;
-  int belowCount = 0;
+  int aboveCount   = 0;
+  int belowCount   = 0;
   bool activeBelow = false;
-  bool added = false;
-  int startBelow = 0;
-  float thresh = GetThresholdFromRegionId(regionId);
+  bool added       = false;
+  int startBelow   = 0;
+  float thresh     = GetThresholdFromRegionId(regionId);
+  int offset       = GetStartingXOffsetFromRegionId(regionId);
 
   // Slide across the sums and count for consecutive points above/below a threshold
   for (int i = 0; i < sums.size(); i++)
@@ -469,7 +471,7 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
       {
         //cout << "above " << i << " " << startBelow << endl;
         activeBelow = false;
-        newOpening.start = startBelow;
+        newOpening.start = startBelow + offset;
         newOpening.length = i - startBelow - aboveCount + 1;
         openings.push_back(newOpening);
         added = true;
@@ -623,6 +625,36 @@ bool IsWithinBounds(int imgHeight, int imgWidth, Window win)
   if (0 > win.br.y || win.br.y > imgHeight-1) { return false; }
   
   return true;
+}
+
+float Interpolate(float x, vector<float> x_arr, vector<float> y_arr)
+{
+  int i = 0;
+  float x0, x1, y0, y1;
+
+  // Make sure x falls within the end points, otherwise return
+  if (x < x_arr.front() || x_arr.back() < x)
+  {
+    return -1.0;
+  }
+
+  // find where our index "falls" within the data we have
+  for(i = 0; i < x_arr.size()-1; i++)
+  {
+    // find the two points x falls between
+    if(x_arr.at(i) <= x && x < x_arr.at(i + 1))
+    {
+      x0 = x_arr.at(i);
+      y0 = y_arr.at(i);
+      x1 = x_arr.at(i + 1);
+      y1 = y_arr.at(i + 1);
+
+      // interpolate
+      return y0 + (((y1 - y0) / (x1 - x0)) * (x - x0));
+    }
+  }
+
+  return -1.0;
 }
 
 Mat GetSubRegionImage(Mat original, int regionId)
@@ -800,6 +832,32 @@ float GetThresholdFromRegionId(int regionId)
   return threshold;
 }
 
+int GetStartingXOffsetFromRegionId(int regionId)
+{
+  int offset = 0;
+  switch(regionId){
+    case (K_BEASON_NE_ID):
+      offset = K_BEASON_NE_WIN_START_TP_X;
+      break;
+    case (K_BEASON_SE_ID):
+      offset = K_BEASON_SE_WIN_START_TP_X;
+      break;
+    case (K_BEASON_SW_ID):
+      offset = K_BEASON_SW_WIN_START_TP_X;
+      break;
+    case (K_BEASON_NW_ID):
+      offset = K_BEASON_NW_WIN_START_TP_X;
+      break;
+    case (K_COOKSIE_NW_ID):
+      offset = K_COOKSIE_NW_WIN_START_TP_X;
+      break;
+    case (K_COOKSIE_SW_ID):
+      offset = K_COOKSIE_SW_WIN_START_TP_X;
+      break;
+  }
+  return offset;
+}
+
 float GetDistance(ImgPoint a, ImgPoint b)
 {
   float xDiff = (float)a.x - (float)b.x;
@@ -823,7 +881,10 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
     if(*actCount > sus_thresh) {alert = true;}
     return alert;
   }
-  else {return;}
+  else
+  {
+    return alert;
+  }
 }
 
 int DetectActivity(Mat image, Window carWindow, int baseCount)
@@ -1008,19 +1069,22 @@ void GetCornersOfSpot(Corner * corners, int regionId, int start)
 void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
 {
   int i;
-  char query[120];
+  char query[120] = {0};
 
   // Lock table
-  WaitForLock(conn, K_TBL_OPEN_PARKING);
+//  cout << "before lock" << endl;
+//  WaitForLockForWrite(conn, (char*)K_TBL_OPEN_PARKING);
+//  cout << "got lock" << endl;
 
   // Clear table
-  ClearTable(conn, K_TBL_OPEN_PARKING);
+  ClearTable(conn, (char*)K_TBL_OPEN_PARKING);
+  cout << "cleared table" << endl;
 
   // Make insertions
   for(i = 0; i < spaces_db.size(); i++)
   {
     // from db_utils
-    FormatInsertForOpenParking(query, K_TBL_OPEN_PARKING,
+    FormatInsertForOpenParking(query, (char*)K_TBL_OPEN_PARKING,
       spaces_db.at(i).spot_id,
       spaces_db.at(i).region,   // x
       spaces_db.at(i).distance, // y
@@ -1029,11 +1093,18 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
       spaces_db.at(i).corner2,
       spaces_db.at(i).corner3
     );
-    InsertEntry(conn, query);
+//    printf("%s\n", query);
+    if(InsertEntry(conn, query))
+      cout << "error inserting" << endl;
   }
+  cout << "made insertions" << endl;
 
   // Unlock table
-  UnlockTable(conn, K_TBL_OPEN_PARKING);
+//  if (UnlockTable(conn, (char*)K_TBL_OPEN_PARKING))
+//      cout << "could not unlock" << endl;
+//  else
+//      cout << "unlocked table" << endl;
+
 }
 #endif
 ////////////////////////////////////////////////////////////////////////////////
