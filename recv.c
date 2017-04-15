@@ -53,34 +53,32 @@ int main(int argc, char *argv[])
     {
         port_type = atoi(argv[2]) + K_PORT_OFFSET;
     }
-
-    // Create the socket
-    if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
-        printf("\n Error : Could not create socket \n");
-        return 1;
-    } 
-
-    // Zero out serv_addr struct
-    memset(&serv_addr, '0', sizeof(serv_addr)); 
-
-    // Set up socket
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(port_type); 
-
-    // Convert IP address to binary
-    if(inet_pton(AF_INET, argv[1], &serv_addr.sin_addr)<=0)
-    {
-        printf("\n inet_pton error occured\n");
-        return 1;
-    } 
-
     while (1)
     {
-	   printf("here1\n");
+
+        // Create the socket
+        if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        {
+            printf("\n Error : Could not create socket \n");
+            return 1;
+        }
+
+        // Zero out serv_addr struct
+        memset(&serv_addr, '0', sizeof(serv_addr)); 
+
+        // Set up socket
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(port_type); 
+
+        // Convert IP address to binary
+        if(inet_pton(AF_INET, argv[1], &serv_addr.sin_addr)<=0)
+        {
+            printf("\n inet_pton error occured\n");
+            return 1;
+        }
+
         // Open database
         db = (void *)OpenDB(K_DB);
-	   printf("here2\n");
 
         // Connect the socket to the network
         if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
@@ -137,9 +135,7 @@ int main(int argc, char *argv[])
             {
                 printf("\n Error : Fputs error\n");
             }*/
-        } 
-	    printf("here4\n");
-
+        }
 
         // Error reading from socket
         if(n < 0)
@@ -149,7 +145,8 @@ int main(int argc, char *argv[])
 
         // close database
         CloseDB(db);
-        printf("here5\n");
+
+        // close socket
         close(sockfd);
 
         // Sleep

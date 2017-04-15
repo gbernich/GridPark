@@ -74,7 +74,6 @@ int main(int argc, char *argv[])
 
         // Connect to database
         db = (void *)OpenDB(K_DB);
-        printf("1\n");
 
         // Read from database
         j = 2;
@@ -138,20 +137,17 @@ int main(int argc, char *argv[])
             // free memory
             DeleteSuspActivities(acts);
         }
-        printf("2\n");
 
         // Create a packet to send
         sendBuff[0] = (char)packet_type;
         sendBuff[1] = (char)count;
         // close database
         CloseDB(db);
-        printf("3\n");
         //ticks = time(NULL);
         //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
 
         // Send packet over socket
         write(connfd, sendBuff, j);
-        printf("4\n");
 
         // Close connection
         close(connfd);
