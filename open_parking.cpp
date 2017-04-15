@@ -96,7 +96,7 @@ int main(int argc, char** argv )
     src = imread(imgFn, 1);
 
     // Get edges
-    thresh = 30;
+    thresh = 50;
     cvtColor(src, src_gray, CV_BGR2GRAY);
     edges = GetEdges(src_gray, thresh, 3, 3);
     clock_gettime(CLOCK_MONOTONIC, &finish_edges);
@@ -165,7 +165,7 @@ int main(int argc, char** argv )
     cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
 
     // Save edges image for DEBUG USE ONLY (REMOVE THIS)
-    //imwrite("./testimg/edges.jpg", edges);
+    imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
     break; // for development lets only run the loop once
