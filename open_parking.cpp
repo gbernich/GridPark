@@ -158,6 +158,7 @@ int main(int argc, char** argv )
       }
       baseCount = GetBaseCount(edges, carWindow);
       bcAvg = UpdateEdgeList(edgeList, baseCount);
+      cout << "BC AVG" << bcAvg << endl;
       if(loopCount = 5)
       {
         justParked = false;
@@ -175,6 +176,7 @@ int main(int argc, char** argv )
     }
  
     loopCount = loopCount + 1;
+    cout << "Loop Count" << loopCount << endl;
     if(loopCount > 5)
     {
       loopCount = 0;
