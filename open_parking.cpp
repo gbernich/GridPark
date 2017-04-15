@@ -152,14 +152,15 @@ int main(int argc, char** argv )
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
     if(justParked)
     {
-      if(loopCount = 0)
+      if(loopCount == 0)
       {
         carWindow = CreateWindow(topLeft, width, height, 0);
       }
       baseCount = GetBaseCount(edges, carWindow);
+      cout << "curr frame " << baseCount << endl;
       bcAvg = UpdateEdgeList(edgeList, baseCount);
       cout << "BC AVG" << bcAvg << endl;
-      if(loopCount = 5)
+      if(loopCount == 5)
       {
         justParked = false;
         haveBC = true;
