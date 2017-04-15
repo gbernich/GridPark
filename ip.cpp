@@ -869,7 +869,7 @@ float GetDistance(ImgPoint a, ImgPoint b)
 bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
   int* actCount, int baseCount, Mat image, Window carWindow)
 {
-  int sus_thresh = 20;
+  int sus_thresh = 5;
   int new_detect = 0;
   bool alert = false;
 
@@ -1165,13 +1165,29 @@ void WriteOpenings(char * fn, char * imgfn, vector<Opening> openings)
 
 
 // System ///////////////////////////////////////////////////////////////////
-void TakeNewImage(char * fn, unsigned int num)
+void TakeNewImage()
 {
-  char cmd[50];
+  char cmd[160] = {0};
   //sprintf(fn, "img_%04u.jpg", num);
-  sprintf(fn, "img.jpg", num);
-  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=100% -s contrast=100% -s gamma=70%% img.jpg 50", fn);
+  //sprintf(fn, "img.jpg", num);
+
+  // Day Time
+  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
+  //sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img.jpg -S 30");
+//  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
+
+  // Night Time
+  //sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=100%% -s contrast=100%% -s gamma=70%% img.jpg -S 10");
 
   cout << cmd << endl;
-  //system(cmd);
+  system(cmd);
 }
+
+/*
+void GetLatestImage(char * fn)
+{
+    FILE *fp = popen("ls | grep img_ | tail -2 | head -1", "r");
+    fscanf(fp, "%s", fn);
+    pclose(fp);
+}
+*/

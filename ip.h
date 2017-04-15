@@ -249,6 +249,6 @@ void WriteSlidingWindowFloat(char * fn, char * imgfn, vector<float> sums);
 void WriteOpenings(char * fn, char * imgfn, vector<Opening> openings);
 
 // System
-void TakeNewImage(char * fn, unsigned int num);
+void TakeNewImage();
 
 #endif

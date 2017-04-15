@@ -12,6 +12,8 @@ extern "C" {
 }
 #endif
 
+#define USE_DB 0
+
 using namespace std;
 
 static float x_vals_init[] = {1, 2, 3, 4};
@@ -65,10 +67,10 @@ int main(int argc, char** argv )
   int width;
   int height;
   Corner topLeft;
-  topLeft.x = 1200;
-  topLeft.y = 625;
-  width = 150;
-  height = 100;
+  topLeft.x = 1100;
+  topLeft.y = 670;
+  width = 130;
+  height = 50;
 
   // testing
   cout << "interpolate " << Interpolate(1.5, x_vals, y_vals) << endl;
@@ -88,15 +90,14 @@ int main(int argc, char** argv )
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // Take an image
-    TakeNewImage(imgFn, imgNum++);
-    
+    TakeNewImage();
     // Load source image
     clock_gettime(CLOCK_MONOTONIC, &start_edges);
     sprintf(imgFn, "%s", "img.jpg");//);argv[1]);
     src = imread(imgFn, 1);
 
     // Get edges
-    thresh = 50;
+    thresh = 70;
     cvtColor(src, src_gray, CV_BGR2GRAY);
     edges = GetEdges(src_gray, thresh, 3, 3);
     clock_gettime(CLOCK_MONOTONIC, &finish_edges);
@@ -119,7 +120,8 @@ int main(int argc, char** argv )
 
       spaces   = GetOpenParkingSpaces(openings, regionId);
       for (i = 0; i < spaces.size(); i++)
-        //cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
+      {  //cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
+      }
 
       if (spaces.size() > 0)
       {
@@ -134,7 +136,8 @@ int main(int argc, char** argv )
     // Write to database (blocking)
     #ifdef __arm__  // only on raspberry pi
       clock_gettime(CLOCK_MONOTONIC, &start_db);
-      InsertOpenParking(spaces_db_all, conn);
+      if (USE_DB)
+        InsertOpenParking(spaces_db_all, conn);
       spaces_db_all.clear();
       clock_gettime(CLOCK_MONOTONIC, &finish_db);
     #endif
@@ -149,6 +152,7 @@ int main(int argc, char** argv )
     }
     alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
+    cout << "base " << baseCount << endl;
     cout << alert << endl;
 
     // Capture time
@@ -165,11 +169,11 @@ int main(int argc, char** argv )
     cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
 
     // Save edges image for DEBUG USE ONLY (REMOVE THIS)
-    //imwrite("./testimg/edges.jpg", edges);
+    imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
     //break; // for development lets only run the loop once
-    sleep(5);
+    sleep(2);
   }
 
   #ifdef __arm__
