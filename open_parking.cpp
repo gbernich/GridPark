@@ -56,7 +56,7 @@ int main(int argc, char** argv )
   vector<OPEN_SPOT_T> spaces_db, spaces_db_all;
 
   //Suspicious Activity 
-  int edgeList[5] = {0};
+  int edgeList[10] = {0};
   bool carParked = true;
   bool monitorON = true;
   bool resetCount = false;
@@ -72,17 +72,18 @@ int main(int argc, char** argv )
   int width;
   int height;
   Corner topLeft;
-  topLeft.x = 1100;
-  topLeft.y = 670;
-  width = 130;
+  topLeft.x = 905;
+  topLeft.y = 675;
+  width = 165;
   height = 50;
 
   // testing
-  cout << "interpolate " << Interpolate(1.5, x_vals, y_vals) << endl;
+/*  cout << "interpolate " << Interpolate(1.5, x_vals, y_vals) << endl;
   cout << "interpolate " << Interpolate(1.8, x_vals, y_vals) << endl;
   cout << "interpolate " << Interpolate(3.1, x_vals, y_vals) << endl;
   cout << "interpolate " << Interpolate(3.5, x_vals, y_vals) << endl;
   cout << "interpolate " << Interpolate(3.9, x_vals, y_vals) << endl;
+*/
 
   #ifdef __arm__
     MYSQL * conn = OpenDB((char*)K_DB);
@@ -95,14 +96,15 @@ int main(int argc, char** argv )
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // Take an image
-    TakeNewImage();
+//    TakeNewImage();
+
     // Load source image
     clock_gettime(CLOCK_MONOTONIC, &start_edges);
-    sprintf(imgFn, "%s", "img.jpg");//);argv[1]);
+    sprintf(imgFn, "%s", argv[1]); //"img.jpg");
     src = imread(imgFn, 1);
 
     // Get edges
-    thresh = 70;
+    thresh = 100;
     cvtColor(src, src_gray, CV_BGR2GRAY);
     edges = GetEdges(src_gray, thresh, 3, 3);
     clock_gettime(CLOCK_MONOTONIC, &finish_edges);
@@ -205,7 +207,7 @@ int main(int argc, char** argv )
     imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
-    //break; // for development lets only run the loop once
+    break; // for development lets only run the loop once
     sleep(2);
   }
 

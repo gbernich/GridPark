@@ -69,12 +69,12 @@ Mat GetEdges(Mat src, int lowThreshold, int ratio, int kernelSize)
     Mat blurred, edges, edges_norm;  
 
     /// Reduce noise with a kernel 3x3
-    blur( src, blurred, Size(3,3) );
+    blur(src, blurred, Size(3,3) );
 
     /// Canny detector
-    Canny( blurred, edges, lowThreshold, lowThreshold * ratio, kernelSize );
+    Canny(blurred, edges, lowThreshold, lowThreshold * ratio, kernelSize);
 
-    normalize( edges, edges_norm, 0, 255, NORM_MINMAX, CV_32FC1, Mat() );
+    normalize(edges, edges_norm, 0, 255, NORM_MINMAX, CV_32FC1, Mat());
     //convertScaleAbs( edges_norm, dst_norm_scaled );
 
     /// Using Canny's output as a mask, we display our result
@@ -1191,7 +1191,7 @@ void TakeNewImage()
 
   // Day Time
 //  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
-  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img.jpg -S 30");
+  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=90%% -s gamma=auto img.jpg -S 30");
 //  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
 
   // Night Time
