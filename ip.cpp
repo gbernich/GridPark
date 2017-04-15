@@ -915,12 +915,13 @@ int GetBaseCount(Mat image, Window carWindow)
 int UpdateEdgeList(int* edgeList, int newSum)
 {
   int avgSum;
-  for(int i=4; i > 0; i--)
+  for(int i=9; i > 0; i--)
   {
     edgeList[i] = edgeList[i-1];
   }
   edgeList[0] = newSum;
-  avgSum = (edgeList[0] + edgeList[1] + edgeList[2] + edgeList[3] + edgeList[4])/5;
+  avgSum = (edgeList[0] + edgeList[1] + edgeList[2] + edgeList[3] + edgeList[4] 
+    + edgeList[5] + edgeList[6] + edgeList[7] + edgeList[8] + edgeList[9])/10;
   return avgSum;
 }
 

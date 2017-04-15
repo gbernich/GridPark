@@ -160,7 +160,7 @@ int main(int argc, char** argv )
       cout << "curr frame " << baseCount << endl;
       bcAvg = UpdateEdgeList(edgeList, baseCount);
       cout << "BC AVG" << bcAvg << endl;
-      if(loopCount == 5)
+      if(loopCount == 10)
       {
         justParked = false;
         haveBC = true;
@@ -178,7 +178,7 @@ int main(int argc, char** argv )
  
     loopCount = loopCount + 1;
     cout << "Loop Count" << loopCount << endl;
-    if(loopCount > 5)
+    if(loopCount > 10)
     {
       loopCount = 0;
     }
