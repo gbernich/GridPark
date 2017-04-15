@@ -1168,8 +1168,10 @@ void WriteOpenings(char * fn, char * imgfn, vector<Opening> openings)
 void TakeNewImage(char * fn, unsigned int num)
 {
   char cmd[50];
-  sprintf(fn, "img_%04u.jpg", num);
-  sprintf(cmd, "fswebcam -r 1920x1080 %s -S 50", fn);
+  //sprintf(fn, "img_%04u.jpg", num);
+  sprintf(fn, "img.jpg", num);
+  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=100% -s contrast=100% -s gamma=70%% img.jpg 50", fn);
+
   cout << cmd << endl;
   //system(cmd);
 }

@@ -92,7 +92,7 @@ int main(int argc, char** argv )
     
     // Load source image
     clock_gettime(CLOCK_MONOTONIC, &start_edges);
-    sprintf(imgFn, "%s", argv[1]);
+    sprintf(imgFn, "%s", "img.jpg");//);argv[1]);
     src = imread(imgFn, 1);
 
     // Get edges
@@ -165,11 +165,11 @@ int main(int argc, char** argv )
     cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
 
     // Save edges image for DEBUG USE ONLY (REMOVE THIS)
-    imwrite("./testimg/edges.jpg", edges);
+    //imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
-    break; // for development lets only run the loop once
-    sleep(1);
+    //break; // for development lets only run the loop once
+    sleep(5);
   }
 
   #ifdef __arm__
