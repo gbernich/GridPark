@@ -146,10 +146,12 @@ int main(int argc, char *argv[])
 
         // Send packet over socket
         write(connfd, sendBuff, j); 
-        // Close connection
-        close(connfd);
 
         // Sleep for some time
         sleep(1);
-     }
+    }
+    // Close connection
+    close(connfd);
+
+    return 0;
 }

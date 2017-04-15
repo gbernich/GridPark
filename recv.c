@@ -90,6 +90,14 @@ int main(int argc, char *argv[])
         // Receive the packets until done, write to command line
         while ( (n = read(sockfd, recvBuff, sizeof(recvBuff))) > 0)
         {
+            //clear table
+            if (entry_type == K_PACKET_OPEN_PARKING)
+                ClearTable(db, K_TBL_OPEN_PARKING);
+            else if (entry_type == K_PACKET_PARKED_CARS)
+                ClearTable(db, K_TBL_PARKED_CARS);
+           else
+                ClearTable(db, K_TBL_SUSP_ACTIVITY);
+
             //insert data
             num_entries = recvBuff[1];
             entry_type = recvBuff[0];
