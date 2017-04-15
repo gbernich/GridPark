@@ -78,14 +78,16 @@ int main(int argc, char *argv[])
     // Connect the socket to the network
     if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
-       printf("\n Error : Connect Failed \n");
-       return 1;
-    } 
+        printf("\n Error : Connect Failed \n");
+        return 1;
+    }
 
     while (1)
     {
+	printf("here1\n");
         // Open database
         db = (void *)OpenDB(K_DB);
+	printf("here2\n");
 
         // Receive the packets until done, write to command line
         while ( (n = read(sockfd, recvBuff, sizeof(recvBuff))) > 0)
@@ -97,6 +99,7 @@ int main(int argc, char *argv[])
                 ClearTable(db, K_TBL_PARKED_CARS);
            else
                 ClearTable(db, K_TBL_SUSP_ACTIVITY);
+	printf("here3\n");
 
             //insert data
             num_entries = recvBuff[1];
@@ -135,6 +138,7 @@ int main(int argc, char *argv[])
                 printf("\n Error : Fputs error\n");
             }*/
         } 
+	printf("here4\n");
 
 
         // Error reading from socket
@@ -145,6 +149,7 @@ int main(int argc, char *argv[])
 
         // close database
         CloseDB(db);
+	printf("here5\n");
 
         // Sleep
         sleep(10);
