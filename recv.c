@@ -82,58 +82,65 @@ int main(int argc, char *argv[])
        return 1;
     } 
 
-    // Open database
-    db = (void *)OpenDB(K_DB);
-
-    // Receive the packets until done, write to command line
-    while ( (n = read(sockfd, recvBuff, sizeof(recvBuff))) > 0)
+    while (1)
     {
-        //insert data
-        num_entries = recvBuff[1];
-        entry_type = recvBuff[0];
+        // Open database
+        db = (void *)OpenDB(K_DB);
 
-        j = 2;
-        for (i = 0; i < num_entries; i++){
-            if (entry_type == K_PACKET_OPEN_PARKING)
-            {
-                GetSocketArgs(args, recvBuff, j, K_PACKET_OPEN_PARKING);
-                j = j + K_TBL_OPEN_PARKING_COLUMNS * sizeof(int);
-                FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING,
-                    args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-                InsertEntry(db, queryString);
-            }
-            else if (entry_type == K_PACKET_PARKED_CARS)
-            {
-                GetSocketArgs(args, recvBuff, j, K_PACKET_PARKED_CARS);
-                j = j + K_TBL_PARKED_CARS_COLUMNS * sizeof(int);
-                FormatInsertForParkedCars(queryString, K_TBL_PARKED_CARS,
-                    args[0], args[1], args[2], args[3], args[4], args[5]);
-                InsertEntry(db, queryString);
-            }
-            else // K_PACKET_SUSP_ACTIVITY
-            {
-                GetSocketArgs(args, recvBuff, j, K_PACKET_SUSP_ACTIVITY);
-                j = j + K_TBL_SUSP_ACTIVITY_COLUMNS * sizeof(int);
-                FormatInsertForSuspActivity(queryString, K_TBL_SUSP_ACTIVITY,
-                    args[0], args[1], args[2]);
-                InsertEntry(db, queryString);
-            }
-        }
-        /*recvBuff[n] = 0;
-        if(fputs(recvBuff, stdout) == EOF)
+        // Receive the packets until done, write to command line
+        while ( (n = read(sockfd, recvBuff, sizeof(recvBuff))) > 0)
         {
-            printf("\n Error : Fputs error\n");
-        }*/
-    } 
+            //insert data
+            num_entries = recvBuff[1];
+            entry_type = recvBuff[0];
 
-    // Error reading from socket
-    if(n < 0)
-    {
-        printf("\n Read error \n");
+            j = 2;
+            for (i = 0; i < num_entries; i++){
+                if (entry_type == K_PACKET_OPEN_PARKING)
+                {
+                    GetSocketArgs(args, recvBuff, j, K_PACKET_OPEN_PARKING);
+                    j = j + K_TBL_OPEN_PARKING_COLUMNS * sizeof(int);
+                    FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING,
+                        args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                    InsertEntry(db, queryString);
+                }
+                else if (entry_type == K_PACKET_PARKED_CARS)
+                {
+                    GetSocketArgs(args, recvBuff, j, K_PACKET_PARKED_CARS);
+                    j = j + K_TBL_PARKED_CARS_COLUMNS * sizeof(int);
+                    FormatInsertForParkedCars(queryString, K_TBL_PARKED_CARS,
+                        args[0], args[1], args[2], args[3], args[4], args[5]);
+                    InsertEntry(db, queryString);
+                }
+                else // K_PACKET_SUSP_ACTIVITY
+                {
+                    GetSocketArgs(args, recvBuff, j, K_PACKET_SUSP_ACTIVITY);
+                    j = j + K_TBL_SUSP_ACTIVITY_COLUMNS * sizeof(int);
+                    FormatInsertForSuspActivity(queryString, K_TBL_SUSP_ACTIVITY,
+                        args[0], args[1], args[2]);
+                    InsertEntry(db, queryString);
+                }
+            }
+            /*recvBuff[n] = 0;
+            if(fputs(recvBuff, stdout) == EOF)
+            {
+                printf("\n Error : Fputs error\n");
+            }*/
+        } 
+
+
+        // Error reading from socket
+        if(n < 0)
+        {
+            printf("\n Read error \n");
+        }
+
+        // close database
+        CloseDB(db);
+
+        // Sleep
+        sleep(10);
     }
-
-    // close database
-    CloseDB(db);
 
     //db = (void *)OpenDB(K_DB);
     //FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING, 0, 1, 2, 3, 4, 5, 6);

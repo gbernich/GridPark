@@ -627,6 +627,36 @@ bool IsWithinBounds(int imgHeight, int imgWidth, Window win)
   return true;
 }
 
+float Interpolate(float x, vector<float> x_arr, vector<float> y_arr)
+{
+  int i = 0;
+  float x0, x1, y0, y1;
+
+  // Make sure x falls within the end points, otherwise return
+  if (x < x_arr.front() || x_arr.back() < x)
+  {
+    return -1.0;
+  }
+
+  // find where our index "falls" within the data we have
+  for(i = 0; i < x_arr.size()-1; i++)
+  {
+    // find the two points x falls between
+    if(x_arr.at(i) <= x && x < x_arr.at(i + 1))
+    {
+      x0 = x_arr.at(i);
+      y0 = y_arr.at(i);
+      x1 = x_arr.at(i + 1);
+      y1 = y_arr.at(i + 1);
+
+      // interpolate
+      return y0 + (((y1 - y0) / (x1 - x0)) * (x - x0));
+    }
+  }
+
+  return -1.0;
+}
+
 Mat GetSubRegionImage(Mat original, int regionId)
 {
   Rect roi(0,0,0,0);

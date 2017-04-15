@@ -216,6 +216,7 @@ bool            IsOpeningLargeEnough(Opening opening, int regionId);
 vector<Opening> GetOpenings(vector<int> leftEdges, vector<int> rightEdges);
 vector<Window>  GetSlidingWindow(Window startWindow, Window endWindow, int imgHeight, int imgWidth);
 bool            IsWithinBounds(int imgHeight, int imgWidth, Window win);
+float           Interpolate(float x, vector<float> x_arr, vector<float> y_arr);
 
 Mat     GetSubRegionImage(Mat original, int regionId);
 Window  GetStartWindow(int regionId);
