@@ -894,7 +894,7 @@ int DetectActivity(Mat image, Window carWindow, int baseCount)
   int thresh = 0;
 
   edgeSum = GetSumOfWindow(image, carWindow, thresh);
-  if (edgeSum > 1.1 * baseCount) {activity = 1;}
+  if (edgeSum > 1.02 * baseCount) {activity = 1;}
   else {activity = 0;}
   cout << edgeSum << endl;
   return activity;
