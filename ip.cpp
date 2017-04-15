@@ -867,7 +867,7 @@ float GetDistance(ImgPoint a, ImgPoint b)
 }
 
 bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
-  int* actCount, int baseCount, Mat image, Window carWindow)
+  int* actCount, int baseCount, Mat image, Window carWindow, int* edgeList)
 {
   int sus_thresh = 5;
   int new_detect = 0;
@@ -876,7 +876,7 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
   if(carParked && monitorON)
   {
     if(resetCount) {*actCount = 0;}
-    new_detect = DetectActivity(image, carWindow, baseCount);
+    new_detect = DetectActivity(image, carWindow, baseCount, edgeList);
     *actCount = *actCount + new_detect;
     if(*actCount > sus_thresh) {alert = true;}
     return alert;
@@ -887,16 +887,19 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
   }
 }
 
-int DetectActivity(Mat image, Window carWindow, int baseCount)
+int DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
 {
-  int edgeSum;
+  int edgeSum, edgeAvg;
   int activity;
   int thresh = 0;
 
   edgeSum = GetSumOfWindow(image, carWindow, thresh);
-  if (edgeSum > 1.02 * baseCount) {activity = 1;}
+  edgeAvg = UpdateEdgeList(edgeList, edgeSum);
+  if (edgeAvg > 1.02 * baseCount) {activity = 1;}
   else {activity = 0;}
-  cout << edgeSum << endl;
+  cout << "Base Count" << baseCount << endl;
+  cout << "New Sum" << edgeSum << endl;
+  cout << "Edge Avg" << edgeAvg << endl;
   return activity;
 }
 
@@ -908,6 +911,20 @@ int GetBaseCount(Mat image, Window carWindow)
   edgeSum = GetSumOfWindow(image, carWindow, thresh);
   return edgeSum;
 }
+
+int UpdateEdgeList(int* edgeList, int newSum)
+{
+  int avgSum;
+  for(int i=4; i > 0; i-1)
+  {
+    edgeList[i] = edgeList[i-1];
+  }
+  edgeList[0] = newSum;
+  avgSum = (edgeList[0] + edgeList[1] + edgeList[2] + edgeList[3] + edgeList[4])/5;
+  return avgSum;
+}
+
+
 
 Window CreateWindow(Corner topLeft, int width, int height, float theta)
 {
@@ -1172,8 +1189,8 @@ void TakeNewImage()
   //sprintf(fn, "img.jpg", num);
 
   // Day Time
-  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
-  //sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img.jpg -S 30");
+//  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
+  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img.jpg -S 30");
 //  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
 
   // Night Time

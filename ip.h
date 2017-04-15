@@ -228,11 +228,11 @@ Window  CreateWindow(Corner topLeft, int width, int height, float theta);
 double  Degrees2Radians(double deg);
 
 //Pedestrian Detection
-bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
-int* actCount, int baseCount, Mat image, Window carWindow);
-int DetectActivity(Mat image, Window carWindow, int baseCount);
+bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
+                    int* actCount, int baseCount, Mat image, Window carWindow, int* edgeList);
+int DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList);
 int GetBaseCount(Mat image, Window carWindow);
-
+int UpdateEdgeList(int * edgeList, int edgeSum);
 
 // Database 
 vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * spot_id);

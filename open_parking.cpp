@@ -56,14 +56,19 @@ int main(int argc, char** argv )
   vector<OPEN_SPOT_T> spaces_db, spaces_db_all;
 
   //Suspicious Activity 
+  int edgeList[5] = {0};
   bool carParked = true;
   bool monitorON = true;
   bool resetCount = false;
   bool justParked = true;
   bool alert = false;
+  bool haveBC = false;
   Window carWindow;
   int baseCount;
+  int bcSum;
+  int bcAvg;
   int actCount = 0;
+  int loopCount = 0;
   int width;
   int height;
   Corner topLeft;
@@ -143,14 +148,39 @@ int main(int argc, char** argv )
     #endif
 
     // Suspicious Activity
+    cout << "susp start" << endl;
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
     if(justParked)
     {
-      carWindow = CreateWindow(topLeft, width, height, 0);
+      if(loopCount = 0)
+      {
+        carWindow = CreateWindow(topLeft, width, height, 0);
+      }
       baseCount = GetBaseCount(edges, carWindow);
-      justParked = false;
+      bcAvg = UpdateEdgeList(edgeList, baseCount);
+      if(loopCount = 5)
+      {
+        justParked = false;
+        haveBC = true;
+        baseCount = bcAvg;
+      }
     }
-    alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
+
+    if(haveBC)
+    {
+      cout << "haveBC" << endl;
+      alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow, edgeList);
+      clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
+      cout << "Alert" << alert << endl;
+    }
+ 
+    loopCount = loopCount + 1;
+    if(loopCount > 5)
+    {
+      loopCount = 0;
+    }
+
+//    alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
     cout << "base " << baseCount << endl;
     cout << alert << endl;
