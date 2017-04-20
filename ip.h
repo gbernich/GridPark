@@ -60,7 +60,7 @@ using namespace std;
 #define K_BEASON_NE_WIN_END_WIDTH       5
 #define K_BEASON_NE_WIN_END_HEIGHT      30//50
 #define K_BEASON_NE_WIN_END_THETA       0.0//20.0
-#define K_BEASON_NE_SUMS_THRESHOLD      0.1//30
+#define K_BEASON_NE_SUMS_THRESHOLD      0.25//30
 
 // Beason Southeast
 #define K_BEASON_SE_ID      1

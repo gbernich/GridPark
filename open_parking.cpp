@@ -132,17 +132,15 @@ int main(int argc, char** argv )
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
 
-      
+
       cout << "region " << regionId << endl;
-      for (i = 0; i < openings.size(); i++)
-        cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
-      
+//      for (i = 0; i < openings.size(); i++)
+//        cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
+
 
       spaces = GetOpenParkingSpaces(openings, regionId);
-      // for (i = 0; i < spaces.size(); i++)
-      // {  
-      //   cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
-      // }
+      for (i = 0; i < spaces.size(); i++)
+        cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
 
       if (spaces.size() > 0)
       {
@@ -161,7 +159,7 @@ int main(int argc, char** argv )
         InsertOpenParking(spaces_db_all, conn);
       spaces_db_all.clear();
       clock_gettime(CLOCK_MONOTONIC, &finish_db);
-    #endif
+   #endif
 
     // Suspicious Activity
     cout << "susp start" << endl;
