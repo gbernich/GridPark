@@ -16,6 +16,19 @@ extern "C" {
 
 using namespace std;
 
+// Parking Data (for interpolation)
+// a pair is in the format of x position, length needed
+static xy beason_ne_init[] = {{865, 200}, {1040, 170}, {1215, 130}, {1550, 40}};
+static xy beason_se_init[] = {{970, 300}, {1280, 180}, {1455, 80}};
+static xy beason_nw_init[] = {{485, 65}, {418, 60}, {585, 85}};
+static xy beason_sw_init[] = {{318, 22}, {360, 65}, {413,118}};
+static xy cooksie_nw_init[] = {{745, 45}, {790, 30}, {840, 20}};
+static vector<xy> beason_ne_data(beason_ne_init, beason_ne_init + sizeof(beason_ne_init) / sizeof(xy));
+static vector<xy> beason_se_data(beason_se_init, beason_se_init + sizeof(beason_se_init) / sizeof(xy));
+static vector<xy> beason_nw_data(beason_nw_init, beason_nw_init + sizeof(beason_nw_init) / sizeof(xy));
+static vector<xy> beason_sw_data(beason_sw_init, beason_sw_init + sizeof(beason_sw_init) / sizeof(xy));
+static vector<xy> cooksie_nw_data(cooksie_nw_init, cooksie_nw_init + sizeof(cooksie_nw_init) / sizeof(xy));
+
 static float x_vals_init[] = {1, 2, 3, 4};
 static vector<float> x_vals(x_vals_init, x_vals_init + sizeof(x_vals_init) / sizeof(x_vals_init[0]));
 
@@ -119,16 +132,17 @@ int main(int argc, char** argv )
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
 
-      /*
+      
       cout << "region " << regionId << endl;
       for (i = 0; i < openings.size(); i++)
         cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
-      */
+      
 
-      spaces   = GetOpenParkingSpaces(openings, regionId);
-      for (i = 0; i < spaces.size(); i++)
-      {  //cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
-      }
+      spaces = GetOpenParkingSpaces(openings, regionId);
+      // for (i = 0; i < spaces.size(); i++)
+      // {  
+      //   cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
+      // }
 
       if (spaces.size() > 0)
       {
