@@ -72,7 +72,7 @@ Mat GetEdges(Mat src, int lowThreshold, int ratio, int kernelSize)
     blur(src, blurred, Size(3,3) );
 
     /// Canny detector
-    Canny(blurred, edges, lowThreshold, lowThreshold * ratio, kernelSize);
+    Canny(src, edges, lowThreshold, lowThreshold * ratio, kernelSize);
 
     normalize(edges, edges_norm, 0, 255, NORM_MINMAX, CV_32FC1, Mat());
     //convertScaleAbs( edges_norm, dst_norm_scaled );

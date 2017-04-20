@@ -72,8 +72,8 @@ int main(int argc, char** argv )
   int width;
   int height;
   Corner topLeft;
-  topLeft.x = 905;
-  topLeft.y = 675;
+  topLeft.x = 1070;
+  topLeft.y = 650;
   width = 165;
   height = 50;
 
@@ -104,7 +104,7 @@ int main(int argc, char** argv )
     src = imread(imgFn, 1);
 
     // Get edges
-    thresh = 100;
+    thresh = 70;
     cvtColor(src, src_gray, CV_BGR2GRAY);
     edges = GetEdges(src_gray, thresh, 3, 3);
     clock_gettime(CLOCK_MONOTONIC, &finish_edges);
