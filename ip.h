@@ -23,7 +23,6 @@
 using namespace cv;
 using namespace std;
 
-
 // Corners
 #define IP_CORNERS_THRESH_INIT      200
 #define IP_CORNERS_FOUND_SATISFIED  500
@@ -39,7 +38,7 @@ using namespace std;
 
 // Openings
 #define K_MINIMUM_OPENING_LENGTH      3
-#define K_SUMS_THRESHOLD_CONSECUTIVE  20
+#define K_SUMS_THRESHOLD_CONSECUTIVE  5
 
 ///// REGION DIMENSIONS /////
 #define K_NUM_SUBREGIONS    5
@@ -51,16 +50,16 @@ using namespace std;
 #define K_BEASON_NE_WIDTH   720
 #define K_BEASON_NE_HEIGHT  115
 #define K_BEASON_NE_WIN_START_TP_X      870
-#define K_BEASON_NE_WIN_START_TP_Y      708
+#define K_BEASON_NE_WIN_START_TP_Y      705
 #define K_BEASON_NE_WIN_START_WIDTH     5
 #define K_BEASON_NE_WIN_START_HEIGHT    30//95
 #define K_BEASON_NE_WIN_START_THETA     0.0
-#define K_BEASON_NE_WIN_END_TP_X        1400
-#define K_BEASON_NE_WIN_END_TP_Y        660
+#define K_BEASON_NE_WIN_END_TP_X        1565
+#define K_BEASON_NE_WIN_END_TP_Y        640
 #define K_BEASON_NE_WIN_END_WIDTH       5
 #define K_BEASON_NE_WIN_END_HEIGHT      30//50
 #define K_BEASON_NE_WIN_END_THETA       0.0//20.0
-#define K_BEASON_NE_SUMS_THRESHOLD      0.25//30
+#define K_BEASON_NE_SUMS_THRESHOLD      0.1// using 80 thresh and blur
 
 // Beason Southeast
 #define K_BEASON_SE_ID      1
@@ -73,12 +72,12 @@ using namespace std;
 #define K_BEASON_SE_WIN_START_WIDTH   5
 #define K_BEASON_SE_WIN_START_HEIGHT  30
 #define K_BEASON_SE_WIN_START_THETA   0.0//15.0
-#define K_BEASON_SE_WIN_END_TP_X      1490
+#define K_BEASON_SE_WIN_END_TP_X      1580
 #define K_BEASON_SE_WIN_END_TP_Y      760
 #define K_BEASON_SE_WIN_END_WIDTH     5
 #define K_BEASON_SE_WIN_END_HEIGHT    30
 #define K_BEASON_SE_WIN_END_THETA     0.0//35.0
-#define K_BEASON_SE_SUMS_THRESHOLD    0.1//150
+#define K_BEASON_SE_SUMS_THRESHOLD    0.2//150
 
 // Beason Southwest
 #define K_BEASON_SW_ID      2
@@ -96,7 +95,7 @@ using namespace std;
 #define K_BEASON_SW_WIN_END_WIDTH     5
 #define K_BEASON_SW_WIN_END_HEIGHT    30
 #define K_BEASON_SW_WIN_END_THETA     0.0
-#define K_BEASON_SW_SUMS_THRESHOLD    0.1
+#define K_BEASON_SW_SUMS_THRESHOLD    0.2
 
 // Beason Northwest
 #define K_BEASON_NW_ID      3
@@ -109,12 +108,12 @@ using namespace std;
 #define K_BEASON_NW_WIN_START_WIDTH   5
 #define K_BEASON_NW_WIN_START_HEIGHT  30
 #define K_BEASON_NW_WIN_START_THETA   0.0
-#define K_BEASON_NW_WIN_END_TP_X      666
+#define K_BEASON_NW_WIN_END_TP_X      680
 #define K_BEASON_NW_WIN_END_TP_Y      680
 #define K_BEASON_NW_WIN_END_WIDTH     5
 #define K_BEASON_NW_WIN_END_HEIGHT    30
 #define K_BEASON_NW_WIN_END_THETA     0.0
-#define K_BEASON_NW_SUMS_THRESHOLD    0.1
+#define K_BEASON_NW_SUMS_THRESHOLD    0.5
 
 // Cooksie Northwest
 #define K_COOKSIE_NW_ID     4
@@ -132,7 +131,7 @@ using namespace std;
 #define K_COOKSIE_NW_WIN_END_WIDTH     5
 #define K_COOKSIE_NW_WIN_END_HEIGHT    10
 #define K_COOKSIE_NW_WIN_END_THETA     0.0
-#define K_COOKSIE_NW_SUMS_THRESHOLD    0.1
+#define K_COOKSIE_NW_SUMS_THRESHOLD    0.2
 
 // Cooksie Southwest (ignored)
 #define K_COOKSIE_SW_ID     5
@@ -205,8 +204,8 @@ ImgPoint GetNextPos(Window win, Mat edges, ImgPoint currPos, ImgPoint* lastPos);
 bool IsInsideWindow(Window win, ImgPoint pos);
 
 // Utilities
-vector<int>     GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow);
-vector<float>   GetNormalizedSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow);
+vector<int>     GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow, int regionId);
+vector<float>   GetNormalizedSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow, int regionId);
 int             GetSumOfWindow(Mat img, Window win, int thresh);
 vector<int>     GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, float minDiff, int edge);
 vector<Opening> GetOpeningsFromSums(vector<int> sums, int regionId);
@@ -214,9 +213,9 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId);
 vector<Opening> GetOpenParkingSpaces(vector<Opening> openings, int regionId);
 bool            IsOpeningLargeEnough(Opening opening, int regionId);
 vector<Opening> GetOpenings(vector<int> leftEdges, vector<int> rightEdges);
-vector<Window>  GetSlidingWindow(Window startWindow, Window endWindow, int imgHeight, int imgWidth);
+vector<Window>  GetSlidingWindow(Window startWindow, Window endWindow, int imgHeight, int imgWidth, int regionId);
 bool            IsWithinBounds(int imgHeight, int imgWidth, Window win);
-float           Interpolate(float x, vector<float> x_arr, vector<float> y_arr);
+int             Interpolate(int x, vector<xy> data);
 
 Mat     GetSubRegionImage(Mat original, int regionId);
 Window  GetStartWindow(int regionId);

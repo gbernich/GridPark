@@ -8,6 +8,27 @@
 
 int debug = 0;
 
+// Parking Data (for interpolation)
+// a pair is in the format of x position, length needed
+static xy beason_ne_init[] = {{865, 200}, {1040, 170}, {1215, 130}, {1550, 40}, {1600, 40}};
+static xy beason_se_init[] = {{970, 300}, {1280, 180}, {1455, 80}, {1550, 80}};
+static xy beason_nw_init[] = {{430, 53}, {485, 70}, {585, 85}, {600, 85}};
+static xy beason_sw_init[] = {{318, 22}, {360, 65}, {413,118}, {500,118}};
+static xy cooksie_nw_init[] = {{745, 45}, {790, 30}, {840, 20}, {900, 20}};
+static vector<xy> beason_ne_data(beason_ne_init, beason_ne_init + sizeof(beason_ne_init) / sizeof(xy));
+static vector<xy> beason_se_data(beason_se_init, beason_se_init + sizeof(beason_se_init) / sizeof(xy));
+static vector<xy> beason_nw_data(beason_nw_init, beason_nw_init + sizeof(beason_nw_init) / sizeof(xy));
+static vector<xy> beason_sw_data(beason_sw_init, beason_sw_init + sizeof(beason_sw_init) / sizeof(xy));
+static vector<xy> cooksie_nw_data(cooksie_nw_init, cooksie_nw_init + sizeof(cooksie_nw_init) / sizeof(xy));
+
+// windows
+static const int beason_ne_win[700] = {698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,699,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,698,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,697,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,696,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,695,694,694,694,694,694,694,694,694,694,694,693,693,693,693,693,693,693,693,693,693,693,692,692,692,692,692,692,692,692,692,692,692,691,691,691,691,691,691,691,691,691,691,691,690,690,690,690,690,690,690,690,690,690,690,689,689,689,689,689,689,689,689,689,689,689,688,688,688,688,688,688,688,688,688,688,687,687,687,687,687,687,687,687,687,687,687,686,686,686,686,686,686,686,686,686,686,686,685,685,685,685,685,685,685,685,685,685,685,684,684,684,684,684,684,684,684,684,684,684,683,683,683,683,683,683,683,683,683,683,683,682,682,682,682,682,681,681,681,681,681,681,680,680,680,680,680,679,679,679,679,679,679,678,678,678,678,678,678,677,677,677,677,677,676,676,676,676,676,676,675,675,675,675,675,675,674,674,674,674,674,673,673,673,673,673,673,672,672,672,672,672,672,671,671,671,671,671,670,670,670,670,670,670,669,669,669,669,669,669,668,668,668,668,668,667,667,667,667,667,667,666,666,666,666,666,666,665,665,665,665,665,664,664,664,664,664,664,663,663,663,663,663,663,662,662,662,662,662,661,661,661,661,661,661,660,660,660,660,660,660,659,659,659,659,658,658,658,658,657,657,657,657,657,656,656,656,656,655,655,655,655,655,654,654,654,654,653,653,653,653,653,652,652,652,652,651,651,651,651,651,650,650,650,650,649,649,649,649,648,648,648,648,648,647,647,647,647,646,646,646,646,646,645,645,645,645,644,644,644,644,644,643,643,643,643,642,642,642,642,642,641,641,640,640,640,639,639,638,638,638,637,637,636,636,636,635,635,634,634,634,633,633,632,632,632,631,631,630,630,630,629,629,628,628,628,627,627,627,626,626,625,625,625,624,624,624,623,623,622,622,622,621,621,621,620,620,619,619,619,618,618,618,617,617,616,616,616,615,615,615,614,614,613,613,613,612,612,612,611,611,610,610,610,609,609,609,608,608,607,607,607,606,606,606,605,605,604,604,604,603,603,603,602,602,601,601,601,600,600,600};
+static const int beason_se_win[715] = {904,904,904,904,904,904,904,903,903,903,903,903,903,903,902,902,902,902,902,902,902,901,901,901,901,901,901,901,901,900,900,900,900,900,900,900,899,899,899,899,899,899,899,898,898,898,898,898,898,898,897,897,897,897,897,897,897,897,896,896,896,896,896,896,896,895,895,895,895,895,895,895,894,894,894,894,894,894,894,893,893,893,893,893,893,893,893,892,892,892,892,892,892,892,891,891,891,891,891,891,891,890,890,890,890,890,890,890,889,889,889,889,889,889,889,889,888,888,888,888,888,888,888,887,887,887,887,887,887,887,886,886,886,886,886,886,886,885,885,885,885,885,885,885,885,884,884,884,884,884,884,884,883,883,883,883,883,883,883,883,882,882,882,882,882,882,882,881,881,881,881,881,881,881,881,880,880,880,880,880,880,880,880,879,879,879,879,879,879,879,878,878,878,878,878,878,878,878,877,877,877,877,877,877,877,876,876,876,876,876,876,876,876,875,875,875,875,875,875,875,875,874,874,874,874,874,874,874,873,873,873,873,873,873,873,873,872,872,872,872,872,872,872,871,871,871,871,871,871,871,871,870,870,870,870,870,870,870,870,869,869,869,869,869,869,869,868,868,868,868,868,868,868,868,867,867,867,867,867,867,867,866,866,866,866,866,866,866,866,865,865,865,865,865,865,865,865,864,864,864,864,864,864,864,863,863,863,863,863,863,863,863,862,862,862,862,862,862,862,861,861,861,861,861,861,861,861,860,860,860,860,860,860,860,860,859,859,859,858,858,858,857,857,857,856,856,856,855,855,855,854,854,854,853,853,853,852,852,852,851,851,851,851,850,850,850,849,849,849,848,848,848,847,847,847,846,846,846,845,845,845,844,844,844,843,843,843,842,842,842,842,841,841,841,840,840,840,839,839,839,838,838,838,837,837,837,836,836,836,835,835,835,834,834,834,833,833,833,833,832,832,832,831,831,831,830,830,830,829,829,829,828,828,828,827,827,827,826,826,826,825,825,825,824,824,824,824,823,823,823,822,822,822,821,821,821,820,820,820,819,819,819,818,818,818,817,817,817,816,816,816,815,815,815,815,814,814,813,813,812,812,812,811,811,810,810,810,809,809,808,808,808,807,807,806,806,806,805,805,804,804,803,803,803,802,802,801,801,801,800,800,799,799,799,798,798,797,797,797,796,796,795,795,794,794,794,793,793,792,792,792,791,791,790,790,790,789,789,788,788,788,787,787,786,786,785,785,785,784,784,783,783,783,782,782,781,781,781,780,780,779,779,779,778,778,777,777,776,776,776,775,775,774,774,774,773,773,772,772,772,771,771,770,770,770,769,768,768,767,766,766,765,764,764,763,762,762,761,760,760,759,759,758,757,757,756,755,755,754,753,753,752,751,751,750,749,749,748,748,747,746,746,745,744,744,743,742,742,741,740,740,739,738,738,737,737,736,735,735,734,733,733,732,731,731,730,729,729,728,727,727,726,726,725,724,724,723,722,722,721,720,720,719,718,718,717,716,716,715,715,714,713,712,711,711,710,709,708,708,707,706,705,704,704,703,702,701,701,700,699,698,697,697,696,695,694,694,693,692,691,690,690,689,688,687,687,686,685,684,683,683,682,681,680,680};
+static const int beason_nw_win[250] = {630,630,630,630,631,631,631,631,631,632,632,632,632,633,633,633,633,633,634,634,634,634,634,635,635,635,635,636,636,636,636,636,637,637,637,637,637,638,638,638,638,639,639,639,639,639,640,640,640,640,640,641,641,641,641,642,642,642,642,642,643,643,643,643,643,644,644,644,644,645,645,645,645,646,646,646,647,647,647,647,648,648,648,649,649,649,650,650,650,650,651,651,651,652,652,652,652,653,653,653,654,654,654,655,655,655,655,656,656,656,657,657,657,657,658,658,658,659,659,659,660,660,660,660,661,661,661,662,662,662,662,663,663,663,664,664,664,665,665,665,665,666,666,666,667,667,667,667,668,668,668,669,669,669,670,670,670,670,670,670,670,671,671,671,671,671,671,672,672,672,672,672,672,673,673,673,673,673,673,673,674,674,674,674,674,674,675,675,675,675,675,675,676,676,676,676,676,676,676,677,677,677,677,677,677,678,678,678,678,678,678,679,679,679,679,679,679,679,680,680,680,680,680,680,681,681,681,681,681,681,682,682,682,682,682,682,682,683,683,683,683,683,683,684,684,684,684,684,684,685};
+static const int beason_sw_win[195] = {674,673,672,671,671,670,669,668,668,667,666,665,665,664,663,662,661,661,660,659,658,658,657,656,655,655,654,653,652,651,651,650,649,648,648,647,646,645,645,644,643,642,641,641,640,639,638,638,637,636,635,635,634,633,632,631,631,630,629,628,628,627,626,625,625,627,629,631,633,636,638,640,642,644,647,649,651,653,656,658,660,662,664,667,669,671,673,675,678,680,682,684,687,689,691,693,695,698,700,702,704,706,709,711,713,715,718,720,722,724,726,729,731,733,735,737,740,742,744,746,749,751,753,755,757,760,762,764,766,768,771,773,775,777,780,780,781,781,782,782,783,784,784,785,785,786,787,787,788,788,789,789,790,791,791,792,792,793,794,794,795,795,796,796,797,798,798,799,799,800,801,801,802,802,803,803,804,805,805,806,806,807,808,808,809,809,810,810,811,812,812,813,813,814,815};
+static const int cooksie_nw_win[125] = {609,608,607,606,605,605,604,603,602,601,600,600,599,598,597,596,595,595,594,593,592,591,590,590,589,588,587,586,585,585,584,583,582,581,580,580,579,578,577,576,575,575,574,573,572,571,570,570,569,568,567,566,565,565,564,563,562,561,560,560,558,557,556,555,553,552,551,550,548,547,546,545,544,542,541,540,539,537,536,535,534,532,531,530,529,528,526,525,524,523,521,520,519,518,516,515,514,513,512,510,509,508,507,505,504,503,502,500,499,498,497,496,494,493,492,491,489,488,487,486,484,483,482,481,480};
+
+
 // Corner Detection ////////////////////////////////////////////////////////////
 Mat GetOptimalCorners(Mat src, int * thresh)
 {
@@ -72,7 +93,7 @@ Mat GetEdges(Mat src, int lowThreshold, int ratio, int kernelSize)
     blur(src, blurred, Size(3,3) );
 
     /// Canny detector
-    Canny(src, edges, lowThreshold, lowThreshold * ratio, kernelSize);
+    Canny(blurred, edges, lowThreshold, lowThreshold * ratio, kernelSize);
 
     normalize(edges, edges_norm, 0, 255, NORM_MINMAX, CV_32FC1, Mat());
     //convertScaleAbs( edges_norm, dst_norm_scaled );
@@ -287,7 +308,7 @@ bool IsInsideWindow(Window win, ImgPoint pos)
 
 
 // Utilities ///////////////////////////////////////////////////////////////////
-vector<int> GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow)
+vector<int> GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow, int regionId)
 {
   vector<Window> windows;
   Window win;
@@ -295,7 +316,7 @@ vector<int> GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWin
   int sum, i, x, y = 0;
   int pixel;
 
-  windows = GetSlidingWindow(startWindow, endWindow, img.rows, img.cols);
+  windows = GetSlidingWindow(startWindow, endWindow, img.rows, img.cols, regionId);
 
   // Sum
   for (i = 0; i < windows.size(); i++)
@@ -309,7 +330,7 @@ vector<int> GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWin
   return sums;
 }
 
-vector<float> GetNormalizedSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow)
+vector<float> GetNormalizedSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow, int regionId)
 {
   vector<Window> windows;
   Window win;
@@ -317,7 +338,7 @@ vector<float> GetNormalizedSlidingSum(Mat img, int thresh, Window startWindow, W
   int sum, i, x, y = 0;
   int pixel;
 
-  windows = GetSlidingWindow(startWindow, endWindow, img.rows, img.cols);
+  windows = GetSlidingWindow(startWindow, endWindow, img.rows, img.cols, regionId);
   //cout << img.rows << endl;
   // Sum
   for (i = 0; i < windows.size(); i++)
@@ -374,7 +395,7 @@ int GetSumOfWindow(Mat img, Window win, int thresh)
   return sum;
 }
 
-vector<int> GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, float minDiff, int edge)
+vector<int> GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, float minDiff, int edge, int regionId)
 {
   vector<Window> windows;
   Window win;
@@ -382,7 +403,7 @@ vector<int> GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, flo
   int sum, i, x, y = 0;
   int pixel;
 
-  windows = GetSlidingWindow(startWindow, endWindow, edges.rows, edges.cols);
+  windows = GetSlidingWindow(startWindow, endWindow, edges.rows, edges.cols, regionId);
   //printf("window size %lu\n", windows.size());
   // Sum
   for (i = 0; i < windows.size(); i++)
@@ -447,9 +468,10 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
   int startBelow   = 0;
   float thresh     = GetThresholdFromRegionId(regionId);
   int offset       = GetStartingXOffsetFromRegionId(regionId);
+  int i;
 
   // Slide across the sums and count for consecutive points above/below a threshold
-  for (int i = 0; i < sums.size(); i++)
+  for (i = 0; i < sums.size(); i++)
   {
     // if below threshold, mark it as active and record the index
     if (sums.at(i) < thresh)
@@ -479,6 +501,14 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
     }
   }
 
+  // Handle incomplete opening
+  if (not added)
+  {
+    newOpening.start = startBelow + offset;
+    newOpening.length = i - startBelow - aboveCount + 1;
+    openings.push_back(newOpening);
+  }
+
   return openings;
 }
 
@@ -501,21 +531,27 @@ bool IsOpeningLargeEnough(Opening opening, int regionId)
   int min = 10000;
   switch(regionId){
     case (K_BEASON_NE_ID):
-      //min = 180 - (int)(opening.start * 0.25);
-      return true;
+      min = Interpolate(opening.start, beason_ne_data);
       break;
     case (K_BEASON_SE_ID):
-      min = 250 - (int)(opening.start * 0.5);
+      min = Interpolate(opening.start, beason_se_data);
       break;
     case (K_BEASON_SW_ID):
+      min = Interpolate(opening.start, beason_sw_data);
       break;
     case (K_BEASON_NW_ID):
+      min = Interpolate(opening.start, beason_nw_data);
       break;
     case (K_COOKSIE_NW_ID):
+      min = Interpolate(opening.start, cooksie_nw_data);
       break;
     case (K_COOKSIE_SW_ID):
+      min = 100000;
       break;
   }
+
+  if (min == -1)
+    return false;
 
   if (opening.length >= min)
     return true;
@@ -559,7 +595,7 @@ vector<Opening> GetOpenings(vector<int> leftEdges, vector<int> rightEdges)
   return openings;
 }
 
-vector<Window> GetSlidingWindow(Window startWindow, Window endWindow, int imgHeight, int imgWidth)
+vector<Window> GetSlidingWindow(Window startWindow, Window endWindow, int imgHeight, int imgWidth, int regionId)
 {
     int stepCount = endWindow.tl.x - startWindow.tl.x;
     vector<Window> windows;
@@ -568,7 +604,30 @@ vector<Window> GetSlidingWindow(Window startWindow, Window endWindow, int imgHei
     float dx0, dy0, dtheta, dheight;
     float tlx, tly, theta, height;
     Corner tmp;
-    
+    int i = 0;
+
+    int * ydata = NULL;
+    switch(regionId){
+      case (K_BEASON_NE_ID):
+        ydata = (int*)beason_ne_win;
+        break;
+      case (K_BEASON_SE_ID):
+        ydata = (int*)beason_se_win;
+        break;
+      case (K_BEASON_SW_ID):
+        ydata = (int*)beason_sw_win;
+        break;
+      case (K_BEASON_NW_ID):
+        ydata = (int*)beason_nw_win;
+        break;
+      case (K_COOKSIE_NW_ID):
+        ydata = (int*)cooksie_nw_win;
+        break;
+      case (K_COOKSIE_SW_ID):
+        ydata = (int*)cooksie_nw_win;
+        break;
+    }
+
     // Initial values (as floats)
     tlx = (float)startWindow.tl.x;
     tly = (float)startWindow.tl.y;
@@ -595,7 +654,7 @@ vector<Window> GetSlidingWindow(Window startWindow, Window endWindow, int imgHei
         
         // convert back to integers to save window
         tmp.x = tlx;
-        tmp.y = tly;
+        tmp.y = ydata[i++];//tly;
         currWindow = CreateWindow(tmp, startWindow.width, height, theta);
         // printf("%d %d   %d %d   %d %d   %d %d\n",
         //   currWindow.tl.x, currWindow.tl.y,
@@ -627,34 +686,34 @@ bool IsWithinBounds(int imgHeight, int imgWidth, Window win)
   return true;
 }
 
-float Interpolate(float x, vector<float> x_arr, vector<float> y_arr)
+int Interpolate(int x, vector<xy> data)
 {
   int i = 0;
-  float x0, x1, y0, y1;
+  int x0, x1, y0, y1;
 
   // Make sure x falls within the end points, otherwise return
-  if (x < x_arr.front() || x_arr.back() < x)
+  if (x < data.front().x || data.back().x < x)
   {
-    return -1.0;
+    return -1;
   }
 
   // find where our index "falls" within the data we have
-  for(i = 0; i < x_arr.size()-1; i++)
+  for(i = 0; i < data.size()-1; i++)
   {
     // find the two points x falls between
-    if(x_arr.at(i) <= x && x < x_arr.at(i + 1))
+    if(data.at(i).x <= x && x < data.at(i + 1).x)
     {
-      x0 = x_arr.at(i);
-      y0 = y_arr.at(i);
-      x1 = x_arr.at(i + 1);
-      y1 = y_arr.at(i + 1);
+      x0 = data.at(i).x;
+      y0 = data.at(i).y;
+      x1 = data.at(i + 1).x;
+      y1 = data.at(i + 1).y;
 
       // interpolate
-      return y0 + (((y1 - y0) / (x1 - x0)) * (x - x0));
+      return y0 + (int)(((float)(y1 - y0) / (float)(x1 - x0)) * (float)(x - x0));
     }
   }
 
-  return -1.0;
+  return -1;
 }
 
 Mat GetSubRegionImage(Mat original, int regionId)
@@ -999,26 +1058,56 @@ vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * 
 // in development
 int GetXPositionOfSpot(int regionId, int start)
 {
-  int x = 0;
+  float x = 0;
+  float img_width = 1129;
+  float lengthOfSub = 0;
+  float withinSub = 0;
+  float regionStart = 0;
 
   switch(regionId){
   case (K_BEASON_NE_ID):
-    x = start;
+    lengthOfSub = 500;
+    regionStart = 487;
+    withinSub = (start - K_BEASON_NE_WIN_START_TP_X) / (float)(K_BEASON_NE_WIN_END_TP_X - K_BEASON_NE_WIN_START_TP_X);
+    x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
+    x *= 100;
     break;
   case (K_BEASON_SE_ID):
-    x = start;
+    lengthOfSub = 500;
+    regionStart = 487;
+    withinSub = (start - K_BEASON_SE_WIN_START_TP_X) / (float)(K_BEASON_SE_WIN_END_TP_X - K_BEASON_SE_WIN_START_TP_X);
+    x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
+    x *= 100;
     break;
   case (K_BEASON_SW_ID):
-    x = start;
+    lengthOfSub = 260;
+    regionStart = 175;
+    withinSub = (start - K_BEASON_SW_WIN_START_TP_X) / (float)(K_BEASON_SW_WIN_END_TP_X - K_BEASON_SW_WIN_START_TP_X);
+    x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
+    x *= 100;
     break;
   case (K_BEASON_NW_ID):
-    x = start;
+    lengthOfSub = 260;
+    regionStart = 175;
+    withinSub = (start - K_BEASON_NW_WIN_START_TP_X) / (float)(K_BEASON_NW_WIN_END_TP_X - K_BEASON_NW_WIN_START_TP_X);
+    x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
+    x *= 100;
     break;
   case (K_COOKSIE_NW_ID):
-    x = start;
+    x = 390;
+    // lengthOfSub = 500;
+    // regionStart = 487;
+    // withinSub = (start - K_COOKSIE_NW_WIN_START_TP_X) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X);
+    // x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
+    // x *= 100;
     break;
   case (K_COOKSIE_SW_ID):
-    x = start;
+    x =390;
+    // lengthOfSub = 500;
+    // regionStart = 487;
+    // withinSub = (start - K_COOKSIE_SW_WIN_START_TP_X) / (float)(K_COOKSIE_SW_WIN_END_TP_X - K_COOKSIE_SW_WIN_START_TP_X);
+    // x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
+    // x *= 100;
     break;
   }
   return x;
@@ -1027,23 +1116,33 @@ int GetXPositionOfSpot(int regionId, int start)
 // in development
 int GetYPositionOfSpot(int regionId, int start)
 {
-  int y = 0;
+  float y = 0;
+  float pseudoStart = 0;
+  float img_width = 1129;
+  float lengthOfSub = 0;
+  float withinSub = 0;
+  float regionStart = 0;
 
   switch(regionId){
   case (K_BEASON_NE_ID):
-    y = start;
+    y = 540;
     break;
   case (K_BEASON_SE_ID):
-    y = start;
+    y = 635;
     break;
   case (K_BEASON_SW_ID):
-    y = start;
+    y = 635;
     break;
   case (K_BEASON_NW_ID):
-    y = start;
+    y = 540;
     break;
   case (K_COOKSIE_NW_ID):
-    y = start;
+    lengthOfSub = 480;
+    regionStart = 540;
+    pseudoStart = start * (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) + K_COOKSIE_NW_WIN_START_TP_Y;
+    withinSub = (pseudoStart - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y);
+    y = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
+    y *= 100;
     break;
   case (K_COOKSIE_SW_ID):
     y = start;

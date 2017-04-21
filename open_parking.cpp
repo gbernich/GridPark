@@ -16,24 +16,8 @@ extern "C" {
 
 using namespace std;
 
-// Parking Data (for interpolation)
-// a pair is in the format of x position, length needed
-static xy beason_ne_init[] = {{865, 200}, {1040, 170}, {1215, 130}, {1550, 40}};
-static xy beason_se_init[] = {{970, 300}, {1280, 180}, {1455, 80}};
-static xy beason_nw_init[] = {{485, 65}, {418, 60}, {585, 85}};
-static xy beason_sw_init[] = {{318, 22}, {360, 65}, {413,118}};
-static xy cooksie_nw_init[] = {{745, 45}, {790, 30}, {840, 20}};
-static vector<xy> beason_ne_data(beason_ne_init, beason_ne_init + sizeof(beason_ne_init) / sizeof(xy));
-static vector<xy> beason_se_data(beason_se_init, beason_se_init + sizeof(beason_se_init) / sizeof(xy));
-static vector<xy> beason_nw_data(beason_nw_init, beason_nw_init + sizeof(beason_nw_init) / sizeof(xy));
-static vector<xy> beason_sw_data(beason_sw_init, beason_sw_init + sizeof(beason_sw_init) / sizeof(xy));
-static vector<xy> cooksie_nw_data(cooksie_nw_init, cooksie_nw_init + sizeof(cooksie_nw_init) / sizeof(xy));
-
-static float x_vals_init[] = {1, 2, 3, 4};
-static vector<float> x_vals(x_vals_init, x_vals_init + sizeof(x_vals_init) / sizeof(x_vals_init[0]));
-
-static float y_vals_init[] = {0, 10, 25, 40};
-static vector<float> y_vals(y_vals_init, y_vals_init + sizeof(y_vals_init) / sizeof(y_vals_init[0]));
+//static xy x_vals_init[] = {{1, 0}, {2, 10}, {4, 25}, {6, 40}};
+//static vector<xy> x_vals(x_vals_init, x_vals_init + sizeof(x_vals_init) / sizeof(xy));
 
 int main(int argc, char** argv )
 {
@@ -91,12 +75,8 @@ int main(int argc, char** argv )
   height = 50;
 
   // testing
-/*  cout << "interpolate " << Interpolate(1.5, x_vals, y_vals) << endl;
-  cout << "interpolate " << Interpolate(1.8, x_vals, y_vals) << endl;
-  cout << "interpolate " << Interpolate(3.1, x_vals, y_vals) << endl;
-  cout << "interpolate " << Interpolate(3.5, x_vals, y_vals) << endl;
-  cout << "interpolate " << Interpolate(3.9, x_vals, y_vals) << endl;
-*/
+  //cout << "interpolate " << Interpolate(3, x_vals) << endl;
+  //cout << "interpolate " << Interpolate(5, x_vals) << endl;
 
   #ifdef __arm__
     MYSQL * conn = OpenDB((char*)K_DB);
@@ -117,7 +97,7 @@ int main(int argc, char** argv )
     src = imread(imgFn, 1);
 
     // Get edges
-    thresh = 70;
+    thresh = 50;
     cvtColor(src, src_gray, CV_BGR2GRAY);
     edges = GetEdges(src_gray, thresh, 3, 3);
     clock_gettime(CLOCK_MONOTONIC, &finish_edges);
@@ -128,14 +108,15 @@ int main(int argc, char** argv )
     {
       startWin = GetStartWindow(regionId);
       endWin   = GetEndWindow(regionId);
-      sums     = GetSlidingSum(edges, 0, startWin, endWin);
-      sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin);
+      sums     = GetSlidingSum(edges, 0, startWin, endWin, regionId);
+      sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin, regionId);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
-
+      WriteSlidingWindowFloat("../matlab/edges.txt", argv[1], sumsNorm);
+      
 
       cout << "region " << regionId << endl;
-//      for (i = 0; i < openings.size(); i++)
-//        cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
+      //for (i = 0; i < openings.size(); i++)
+      //  cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
 
 
       spaces = GetOpenParkingSpaces(openings, regionId);
