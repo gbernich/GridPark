@@ -1227,11 +1227,10 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
 vector<ParkedCar> GetParkedCars(MYSQL * conn)
 {
   vector<ParkedCar> cars;
-  PARKED_CAR_T * car_c = NULL;
   ParkedCar car_cpp;
 
   // Get a linked list from the C function
-  PARKED_CAR_T * car_c = GetParkedCars(conn, K_TBL_PARKED_CARS);
+  PARKED_CAR_T * car_c = GetParkedCars(conn, (char *)K_TBL_PARKED_CARS);
 
   // Convert the linked list to a vector so that its user friendly
   if (car_c == NULL)
@@ -1240,12 +1239,12 @@ vector<ParkedCar> GetParkedCars(MYSQL * conn)
   }
 
   do {
-      car_cpp.id = car_c.car_id;
-      car_cpp.susp_activity = car_c.susp_activity;
-      car_cpp.tl.x = car_c.corner0;
-      car_cpp.tl.y = car_c.corner1;
-      car_cpp.br.x = car_c.corner2;
-      car_cpp.br.y = car_c.corner3;
+      car_cpp.id = car_c->car_id;
+      car_cpp.susp_activity = car_c->susp_activity;
+      car_cpp.tl.x = car_c->corner0;
+      car_cpp.tl.y = car_c->corner1;
+      car_cpp.br.x = car_c->corner2;
+      car_cpp.br.y = car_c->corner3;
       cars.push_back(car_cpp);
       car_c = car_c -> next;
   } while(car_c != NULL);

@@ -253,22 +253,21 @@ void GetSocketArgs(int * args, char * buff, int offset, int packet_type)
 // JSON /////////////////
 void WriteOpenParkingJSONHeader(FILE * f)
 {
-    fprintf(f, "{\n\t\"Parking_Data\": {\n");
-    fprintf(f, "\t\t\"Spots\": [\n");
+    fprintf(f, "[\n");
 }
 void WriteOpenParkingJSONEntry(FILE * f, int * args)
 {
-    fprintf(f, "\t\t\t{\n"); // open entry
+    fprintf(f, "\t{\n"); // open entry
 
-    fprintf(f, "\t\t\t\"index\": \"%d\",\n", args[0]);
-    fprintf(f, "\t\t\t\"x\": \"%d\",\n", args[1]);
-    fprintf(f, "\t\t\t\"y\": \"%d\",\n", args[2]);
-    fprintf(f, "\t\t\t\"c0\": \"%d\",\n", args[3]);
-    fprintf(f, "\t\t\t\"c1\": \"%d\",\n", args[4]);
-    fprintf(f, "\t\t\t\"c2\": \"%d\",\n", args[5]);
-    fprintf(f, "\t\t\t\"c3\": \"%d\"\n", args[6]);
+    fprintf(f, "\t\t\"index\": \"%d\",\n", args[0]);
+    fprintf(f, "\t\t\"x\": \"%d\",\n", args[1]);
+    fprintf(f, "\t\t\"y\": \"%d\",\n", args[2]);
+    fprintf(f, "\t\t\"c0\": \"%d\",\n", args[3]);
+    fprintf(f, "\t\t\"c1\": \"%d\",\n", args[4]);
+    fprintf(f, "\t\t\"c2\": \"%d\",\n", args[5]);
+    fprintf(f, "\t\t\"c3\": \"%d\"\n", args[6]);
 
-    fprintf(f, "\t\t\t}"); // close entry
+    fprintf(f, "\t}"); // close entry
 }
 
 void WriteOpenParkingJSONComma(FILE * f)
@@ -278,7 +277,5 @@ void WriteOpenParkingJSONComma(FILE * f)
 
 void WriteOpenParkingJSONFooter(FILE * f)
 {
-    fprintf(f, "\n\t\t]\n");
-    fprintf(f, "\t}\n");
-    fprintf(f, "}\n");
+    fprintf(f, "\n]\n");
 }

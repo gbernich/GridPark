@@ -81,10 +81,10 @@ int main(int argc, char** argv )
 
   #ifdef __arm__
     MYSQL * conn = OpenDB((char*)K_DB);
-    cars = GetParkedCars(MYSQL * conn);
+    cars = GetParkedCars(conn);
 
     for(i = 0; i < cars.size(); i++)
-      cout << cars.at(i).id << endl;
+      cout << cars.at(i).br.y << endl;
 
   #endif
 
@@ -117,8 +117,8 @@ int main(int argc, char** argv )
       sums     = GetSlidingSum(edges, 0, startWin, endWin, regionId);
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin, regionId);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
-      WriteSlidingWindowFloat("../matlab/edges.txt", argv[1], sumsNorm);
-      
+      WriteSlidingWindowFloat((char *)("../matlab/edges.txt"), argv[1], sumsNorm);
+
 
       cout << "region " << regionId << endl;
       //for (i = 0; i < openings.size(); i++)
