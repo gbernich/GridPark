@@ -12,7 +12,7 @@ extern "C" {
 }
 #endif
 
-#define USE_DB 0
+#define USE_DB 1
 
 using namespace std;
 
