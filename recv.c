@@ -141,11 +141,6 @@ int main(int argc, char *argv[])
                     InsertEntry(db, queryString);
                 }
             }
-            /*recvBuff[n] = 0;
-            if(fputs(recvBuff, stdout) == EOF)
-            {
-                printf("\n Error : Fputs error\n");
-            }*/
         }
 
         // Error reading from socket
@@ -167,33 +162,5 @@ int main(int argc, char *argv[])
         // Sleep
         sleep(5);
     }
-
-    //db = (void *)OpenDB(K_DB);
-    //FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING, 0, 1, 2, 3, 4, 5, 6);
-    //InsertEntry(db, queryString);
-    //ClearTable(db, K_TBL_OPEN_PARKING);
-    //i = TableIsLocked(db, K_TBL_OPEN_PARKING);
-    //printf("%d\n", i);
-
-    //WaitForLock(db, K_TBL_OPEN_PARKING);
-    //printf("Got the lock!\n");
-    //UnlockTable(db, K_TBL_OPEN_PARKING);
-    //printf("Released the lock!\n");
-
-    /*
-    spots = GetOpenSpots(db, K_TBL_OPEN_PARKING);
-    PrintOpenSpots(spots);
-    DeleteOpenSpots(spots);
-
-    cars = GetParkedCars(db, K_TBL_PARKED_CARS);
-    PrintParkedCars(cars);
-    DeleteParkedCars(cars);
-
-    acts = GetSuspActivity(db, K_TBL_SUSP_ACTIVITY);
-    PrintSuspActivities(acts);
-    DeleteSuspActivities(acts);
-    */
-    //CloseDB(db);
-
     return 0;
 }

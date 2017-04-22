@@ -53,6 +53,7 @@ int main(int argc, char** argv )
   vector<OPEN_SPOT_T> spaces_db, spaces_db_all;
 
   //Suspicious Activity 
+  vector<ParkedCar> cars;
   int edgeList[10] = {0};
   bool carParked = true;
   bool monitorON = true;
@@ -80,6 +81,11 @@ int main(int argc, char** argv )
 
   #ifdef __arm__
     MYSQL * conn = OpenDB((char*)K_DB);
+    cars = GetParkedCars(MYSQL * conn);
+
+    for(i = 0; i < cars.size(); i++)
+      cout << cars.at(i).id << endl;
+
   #endif
 
   // Main loop that will continue forever

@@ -278,7 +278,7 @@ void WriteOpenParkingJSONComma(FILE * f)
 
 void WriteOpenParkingJSONFooter(FILE * f)
 {
-    fprintf(f, "{\t\t\t]\n");
-    fprintf(f, "{\t\t}\n");
-    fprintf(f, "{\t}\n");
+    fprintf(f, "\n\t\t\t]\n");
+    fprintf(f, "\t\t}\n");
+    fprintf(f, "\t}\n");
 }

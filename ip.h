@@ -189,6 +189,13 @@ struct Opening {
     int length;
 };
 
+struct ParkedCar {
+    int id;
+    int susp_activity;
+    Corner tl;
+    Corner br;
+};
+
 
 
 Mat GetOptimalCorners(Mat src_gray, int * thresh);
@@ -239,7 +246,8 @@ int GetXPositionOfSpot(int regionId, int start);
 int GetYPositionOfSpot(int regionId, int start);
 void GetCornersOfSpot(Corner * corners, int regionId, int start);
 #ifdef __arm__
-void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn);
+void              InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn);
+vector<ParkedCar> GetParkedCars(MYSQL * conn);
 #endif
 
 // Output
