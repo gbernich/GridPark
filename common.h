@@ -80,4 +80,10 @@ void PrintSuspActivities(SUSP_ACTIVITY_T * head);
 void PackIntoPacket(char * buff, int offset, int size, int value);
 void GetSocketArgs(int * args, char * buff, int offset, int packet_type);
 
+// JSON
+void WriteOpenParkingJSONHeader(FILE * json);
+void WriteOpenParkingJSONEntry(FILE * json, int * args);
+void WriteOpenParkingJSONComma(FILE * json);
+void WriteOpenParkingJSONFooter(FILE * json);
+
 #endif
