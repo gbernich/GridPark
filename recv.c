@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     int n = 0;
     char recvBuff[1024] = {0};
     struct sockaddr_in serv_addr; 
+    FILE * json = NULL;
 
     void * db = NULL;
     int i;
@@ -87,12 +88,19 @@ int main(int argc, char *argv[])
             return 1;
         }
 
+        // Open Parking JSON file
+        json = fopen("/var/www/html/garrett.json", "w");
+        WriteOpenParkingJSONHeader(json);
+
         // Receive the packets until done, write to command line
         while ( (n = read(sockfd, recvBuff, sizeof(recvBuff))) > 0)
         {
             //clear table
             if (entry_type == K_PACKET_OPEN_PARKING)
+            {
                 ClearTable(db, K_TBL_OPEN_PARKING);
+                WriteOpenParkingJSON(recvBuff)
+            }
             else if (entry_type == K_PACKET_PARKED_CARS)
                 ClearTable(db, K_TBL_PARKED_CARS);
             else
@@ -112,6 +120,10 @@ int main(int argc, char *argv[])
                     FormatInsertForOpenParking(queryString, K_TBL_OPEN_PARKING,
                         args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
                     InsertEntry(db, queryString);
+
+                    WriteOpenParkingJSONEntry(json, args);
+                    if (i < num_entries - 1)
+                        WriteOpenParkingJSONComma(json);
                 }
                 else if (entry_type == K_PACKET_PARKED_CARS)
                 {
@@ -142,6 +154,10 @@ int main(int argc, char *argv[])
         {
             printf("\n Read error \n");
         }
+
+        // Close parking JSON file
+        WriteOpenParkingJSONFooter(json);
+        fclosef(json);
 
         // close database
         CloseDB(db);
