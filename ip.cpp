@@ -1125,16 +1125,16 @@ int GetYPositionOfSpot(int regionId, int start)
 
   switch(regionId){
   case (K_BEASON_NE_ID):
-    y = 540;
+    y = (int)(540.0 / 1129);
     break;
   case (K_BEASON_SE_ID):
-    y = 635;
+    y = (int)(635 / 1129);
     break;
   case (K_BEASON_SW_ID):
-    y = 635;
+    y = (int)(635 / 1129);
     break;
   case (K_BEASON_NW_ID):
-    y = 540;
+    y = (int)(540 / 1129);
     break;
   case (K_COOKSIE_NW_ID):
     lengthOfSub = 480;
