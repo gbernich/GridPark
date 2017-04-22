@@ -89,8 +89,16 @@ int main(int argc, char *argv[])
         }
 
         // Open Parking JSON file
-        json = fopen("/var/www/html/garrett.json", "w");
-        WriteOpenParkingJSONHeader(json);
+        if (atoi(argv[2]) == 0)
+        {
+            json = fopen("/var/www/html/parking.json", "w");
+            if (json == NULL)
+            {
+                printf("Error opening file!\n");
+                exit(1);
+            }
+            WriteOpenParkingJSONHeader(json);
+        }
 
         // Receive the packets until done, write to command line
         while ( (n = read(sockfd, recvBuff, sizeof(recvBuff))) > 0)
@@ -150,8 +158,11 @@ int main(int argc, char *argv[])
         }
 
         // Close parking JSON file
-        WriteOpenParkingJSONFooter(json);
-        fclose(json);
+        if (atoi(argv[2]) == 0)
+        {
+            WriteOpenParkingJSONFooter(json);
+            fclose(json);
+        }
 
         // close database
         CloseDB(db);
