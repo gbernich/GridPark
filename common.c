@@ -266,7 +266,7 @@ void WriteOpenParkingJSONEntry(FILE * f, int * args)
     fprintf(f, "\t\t\t\"c0\": \"%d\",\n", args[3]);
     fprintf(f, "\t\t\t\"c1\": \"%d\",\n", args[4]);
     fprintf(f, "\t\t\t\"c2\": \"%d\",\n", args[5]);
-    fprintf(f, "\t\t\t\"c3\": \"%d\",\n", args[6]);
+    fprintf(f, "\t\t\t\"c3\": \"%d\"\n", args[6]);
 
     fprintf(f, "\t\t\t}"); // close entry
 }
@@ -278,7 +278,7 @@ void WriteOpenParkingJSONComma(FILE * f)
 
 void WriteOpenParkingJSONFooter(FILE * f)
 {
-    fprintf(f, "{\t\t\t]\n");
-    fprintf(f, "{\t\t}\n");
-    fprintf(f, "{\t}\n");
+    fprintf(f, "\n\t\t]\n");
+    fprintf(f, "\t}\n");
+    fprintf(f, "}\n");
 }
