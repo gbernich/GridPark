@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
             if (entry_type == K_PACKET_OPEN_PARKING)
             {
                 ClearTable(db, K_TBL_OPEN_PARKING);
-                WriteOpenParkingJSON(recvBuff)
             }
             else if (entry_type == K_PACKET_PARKED_CARS)
                 ClearTable(db, K_TBL_PARKED_CARS);
@@ -157,7 +156,7 @@ int main(int argc, char *argv[])
 
         // Close parking JSON file
         WriteOpenParkingJSONFooter(json);
-        fclosef(json);
+        fclose(json);
 
         // close database
         CloseDB(db);

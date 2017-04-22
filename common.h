@@ -3,9 +3,10 @@
 // Author:              Garrett Bernichon
 // Function:            Global structs
 //-----------------------------------------------------------------------------
-
 #ifndef COMMON_H
 #define COMMON_H
+
+#include <stdio.h>
 
 #define K_PACKET_OPEN_PARKING   0
 #define K_PACKET_PARKED_CARS    1
@@ -81,9 +82,9 @@ void PackIntoPacket(char * buff, int offset, int size, int value);
 void GetSocketArgs(int * args, char * buff, int offset, int packet_type);
 
 // JSON
-void WriteOpenParkingJSONHeader(FILE * json);
-void WriteOpenParkingJSONEntry(FILE * json, int * args);
-void WriteOpenParkingJSONComma(FILE * json);
-void WriteOpenParkingJSONFooter(FILE * json);
+void WriteOpenParkingJSONHeader(FILE * f);
+void WriteOpenParkingJSONEntry(FILE * f, int * args);
+void WriteOpenParkingJSONComma(FILE * f);
+void WriteOpenParkingJSONFooter(FILE * f);
 
 #endif
