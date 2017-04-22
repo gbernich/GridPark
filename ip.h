@@ -186,6 +186,7 @@ struct Window {
 
 struct Opening {
     int start;
+    int startY;
     int length;
 };
 

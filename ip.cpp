@@ -1044,9 +1044,9 @@ vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * 
     spot.distance = GetYPositionOfSpot(region, spaces.at(i).start);; // really y percentage represented by an integer (50 means 50%)
     
     GetCornersOfSpot(corners, region, spaces.at(i).start);
-    spot.corner0  = corners[0].x; // top left x
+    spot.corner0  = spaces.at(i).start - 20; // top left x
     spot.corner1  = corners[0].y; // top left y
-    spot.corner2  = corners[1].x; // bottom right x
+    spot.corner2  = spaces.at(i).start + spaces.at(i).length + 20; // bottom right x
     spot.corner3  = corners[1].y; // bottom right y
 
     spaces_db.push_back(spot);
@@ -1094,7 +1094,7 @@ int GetXPositionOfSpot(int regionId, int start)
     x *= 100;
     break;
   case (K_COOKSIE_NW_ID):
-    x = 390;
+    x = 39000 / img_width;
     // lengthOfSub = 500;
     // regionStart = 487;
     // withinSub = (start - K_COOKSIE_NW_WIN_START_TP_X) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X);
@@ -1102,7 +1102,7 @@ int GetXPositionOfSpot(int regionId, int start)
     // x *= 100;
     break;
   case (K_COOKSIE_SW_ID):
-    x =390;
+    x =39000 / img_width;
     // lengthOfSub = 500;
     // regionStart = 487;
     // withinSub = (start - K_COOKSIE_SW_WIN_START_TP_X) / (float)(K_COOKSIE_SW_WIN_END_TP_X - K_COOKSIE_SW_WIN_START_TP_X);
@@ -1125,23 +1125,23 @@ int GetYPositionOfSpot(int regionId, int start)
 
   switch(regionId){
   case (K_BEASON_NE_ID):
-    y = (int)(54000 / 1129);
+    y = (int)(54000 / img_width);
     break;
   case (K_BEASON_SE_ID):
-    y = (int)(63500 / 1129);
+    y = (int)(63500 / img_width);
     break;
   case (K_BEASON_SW_ID):
-    y = (int)(63500 / 1129);
+    y = (int)(63500 / img_width);
     break;
   case (K_BEASON_NW_ID):
-    y = (int)(54000 / 1129);
+    y = (int)(54000 / img_width);
     break;
   case (K_COOKSIE_NW_ID):
-    lengthOfSub = 480;
-    regionStart = 540;
+    lengthOfSub = 135;
+    regionStart = 625;
     pseudoStart = start * (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) + K_COOKSIE_NW_WIN_START_TP_Y;
     withinSub = (pseudoStart - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y);
-    y = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
+    y = (lengthOfSub / img_width) * withinSub + ((img_width - regionStart / img_width);
     y *= 100;
     break;
   case (K_COOKSIE_SW_ID):

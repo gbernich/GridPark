@@ -81,11 +81,6 @@ int main(int argc, char** argv )
 
   #ifdef __arm__
     MYSQL * conn = OpenDB((char*)K_DB);
-    cars = GetParkedCars(conn);
-
-    for(i = 0; i < cars.size(); i++)
-      cout << cars.at(i).br.y << endl;
-
   #endif
 
   // Main loop that will continue forever
@@ -149,6 +144,9 @@ int main(int argc, char** argv )
    #endif
 
     // Suspicious Activity
+    #ifdef __arm__  // only on raspberry pi
+      cars = GetParkedCars(conn);
+    #endif
     cout << "susp start" << endl;
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
     if(justParked)
