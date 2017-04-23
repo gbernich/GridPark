@@ -1118,10 +1118,10 @@ int GetYPositionOfSpot(int regionId, int start)
 {
   float y = 0;
   float pseudoStart = 0;
-  float img_width = 1129;
+  float img_width = 1183;
   float lengthOfSub = 0;
   float withinSub = 0;
-  float regionStart = 0;
+  float regionEnd = 0;
 
   switch(regionId){
   case (K_BEASON_NE_ID):
@@ -1138,10 +1138,13 @@ int GetYPositionOfSpot(int regionId, int start)
     break;
   case (K_COOKSIE_NW_ID):
     lengthOfSub = 135;
-    regionStart = 625;
-    pseudoStart = start * (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) + K_COOKSIE_NW_WIN_START_TP_Y;
+    regionEnd = 490;
+    pseudoStart = (K_COOKSIE_NW_WIN_START_TP_Y - start) * (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) + K_COOKSIE_NW_WIN_START_TP_Y;
     withinSub = (pseudoStart - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y);
-    y = (lengthOfSub / img_width) * withinSub + ((img_width - regionStart / img_width);
+    cout << "start " << start << endl;
+    cout << "slope " << (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y)/(float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) << endl;
+    cout << "start " << pseudoStart << endl;
+    y = (lengthOfSub / img_width) * withinSub + (regionEnd / img_width);
     y *= 100;
     break;
   case (K_COOKSIE_SW_ID):
