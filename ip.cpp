@@ -1094,15 +1094,15 @@ int GetXPositionOfSpot(int regionId, int start)
     x *= 100;
     break;
   case (K_BEASON_SW_ID):
-    lengthOfSub = 260;
-    regionStart = 175;
+    lengthOfSub = 195;
+    regionStart = 335-80;
     withinSub = (start - K_BEASON_SW_WIN_START_TP_X) / (float)(K_BEASON_SW_WIN_END_TP_X - K_BEASON_SW_WIN_START_TP_X);
     x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
     x *= 100;
     break;
   case (K_BEASON_NW_ID):
-    lengthOfSub = 260;
-    regionStart = 175;
+    lengthOfSub = 250;
+    regionStart = 430-175;
     withinSub = (start - K_BEASON_NW_WIN_START_TP_X) / (float)(K_BEASON_NW_WIN_END_TP_X - K_BEASON_NW_WIN_START_TP_X);
     x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
     x *= 100;
@@ -1116,7 +1116,7 @@ int GetXPositionOfSpot(int regionId, int start)
     // x *= 100;
     break;
   case (K_COOKSIE_SW_ID):
-    x =39000 / img_width;
+    x = 39000 / img_width;
     // lengthOfSub = 500;
     // regionStart = 487;
     // withinSub = (start - K_COOKSIE_SW_WIN_START_TP_X) / (float)(K_COOKSIE_SW_WIN_END_TP_X - K_COOKSIE_SW_WIN_START_TP_X);
@@ -1139,7 +1139,7 @@ int GetYPositionOfSpot(int regionId, int start)
 
   switch(regionId){
   case (K_BEASON_NE_ID):
-    y = (int)(54000 / img_width);
+    y = (int)(49000 / img_width);
     break;
   case (K_BEASON_SE_ID):
     y = (int)(63500 / img_width);
@@ -1148,7 +1148,7 @@ int GetYPositionOfSpot(int regionId, int start)
     y = (int)(63500 / img_width);
     break;
   case (K_BEASON_NW_ID):
-    y = (int)(54000 / img_width);
+    y = (int)(49000 / img_width);
     break;
   case (K_COOKSIE_NW_ID):
     lengthOfSub = 135;
@@ -1366,7 +1366,7 @@ void TakeNewImage()
 
   // Day Time
 //  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
-  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=90%% -s gamma=auto img.jpg -S 30");
+  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=10%% img.jpg -S 50");
 //  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
 
   // Night Time
