@@ -1173,19 +1173,19 @@ int GetYPositionOfWindow(int region, int start, int topBot)
 
   switch(regionId){
   case (K_BEASON_NE_ID):
-    y = Interpolate(start, beason_ne_data);
+    y = beason_ne_win[start - K_BEASON_NE_WIN_START_TP_X];
     break;
   case (K_BEASON_SE_ID):
-    y = Interpolate(start, beason_se_data);
+    y = beason_se_win[start - K_BEASON_SE_WIN_START_TP_X];
     break;
   case (K_BEASON_SW_ID):
-    y = Interpolate(start, beason_sw_data);
+    y = beason_sw_win[start - K_BEASON_SW_WIN_START_TP_X];
     break;
   case (K_BEASON_NW_ID):
-    y = Interpolate(start, beason_nw_data);
+    y = beason_nw_win[start - K_BEASON_NW_WIN_START_TP_X];
     break;
   case (K_COOKSIE_NW_ID):
-    y = Interpolate(start, cooksie_nw_data);
+    y = cooksie_nw_win[start - K_COOKSIE_NW_WIN_START_TP_X];
     break;
   case (K_COOKSIE_SW_ID):
     y = 0;
