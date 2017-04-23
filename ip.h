@@ -219,7 +219,7 @@ vector<int>     GetSlidingEdges(Mat edges, Window startWindow, Window endWindow,
 vector<Opening> GetOpeningsFromSums(vector<int> sums, int regionId);
 vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId);
 vector<Opening> GetOpenParkingSpaces(vector<Opening> openings, int regionId);
-bool            IsOpeningLargeEnough(Opening opening, int regionId);
+bool            IsOpeningLargeEnough(Opening opening, int regionId, int * reqLength);
 vector<Opening> GetOpenings(vector<int> leftEdges, vector<int> rightEdges);
 vector<Window>  GetSlidingWindow(Window startWindow, Window endWindow, int imgHeight, int imgWidth, int regionId);
 bool            IsWithinBounds(int imgHeight, int imgWidth, Window win);

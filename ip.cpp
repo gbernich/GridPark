@@ -10,11 +10,11 @@ int debug = 0;
 
 // Parking Data (for interpolation)
 // a pair is in the format of x position, length needed
-static xy beason_ne_init[] = {{865, 200}, {1040, 170}, {1215, 130}, {1550, 40}, {1600, 40}};
-static xy beason_se_init[] = {{970, 300}, {1280, 180}, {1455, 80}, {1550, 80}};
-static xy beason_nw_init[] = {{430, 53}, {485, 70}, {585, 85}, {600, 85}};
-static xy beason_sw_init[] = {{318, 22}, {360, 65}, {413,118}, {500,118}};
-static xy cooksie_nw_init[] = {{745, 45}, {790, 30}, {840, 20}, {900, 20}};
+static xy beason_ne_init[] = {{800, 200}, {865, 200}, {1040, 170}, {1215, 130}, {1550, 40}, {1600, 40}};
+static xy beason_se_init[] = {{800, 300}, {870, 300}, {1280, 180}, {1455, 80}, {1550, 80}};
+static xy beason_nw_init[] = {{400, 53}, {430, 53}, {485, 70}, {585, 85}, {600, 85}};
+static xy beason_sw_init[] = {{250, 22}, {318, 22}, {360, 65}, {413,118}, {500,118}};
+static xy cooksie_nw_init[] = {{700, 45}, {745, 45}, {790, 30}, {840, 20}, {900, 20}};
 static vector<xy> beason_ne_data(beason_ne_init, beason_ne_init + sizeof(beason_ne_init) / sizeof(xy));
 static vector<xy> beason_se_data(beason_se_init, beason_se_init + sizeof(beason_se_init) / sizeof(xy));
 static vector<xy> beason_nw_data(beason_nw_init, beason_nw_init + sizeof(beason_nw_init) / sizeof(xy));
@@ -515,17 +515,27 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
 vector<Opening> GetOpenParkingSpaces(vector<Opening> openings, int regionId)
 {
   vector<Opening> spaces;
+  int reqLength = 0;
 
   for (int i = 0; i < openings.size(); i++)
   {
-    if (IsOpeningLargeEnough(openings.at(i), regionId))
+    while (IsOpeningLargeEnough(openings.at(i), regionId, &reqLength))
+    {
+      // Add the spot to the vector
       spaces.push_back(openings.at(i));
+
+      // Update the starting position of the spot 
+      openings.at(i).start += reqLength;
+      
+      // Update the length of this spot
+      openings.at(i).length -= reqLength;
+    }
   }
 
   return spaces;
 }
 
-bool IsOpeningLargeEnough(Opening opening, int regionId)
+bool IsOpeningLargeEnough(Opening opening, int regionId, int * reqLength)
 {
   int result = false;
   int min = 10000;
@@ -549,6 +559,9 @@ bool IsOpeningLargeEnough(Opening opening, int regionId)
       min = 100000;
       break;
   }
+
+  // return the required length
+  *reqLength = min;
 
   if (min == -1)
     return false;

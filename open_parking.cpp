@@ -112,7 +112,7 @@ int main(int argc, char** argv )
       sums     = GetSlidingSum(edges, 0, startWin, endWin, regionId);
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin, regionId);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
-      WriteSlidingWindowFloat((char *)("edges.txt"), argv[1], sumsNorm);
+      WriteSlidingWindowFloat((char *)("../matlab/edges.txt"), argv[1], sumsNorm);
 
 
       cout << "region " << regionId << endl;
