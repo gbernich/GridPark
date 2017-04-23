@@ -1060,7 +1060,7 @@ vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * 
     spot.corner0  = spaces.at(i).start - 20; // top left x
     spot.corner1  = GetYPositionOfWindow(region, spaces.at(i).start, 0); // top left y
     spot.corner2  = spaces.at(i).start + spaces.at(i).length + 20; // bottom right x
-    spot.corner3  = GetYPositionOfWindow(region, spaces.at(i).start, 0);; // bottom right y
+    spot.corner3  = GetYPositionOfWindow(region, spaces.at(i).start, 1); // bottom right y
 
     spaces_db.push_back(spot);
   }
@@ -1167,7 +1167,7 @@ int GetYPositionOfSpot(int regionId, int start)
   return y;
 }
 
-int GetYPositionOfWindow(int region, int start, int topBot)
+int GetYPositionOfWindow(int regionId, int start, int topBot)
 {
   int y = 0;
 

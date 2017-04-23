@@ -245,6 +245,7 @@ int UpdateEdgeList(int * edgeList, int edgeSum);
 vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * spot_id);
 int GetXPositionOfSpot(int regionId, int start);
 int GetYPositionOfSpot(int regionId, int start);
+int GetYPositionOfWindow(int regionId, int start, int topBot);
 void GetCornersOfSpot(Corner * corners, int regionId, int start);
 #ifdef __arm__
 void              InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn);
