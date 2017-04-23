@@ -15,6 +15,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h> 
+#include <errno.h>
 
 #include "db_utils.h"
 #include "common.h"
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
 {
     int sockfd = 0;
     int n = 0;
+    int status = 0;
     char recvBuff[1024] = {0};
     struct sockaddr_in serv_addr; 
     FILE * json = NULL;
@@ -82,10 +84,13 @@ int main(int argc, char *argv[])
         db = (void *)OpenDB(K_DB);
 
         // Connect the socket to the network
-        while(connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        status = connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+        if(status < 0)
         {
             printf("\n Info : Connect failed, trying again \n");
-            sleep(5);
+            printf("Status = %s\n", strerror(errno));
+//            sleep(5);
+            return 1;
         }
 
         // Open Parking JSON file
