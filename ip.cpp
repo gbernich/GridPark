@@ -1193,9 +1193,9 @@ int GetYPositionOfWindow(int regionId, int start, int topBot)
   }
 
   if (topBot == 0) // upper
-    return y - 100;
+    return y - 110;
   else             // lower
-    return y + 100;
+    return y + 110;
 }
 
 // in development

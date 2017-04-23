@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
     struct sockaddr_in serv_addr;
     char sendBuff[1025] = {0};
     char recvBuff[1025] = {0};
-    time_t ticks;
     int read_size;
 
     // Database
@@ -83,7 +82,7 @@ int main(int argc, char *argv[])
             // get open spots from DB
             spots = GetOpenSpots(db, K_TBL_OPEN_PARKING);
             s = spots;
-            PrintOpenSpots(spots);
+            //PrintOpenSpots(spots);
             do
             {   // pack into buffer
                 count++;
@@ -141,10 +140,9 @@ int main(int argc, char *argv[])
         // Create a packet to send
         sendBuff[0] = (char)packet_type;
         sendBuff[1] = (char)count;
+
         // close database
         CloseDB(db);
-        //ticks = time(NULL);
-        //snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
 
         // Send packet over socket
         write(connfd, sendBuff, j);

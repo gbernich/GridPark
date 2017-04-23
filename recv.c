@@ -95,7 +95,6 @@ RETRY:
             close(sockfd);
             sleep(5);
             goto RETRY;
-        //    return 1;
         }
 
         // Open Parking JSON file
@@ -119,10 +118,13 @@ RETRY:
                 ClearTable(db, K_TBL_OPEN_PARKING);
             }
             else if (entry_type == K_PACKET_PARKED_CARS)
+            {
                 ClearTable(db, K_TBL_PARKED_CARS);
+            }
             else
+            {
                 ClearTable(db, K_TBL_SUSP_ACTIVITY);
-	        printf("here3\n");
+            }
 
             //insert data
             num_entries = recvBuff[1];
