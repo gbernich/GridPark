@@ -90,12 +90,12 @@ using namespace std;
 #define K_BEASON_SW_WIN_START_WIDTH   5
 #define K_BEASON_SW_WIN_START_HEIGHT  30
 #define K_BEASON_SW_WIN_START_THETA   0.0
-#define K_BEASON_SW_WIN_END_TP_X      512
+#define K_BEASON_SW_WIN_END_TP_X      530
 #define K_BEASON_SW_WIN_END_TP_Y      790
 #define K_BEASON_SW_WIN_END_WIDTH     5
 #define K_BEASON_SW_WIN_END_HEIGHT    30
 #define K_BEASON_SW_WIN_END_THETA     0.0
-#define K_BEASON_SW_SUMS_THRESHOLD    0.2
+#define K_BEASON_SW_SUMS_THRESHOLD    0.4
 
 // Beason Northwest
 #define K_BEASON_NW_ID      3

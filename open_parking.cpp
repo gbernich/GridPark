@@ -114,7 +114,6 @@ int main(int argc, char** argv )
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
       WriteSlidingWindowFloat((char *)("../matlab/edges.txt"), argv[1], sumsNorm);
 
-
       cout << "region " << regionId << endl;
       //for (i = 0; i < openings.size(); i++)
       //  cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
