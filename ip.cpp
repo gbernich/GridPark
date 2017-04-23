@@ -1058,9 +1058,9 @@ vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * 
     
     GetCornersOfSpot(corners, region, spaces.at(i).start);
     spot.corner0  = spaces.at(i).start - 20; // top left x
-    spot.corner1  = corners[0].y; // top left y
+    spot.corner1  = GetYPositionOfWindow(region, spaces.at(i).start, 0); // top left y
     spot.corner2  = spaces.at(i).start + spaces.at(i).length + 20; // bottom right x
-    spot.corner3  = corners[1].y; // bottom right y
+    spot.corner3  = GetYPositionOfWindow(region, spaces.at(i).start, 0);; // bottom right y
 
     spaces_db.push_back(spot);
   }
@@ -1165,6 +1165,37 @@ int GetYPositionOfSpot(int regionId, int start)
     break;
   }
   return y;
+}
+
+int GetYPositionOfWindow(int region, int start, int topBot)
+{
+  int y = 0;
+
+  switch(regionId){
+  case (K_BEASON_NE_ID):
+    y = Interpolate(start, beason_ne_data);
+    break;
+  case (K_BEASON_SE_ID):
+    y = Interpolate(start, beason_se_data);
+    break;
+  case (K_BEASON_SW_ID):
+    y = Interpolate(start, beason_sw_data);
+    break;
+  case (K_BEASON_NW_ID):
+    y = Interpolate(start, beason_nw_data);
+    break;
+  case (K_COOKSIE_NW_ID):
+    y = Interpolate(start, cooksie_nw_data);
+    break;
+  case (K_COOKSIE_SW_ID):
+    y = 0;
+    break;
+  }
+
+  if (topBot == 0) // upper
+    return y - 100;
+  else             // lower
+    return y + 100;
 }
 
 // in development
