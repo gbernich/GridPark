@@ -82,10 +82,10 @@ int main(int argc, char *argv[])
         db = (void *)OpenDB(K_DB);
 
         // Connect the socket to the network
-        if( connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        while(connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
         {
-            printf("\n Error : Connect Failed \n");
-            return 1;
+            printf("\n Info : Connect failed, trying again \n");
+            sleep(5);
         }
 
         // Open Parking JSON file
