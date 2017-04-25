@@ -524,6 +524,8 @@ vector<Opening> GetOpenParkingSpaces(vector<Opening> openings, int regionId)
     {
       // Add the spot to the vector
       spaces.push_back(openings.at(i));
+      if (regionId == K_COOKSIE_NW_ID)
+        break; // lets skip this for cooksie because performance is low due to its distance
 
       // Update the starting position of the spot 
       openings.at(i).start += reqLength;
