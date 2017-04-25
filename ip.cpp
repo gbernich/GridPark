@@ -524,6 +524,7 @@ vector<Opening> GetOpenParkingSpaces(vector<Opening> openings, int regionId)
     {
       // Add the spot to the vector
       spaces.push_back(openings.at(i));
+      break;
 
       // Update the starting position of the spot 
       openings.at(i).start += reqLength;
