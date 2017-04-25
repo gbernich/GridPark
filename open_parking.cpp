@@ -90,11 +90,11 @@ int main(int argc, char** argv )
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // Take an image
-//    TakeNewImage();
+    TakeNewImage();
 
     // Load source image
     clock_gettime(CLOCK_MONOTONIC, &start_edges);
-    sprintf(imgFn, "%s", argv[1]); //"img.jpg");
+    sprintf(imgFn, "%s", "img.jpg");//argv[1]
     src = imread(imgFn, 1);
 
     // Get edges
@@ -142,8 +142,9 @@ int main(int argc, char** argv )
       clock_gettime(CLOCK_MONOTONIC, &finish_db);
    #endif
 
+
     // Suspicious Activity
-    #ifdef __arm__  // only on raspberry pi
+/*    #ifdef __arm__  // only on raspberry pi
       cars = GetParkedCars(conn);
     #endif
     cout << "susp start" << endl;
@@ -180,7 +181,7 @@ int main(int argc, char** argv )
     {
       loopCount = 0;
     }
-
+*/
 //    alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
     cout << "base " << baseCount << endl;
@@ -200,11 +201,11 @@ int main(int argc, char** argv )
     cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
 
     // Save edges image for DEBUG USE ONLY (REMOVE THIS)
-    imwrite("./testimg/edges.jpg", edges);
+//    imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
-    break; // for development lets only run the loop once
-    sleep(2);
+//    break; // for development lets only run the loop once
+    sleep(5);
   }
 
   #ifdef __arm__

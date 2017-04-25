@@ -10,11 +10,11 @@ int debug = 0;
 
 // Parking Data (for interpolation)
 // a pair is in the format of x position, length needed
-static xy beason_ne_init[] = {{800, 200}, {865, 200}, {1040, 170}, {1215, 130}, {1550, 40}, {1600, 40}};
-static xy beason_se_init[] = {{800, 300}, {870, 300}, {1280, 180}, {1455, 80}, {1550, 80}};
-static xy beason_nw_init[] = {{400, 58}, {430, 58}, {485, 70}, {585, 85}, {600, 85}};
-static xy beason_sw_init[] = {{250, 22}, {318, 22}, {360, 65}, {413,95}, {600,95}};
-static xy cooksie_nw_init[] = {{700, 45}, {745, 45}, {790, 30}, {840, 20}, {900, 20}};
+static xy beason_ne_init[] = {{800, 195}, {865, 195}, {1040, 160}, {1215, 120}, {1550, 37}, {1600, 37}};
+static xy beason_se_init[] = {{800, 280}, {870, 280}, {1280, 160}, {1455, 70}, {1550, 70}};
+static xy beason_nw_init[] = {{400, 50}, {430, 50}, {485, 62}, {585, 80}, {600, 80}};
+static xy beason_sw_init[] = {{250, 20}, {318, 20}, {360, 55}, {413, 80}, {600,80}};
+static xy cooksie_nw_init[] = {{700, 40}, {745, 40}, {790, 25}, {840, 17}, {900, 17}};
 static vector<xy> beason_ne_data(beason_ne_init, beason_ne_init + sizeof(beason_ne_init) / sizeof(xy));
 static vector<xy> beason_se_data(beason_se_init, beason_se_init + sizeof(beason_se_init) / sizeof(xy));
 static vector<xy> beason_nw_data(beason_nw_init, beason_nw_init + sizeof(beason_nw_init) / sizeof(xy));
@@ -527,7 +527,7 @@ vector<Opening> GetOpenParkingSpaces(vector<Opening> openings, int regionId)
 
       // Update the starting position of the spot 
       openings.at(i).start += reqLength;
-      
+
       // Update the length of this spot
       openings.at(i).length -= reqLength;
     }
@@ -1094,21 +1094,21 @@ int GetXPositionOfSpot(int regionId, int start)
     x *= 100;
     break;
   case (K_BEASON_SW_ID):
-    lengthOfSub = 260;
-    regionStart = 175;
+    lengthOfSub = 195;
+    regionStart = 335-80;
     withinSub = (start - K_BEASON_SW_WIN_START_TP_X) / (float)(K_BEASON_SW_WIN_END_TP_X - K_BEASON_SW_WIN_START_TP_X);
     x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
     x *= 100;
     break;
   case (K_BEASON_NW_ID):
-    lengthOfSub = 260;
-    regionStart = 175;
+    lengthOfSub = 250;
+    regionStart = 430-215;
     withinSub = (start - K_BEASON_NW_WIN_START_TP_X) / (float)(K_BEASON_NW_WIN_END_TP_X - K_BEASON_NW_WIN_START_TP_X);
     x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
     x *= 100;
     break;
   case (K_COOKSIE_NW_ID):
-    x = 39000 / img_width;
+    x = 33000 / img_width;
     // lengthOfSub = 500;
     // regionStart = 487;
     // withinSub = (start - K_COOKSIE_NW_WIN_START_TP_X) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X);
@@ -1116,7 +1116,7 @@ int GetXPositionOfSpot(int regionId, int start)
     // x *= 100;
     break;
   case (K_COOKSIE_SW_ID):
-    x =39000 / img_width;
+    x = 39000 / img_width;
     // lengthOfSub = 500;
     // regionStart = 487;
     // withinSub = (start - K_COOKSIE_SW_WIN_START_TP_X) / (float)(K_COOKSIE_SW_WIN_END_TP_X - K_COOKSIE_SW_WIN_START_TP_X);
@@ -1139,7 +1139,7 @@ int GetYPositionOfSpot(int regionId, int start)
 
   switch(regionId){
   case (K_BEASON_NE_ID):
-    y = (int)(54000 / img_width);
+    y = (int)(49000 / img_width);
     break;
   case (K_BEASON_SE_ID):
     y = (int)(63500 / img_width);
@@ -1148,16 +1148,13 @@ int GetYPositionOfSpot(int regionId, int start)
     y = (int)(63500 / img_width);
     break;
   case (K_BEASON_NW_ID):
-    y = (int)(54000 / img_width);
+    y = (int)(49000 / img_width);
     break;
   case (K_COOKSIE_NW_ID):
     lengthOfSub = 135;
     regionEnd = 490;
     pseudoStart = (start - K_COOKSIE_NW_WIN_START_TP_Y) * (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) + K_COOKSIE_NW_WIN_START_TP_Y;
     withinSub = (pseudoStart - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y);
-    cout << "start " << start << endl;
-    cout << "slope " << (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y)/(float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) << endl;
-    cout << "start " << pseudoStart << endl;
     y = (lengthOfSub / img_width) * withinSub + (regionEnd / img_width);
     y *= 100;
     break;
@@ -1366,7 +1363,7 @@ void TakeNewImage()
 
   // Day Time
 //  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
-  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=90%% -s gamma=auto img.jpg -S 30");
+  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=70%% img.jpg -S 50");
 //  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
 
   // Night Time
