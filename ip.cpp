@@ -1153,7 +1153,7 @@ int GetYPositionOfSpot(int regionId, int start)
   case (K_COOKSIE_NW_ID):
     lengthOfSub = 135;
     regionEnd = 490;
-    pseudoStart = (start - K_COOKSIE_NW_WIN_START_TP_Y) * (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) + K_COOKSIE_NW_WIN_START_TP_Y;
+    pseudoStart = (K_COOKSIE_NW_WIN_START_TP_X - start) * (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) + K_COOKSIE_NW_WIN_START_TP_Y;
     withinSub = (pseudoStart - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y);
     y = (lengthOfSub / img_width) * withinSub + (regionEnd / img_width);
     y *= 100;
