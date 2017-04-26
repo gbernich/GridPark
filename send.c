@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
             spots = GetOpenSpots(db, K_TBL_OPEN_PARKING);
             s = spots;
             //PrintOpenSpots(spots);
-            do
+            while (s != NULL)
             {   // pack into buffer
                 count++;
                 PackIntoPacket(sendBuff, j, sizeof(int), s->spot_id);  j += sizeof(int);
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
                 PackIntoPacket(sendBuff, j, sizeof(int), s->corner2);  j += sizeof(int);
                 PackIntoPacket(sendBuff, j, sizeof(int), s->corner3);  j += sizeof(int);
                 s = s -> next;
-            } while (s != NULL);
+            } //while (s != NULL);
 
             // free memory
             DeleteOpenSpots(spots);
