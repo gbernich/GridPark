@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
             // get parked car info
             cars = GetParkedCars(db, K_TBL_PARKED_CARS);
             c = cars;
-            do
+            while (c != NULL)
             {   // pack into buffer
                 count++;
                 PackIntoPacket(sendBuff, j, sizeof(int), c->car_id);  j += sizeof(int);
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
                 PackIntoPacket(sendBuff, j, sizeof(int), c->corner2);  j += sizeof(int);
                 PackIntoPacket(sendBuff, j, sizeof(int), c->corner3);  j += sizeof(int);
                 c = c -> next;
-            } while (c != NULL);
+            } //while (c != NULL);
 
             // free memory
             DeleteParkedCars(cars);
@@ -124,14 +124,14 @@ int main(int argc, char *argv[])
             // get suspicious activity
             acts = GetSuspActivity(db, K_TBL_SUSP_ACTIVITY);
             a = acts;
-            do
+            while (a != NULL)
             {   // pack into buffer
                 count++;
                 PackIntoPacket(sendBuff, j, sizeof(int), a->car_id);  j += sizeof(int);
                 PackIntoPacket(sendBuff, j, sizeof(int), a->time_of_detect);   j += sizeof(int);
                 PackIntoPacket(sendBuff, j, sizeof(int), a->length_of_activity);  j += sizeof(int);
                 a = a -> next;
-            } while (a != NULL);
+            } //while (a != NULL);
 
             // free memory
             DeleteSuspActivities(acts);
