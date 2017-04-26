@@ -86,5 +86,9 @@ void WriteOpenParkingJSONHeader(FILE * f);
 void WriteOpenParkingJSONEntry(FILE * f, int * args);
 void WriteOpenParkingJSONComma(FILE * f);
 void WriteOpenParkingJSONFooter(FILE * f);
+void WriteSuspActivityJSONHeader(FILE * f);
+void WriteSuspActivityJSONEntry(FILE * f, int * args);
+void WriteSuspActivityJSONComma(FILE * f);
+void WriteSuspActivityJSONFooter(FILE * f);
 
 #endif
