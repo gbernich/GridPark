@@ -279,3 +279,28 @@ void WriteOpenParkingJSONFooter(FILE * f)
 {
     fprintf(f, "\n]\n");
 }
+
+void WriteSuspActivityJSONHeader(FILE * f)
+{
+    fprintf(f, "[\n");
+}
+void WriteSuspActivityJSONEntry(FILE * f, int * args)
+{
+    fprintf(f, "\t{\n"); // open entry
+
+    fprintf(f, "\t\t\"index\": \"%d\",\n", args[0]);
+    fprintf(f, "\t\t\"time\": \"%d\",\n", args[1]);
+    fprintf(f, "\t\t\"length\": \"%d\",\n", args[2]);
+
+    fprintf(f, "\t}"); // close entry
+}
+
+void WriteSuspActivityJSONComma(FILE * f)
+{
+    fprintf(f, ",\n");
+}
+
+void WriteSuspActivityJSONFooter(FILE * f)
+{
+    fprintf(f, "\n]\n");
+}

@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
     int status = 0;
     char recvBuff[1024] = {0};
     struct sockaddr_in serv_addr; 
-    FILE * json = NULL;
+    FILE * parking_json = NULL;
+    FILE * activity_json = NULL;
 
     void * db = NULL;
     int i;
@@ -100,13 +101,24 @@ RETRY:
         // Open Parking JSON file
         if (atoi(argv[2]) == 0)
         {
-            json = fopen("/var/www/html/parking.json", "w");
-            if (json == NULL)
+            parking_json = fopen("/var/www/html/parking.json", "w");
+            if (parking_json == NULL)
             {
                 printf("Error opening file!\n");
                 exit(1);
             }
-            WriteOpenParkingJSONHeader(json);
+            WriteOpenParkingJSONHeader(parking_json);
+        }
+        // Susp Activity JSON file
+        else if (atoi(argv[2]) == 2)
+        {
+            activity_json = fopen("/var/www/html/activity.json", "w");
+            if (activity_json == NULL)
+            {
+                printf("Error opening file!\n");
+                exit(1);
+            }
+            WriteSuspActivityJSONHeader(activity_json);
         }
 
         // Receive the packets until done, write to command line
@@ -140,9 +152,9 @@ RETRY:
                         args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
                     InsertEntry(db, queryString);
 
-                    WriteOpenParkingJSONEntry(json, args);
+                    WriteOpenParkingJSONEntry(parking_json, args);
                     if (i < num_entries - 1)
-                        WriteOpenParkingJSONComma(json);
+                        WriteOpenParkingJSONComma(parking_json);
                 }
                 else if (entry_type == K_PACKET_PARKED_CARS)
                 {
@@ -159,6 +171,9 @@ RETRY:
                     FormatInsertForSuspActivity(queryString, K_TBL_SUSP_ACTIVITY,
                         args[0], args[1], args[2]);
                     InsertEntry(db, queryString);
+                    WriteSuspActivityJSONEntry(activity_json, args);
+                    if (i < num_entries - 1)
+                        WriteSuspActivityJSONComma(activity_json);
                 }
             }
         }
@@ -172,8 +187,13 @@ RETRY:
         // Close parking JSON file
         if (atoi(argv[2]) == 0)
         {
-            WriteOpenParkingJSONFooter(json);
-            fclose(json);
+            WriteOpenParkingJSONFooter(parking_json);
+            fclose(parking_json);
+        }
+        else if (atoi(argv[2]) == 2)
+        {
+            WriteSuspActivityJSONFooter(activity_json);
+            fclose(activity_json);
         }
 
         // close database
