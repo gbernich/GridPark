@@ -75,7 +75,9 @@ int main(int argc, char** argv )
   topLeft.y = 650;
   width = 165;
   height = 50;
-  vector<SUSP_ACTIVITY_T> alertList;
+  vector<SuspAct> alertList;
+  Mat baseImg, subImg;
+  SuspAct act = {0};
 
   // testing
   //cout << "interpolate " << Interpolate(3, x_vals) << endl;
@@ -151,9 +153,10 @@ int main(int argc, char** argv )
     #ifdef __arm__  // only on raspberry pi
       cars = GetParkedCars(conn);
     #endif
+
       if(!justParked)
       {
-        for(int i = 0, i < cars.length; i++)
+        for(i = 0; i < cars.size(); i++)
         {
           if(cars[i].susp_activity == 1)
           {
@@ -161,40 +164,58 @@ int main(int argc, char** argv )
             topLeft = cars[i].tl;
             width = 165;
             height = 50;
-            mycar = SUSP_ACTIVITY_T(cars[i].id, 0,0, NULL)
+            act.car_id = cars[i].id;
+            act.time_of_detect = 0;
+            act.length_of_activity = 0;
           } 
         }
       }
+
     cout << "susp start" << endl;
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
+    
     if(justParked)
     {
-      if(loopCount == 0)
-      {
-        carWindow = CreateWindow(topLeft, width, height, 0);
-      }
-      baseCount = GetBaseCount(edges, carWindow);
-      cout << "curr frame " << baseCount << endl;
-      bcAvg = UpdateEdgeList(edgeList, baseCount);
-      cout << "BC AVG" << bcAvg << endl;
-      if(loopCount == 10)
-      {
-        justParked = false;
-        haveBC = true;
-        baseCount = bcAvg;
-      }
+      baseImg = edges.clone();
+      haveBC = true;
+      // if(loopCount == 0)
+      // {
+      //   carWindow = CreateWindow(topLeft, width, height, 0);
+      // }
+      // baseCount = GetBaseCount(edges, carWindow);
+      // cout << "curr frame " << baseCount << endl;
+      // bcAvg = UpdateEdgeList(edgeList, baseCount);
+      // cout << "BC AVG" << bcAvg << endl;
+
+      // if(loopCount == 10)
+      // {
+      //   justParked = false;
+      //   haveBC = true;
+      //   baseCount = bcAvg;
+      // }
     }
 
     if(haveBC)
     {
       cout << "haveBC" << endl;
+
+      subtract(edges, baseImg, subImg);
+      subImg = abs(subImg);
+      imwrite("./testimg/sub.jpg", subImg);
+      carWindow.tl.x = 1150;
+      carWindow.tl.y = 900;
+      carWindow.br.x = 1270;
+      carWindow.br.y = 1050;
+
       alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow, edgeList);
       clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
       cout << "Alert" << alert << endl;
       if(alert == 1)
       {
-        alertList.append(mycar)
-        InsertSuspActivity(alertList, conn)
+        alertList.push_back(act);
+        #ifdef __arm__
+          InsertSuspActivity(alertList, conn);
+        #endif
       }
     }
  

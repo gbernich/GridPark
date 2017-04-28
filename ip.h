@@ -197,6 +197,13 @@ struct ParkedCar {
     Corner br;
 };
 
+struct SuspAct
+{
+    int car_id;
+    int time_of_detect;
+    int length_of_activity;
+};
+
 
 
 Mat GetOptimalCorners(Mat src_gray, int * thresh);
