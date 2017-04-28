@@ -1306,7 +1306,7 @@ vector<ParkedCar> GetParkedCars(MYSQL * conn)
   return cars;
 }
 
-void InsertSuspActivity(vector<SUSP_ACTIVITY_T> activity_db, MYSQL * conn)
+void InsertSuspActivity(vector<SuspAct> activity_db, MYSQL * conn)
 {
   int i;
   char query[120] = {0};

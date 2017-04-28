@@ -35,7 +35,7 @@ int main(int argc, char** argv )
   int spot_id = 0;
 
   // Matrices
-  Mat src, src_gray, roi, roi_gray, overlay;
+  Mat src, src_gray, overlay;
 
   // Corner Detection
   int thresh = IP_CORNERS_THRESH_INIT;
@@ -63,6 +63,11 @@ int main(int argc, char** argv )
   bool alert = false;
   bool haveBC = false;
   Window carWindow;
+  carWindow.tl.x = 1150;
+  carWindow.tl.y = 900;
+  carWindow.br.x = 1270;
+  carWindow.br.y = 1050;
+
   int baseCount;
   int bcSum;
   int bcAvg;
@@ -76,7 +81,9 @@ int main(int argc, char** argv )
   width = 165;
   height = 50;
   vector<SuspAct> alertList;
-  Mat baseImg, subImg;
+  Mat baseImg, subImg, cln;
+
+  Rect roi(carWindow.tl.x, carWindow.tl.y, carWindow.br.x - carWindow.tl.x, carWindow.br.y - carWindow.tl.y);
   SuspAct act = {0};
 
   // testing
@@ -169,15 +176,18 @@ int main(int argc, char** argv )
             act.length_of_activity = 0;
           } 
         }
+        cln = edges.clone();
+        cout << "cloned" << endl;
+        baseImg = cln(roi);
+        cout << "base sum " << sum(baseImg) << endl;
+        haveBC = true;
       }
 
     cout << "susp start" << endl;
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
-    
+
     if(justParked)
     {
-      baseImg = edges.clone();
-      haveBC = true;
       // if(loopCount == 0)
       // {
       //   carWindow = CreateWindow(topLeft, width, height, 0);
@@ -199,15 +209,14 @@ int main(int argc, char** argv )
     {
       cout << "haveBC" << endl;
 
-      subtract(edges, baseImg, subImg);
+      cv::subtract(edges(roi), baseImg, subImg);
       subImg = abs(subImg);
-      imwrite("./testimg/sub.jpg", subImg);
-      carWindow.tl.x = 1150;
-      carWindow.tl.y = 900;
-      carWindow.br.x = 1270;
-      carWindow.br.y = 1050;
+      cout << "sub sum " << sum(subImg) << endl;
+//      imwrite("./testimg/base.jpg", baseImg);
+//      imwrite("./testimg/new.jpg", edges(roi));
+//      imwrite("./testimg/sub.jpg", subImg);
 
-      alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow, edgeList);
+      alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, subImg, carWindow, edgeList);
       clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
       cout << "Alert" << alert << endl;
       if(alert == 1)
@@ -218,7 +227,7 @@ int main(int argc, char** argv )
         #endif
       }
     }
- 
+
     loopCount = loopCount + 1;
     cout << "Loop Count" << loopCount << endl;
     if(loopCount > 10)

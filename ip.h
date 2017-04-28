@@ -256,7 +256,7 @@ int GetYPositionOfWindow(int regionId, int start, int topBot);
 void GetCornersOfSpot(Corner * corners, int regionId, int start);
 #ifdef __arm__
 void              InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn);
-void              InsertSuspActivity(vector<SUSP_ACTIVITY_T> activity_db, MYSQL * conn);
+void              InsertSuspActivity(vector<SuspAct> activity_db, MYSQL * conn);
 vector<ParkedCar> GetParkedCars(MYSQL * conn);
 #endif
 
