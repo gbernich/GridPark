@@ -204,7 +204,7 @@ int main(int argc, char** argv )
     imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
-    break; // for development lets only run the loop once
+//    break; // for development lets only run the loop once
     sleep(5);
   }
 

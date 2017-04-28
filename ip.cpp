@@ -1267,7 +1267,7 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
     if(InsertEntry(conn, query))
       cout << "error inserting" << endl;
   }
-  cout << "made insertions" << endl;
+  cout << "made insertions (parking)" << endl;
 
   // Unlock table
 //  if (UnlockTable(conn, (char*)K_TBL_OPEN_PARKING))
@@ -1304,6 +1304,28 @@ vector<ParkedCar> GetParkedCars(MYSQL * conn)
 
   return cars;
 }
+
+void InsertSuspActivity(vector<SUSP_ACTIVITY_T> activity_db, MYSQL * conn)
+{
+  int i;
+  char query[120] = {0};
+
+  // Make insertions
+  for(i = 0; i < activity_db.size(); i++)
+  {
+    // from db_utils
+    FormatInsertForSuspActivity(query, (char*)K_TBL_SUSP_ACTIVITY,
+      activity_db.at(i).car_id,
+      activity_db.at(i).time_of_detect,
+      activity_db.at(i).length_of_activity
+    );
+//    printf("%s\n", query);
+    if(InsertEntry(conn, query))
+      cout << "error inserting" << endl;
+  }
+  cout << "made insertions (activity)" << endl;
+}
+
 #endif
 ////////////////////////////////////////////////////////////////////////////////
 
