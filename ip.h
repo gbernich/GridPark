@@ -38,10 +38,10 @@ using namespace std;
 
 // Openings
 #define K_MINIMUM_OPENING_LENGTH      3
-#define K_SUMS_THRESHOLD_CONSECUTIVE  5
+#define K_SUMS_THRESHOLD_CONSECUTIVE  1//5
 
 ///// REGION DIMENSIONS /////
-#define K_NUM_SUBREGIONS    5
+#define K_NUM_SUBREGIONS    4
 
 // Beason Northeast
 #define K_BEASON_NE_ID      0
@@ -52,14 +52,14 @@ using namespace std;
 #define K_BEASON_NE_WIN_START_TP_X      870
 #define K_BEASON_NE_WIN_START_TP_Y      705
 #define K_BEASON_NE_WIN_START_WIDTH     5
-#define K_BEASON_NE_WIN_START_HEIGHT    30//95
+#define K_BEASON_NE_WIN_START_HEIGHT    25//95
 #define K_BEASON_NE_WIN_START_THETA     0.0
 #define K_BEASON_NE_WIN_END_TP_X        1565
 #define K_BEASON_NE_WIN_END_TP_Y        640
 #define K_BEASON_NE_WIN_END_WIDTH       5
-#define K_BEASON_NE_WIN_END_HEIGHT      30//50
+#define K_BEASON_NE_WIN_END_HEIGHT      21//50
 #define K_BEASON_NE_WIN_END_THETA       0.0//20.0
-#define K_BEASON_NE_SUMS_THRESHOLD      0.1// using 80 thresh and blur
+#define K_BEASON_NE_SUMS_THRESHOLD      0.2
 
 // Beason Southeast
 #define K_BEASON_SE_ID      1
@@ -79,26 +79,8 @@ using namespace std;
 #define K_BEASON_SE_WIN_END_THETA     0.0//35.0
 #define K_BEASON_SE_SUMS_THRESHOLD    0.2//150
 
-// Beason Southwest
-#define K_BEASON_SW_ID      2
-#define K_BEASON_SW_X       310
-#define K_BEASON_SW_Y       615
-#define K_BEASON_SW_WIDTH   220
-#define K_BEASON_SW_HEIGHT  175
-#define K_BEASON_SW_WIN_START_TP_X    335
-#define K_BEASON_SW_WIN_START_TP_Y    680
-#define K_BEASON_SW_WIN_START_WIDTH   5
-#define K_BEASON_SW_WIN_START_HEIGHT  30
-#define K_BEASON_SW_WIN_START_THETA   0.0
-#define K_BEASON_SW_WIN_END_TP_X      530
-#define K_BEASON_SW_WIN_END_TP_Y      790
-#define K_BEASON_SW_WIN_END_WIDTH     5
-#define K_BEASON_SW_WIN_END_HEIGHT    30
-#define K_BEASON_SW_WIN_END_THETA     0.0
-#define K_BEASON_SW_SUMS_THRESHOLD    0.3
-
 // Beason Northwest
-#define K_BEASON_NW_ID      3
+#define K_BEASON_NW_ID      2
 #define K_BEASON_NW_X       390
 #define K_BEASON_NW_Y       490
 #define K_BEASON_NW_WIDTH   280
@@ -108,15 +90,15 @@ using namespace std;
 #define K_BEASON_NW_WIN_START_WIDTH   5
 #define K_BEASON_NW_WIN_START_HEIGHT  30
 #define K_BEASON_NW_WIN_START_THETA   0.0
-#define K_BEASON_NW_WIN_END_TP_X      680
+#define K_BEASON_NW_WIN_END_TP_X      670
 #define K_BEASON_NW_WIN_END_TP_Y      680
 #define K_BEASON_NW_WIN_END_WIDTH     5
 #define K_BEASON_NW_WIN_END_HEIGHT    30
 #define K_BEASON_NW_WIN_END_THETA     0.0
-#define K_BEASON_NW_SUMS_THRESHOLD    0.5
+#define K_BEASON_NW_SUMS_THRESHOLD    0.3
 
 // Cooksie Northwest
-#define K_COOKSIE_NW_ID     4
+#define K_COOKSIE_NW_ID     3
 #define K_COOKSIE_NW_X      690
 #define K_COOKSIE_NW_Y      310
 #define K_COOKSIE_NW_WIDTH  180
@@ -128,13 +110,13 @@ using namespace std;
 #define K_COOKSIE_NW_WIN_START_THETA   0.0
 #define K_COOKSIE_NW_WIN_END_TP_X      870
 #define K_COOKSIE_NW_WIN_END_TP_Y      490
-#define K_COOKSIE_NW_WIN_END_WIDTH     5
+#define K_COOKSIE_NW_WIN_END_WIDTH     3
 #define K_COOKSIE_NW_WIN_END_HEIGHT    10
 #define K_COOKSIE_NW_WIN_END_THETA     0.0
 #define K_COOKSIE_NW_SUMS_THRESHOLD    0.2
 
 // Cooksie Southwest (ignored)
-#define K_COOKSIE_SW_ID     5
+#define K_COOKSIE_SW_ID     4
 #define K_COOKSIE_SW_X      0
 #define K_COOKSIE_SW_Y      0
 #define K_COOKSIE_SW_WIDTH  0
@@ -150,6 +132,24 @@ using namespace std;
 #define K_COOKSIE_SW_WIN_END_HEIGHT    115
 #define K_COOKSIE_SW_WIN_END_THETA     0.0
 #define K_COOKSIE_SW_SUMS_THRESHOLD    50
+
+// Beason Southwest (Ignored)
+#define K_BEASON_SW_ID      5 
+#define K_BEASON_SW_X       310
+#define K_BEASON_SW_Y       615
+#define K_BEASON_SW_WIDTH   220
+#define K_BEASON_SW_HEIGHT  175
+#define K_BEASON_SW_WIN_START_TP_X    335
+#define K_BEASON_SW_WIN_START_TP_Y    680
+#define K_BEASON_SW_WIN_START_WIDTH   5
+#define K_BEASON_SW_WIN_START_HEIGHT  30
+#define K_BEASON_SW_WIN_START_THETA   0.0
+#define K_BEASON_SW_WIN_END_TP_X      530
+#define K_BEASON_SW_WIN_END_TP_Y      790
+#define K_BEASON_SW_WIN_END_WIDTH     5
+#define K_BEASON_SW_WIN_END_HEIGHT    30
+#define K_BEASON_SW_WIN_END_THETA     0.0
+#define K_BEASON_SW_SUMS_THRESHOLD    0.3
 
 /////  END  DIMENSIONS  /////
 

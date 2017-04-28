@@ -490,9 +490,10 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
     // and record the opening
     else
     {
+      //cout << "above " << i << " " << startBelow << endl;
       if (++aboveCount >= K_SUMS_THRESHOLD_CONSECUTIVE && not added)
       {
-        //cout << "above " << i << " " << startBelow << endl;
+        //cout << "above in " << i << " " << startBelow << endl;
         activeBelow = false;
         newOpening.start = startBelow + offset;
         newOpening.length = i - startBelow - aboveCount + 1;
@@ -505,6 +506,7 @@ vector<Opening> GetOpeningsFromSumsNormalized(vector<float> sums, int regionId)
   // Handle incomplete opening
   if (not added)
   {
+    //cout << "adding last: start = " << startBelow + offset << endl;
     newOpening.start = startBelow + offset;
     newOpening.length = i - startBelow - aboveCount + 1;
     openings.push_back(newOpening);

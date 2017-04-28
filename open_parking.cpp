@@ -90,11 +90,11 @@ int main(int argc, char** argv )
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // Take an image
-    TakeNewImage();
+    //TakeNewImage();
 
     // Load source image
     clock_gettime(CLOCK_MONOTONIC, &start_edges);
-    sprintf(imgFn, "%s", "img.jpg");//argv[1]
+    sprintf(imgFn, "%s", argv[1]); // img.jpg;
     src = imread(imgFn, 1);
 
     // Get edges
@@ -113,7 +113,7 @@ int main(int argc, char** argv )
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin, regionId);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
       WriteSlidingWindowFloat((char *)("../matlab/edges.txt"), argv[1], sumsNorm);
-
+//break;
       cout << "region " << regionId << endl;
       //for (i = 0; i < openings.size(); i++)
       //  cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
@@ -201,10 +201,10 @@ int main(int argc, char** argv )
     cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
 
     // Save edges image for DEBUG USE ONLY (REMOVE THIS)
-//    imwrite("./testimg/edges.jpg", edges);
+    imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
-//    break; // for development lets only run the loop once
+    break; // for development lets only run the loop once
     sleep(5);
   }
 
