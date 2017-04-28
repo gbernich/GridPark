@@ -971,13 +971,16 @@ int DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
   int activity;
   int thresh = 0;
 
-  edgeSum = GetSumOfWindow(image, carWindow, thresh);
-  edgeAvg = UpdateEdgeList(edgeList, edgeSum);
-  if (edgeAvg > 1.02 * baseCount) {activity = 1;}
+  //edgeSum = GetSumOfWindow(image, carWindow, thresh);
+  edgeSum = (int)cv::sum(image)[0];
+  if (edgeSum > 50000) {activity = 1;}
   else {activity = 0;}
-  cout << "Base Count" << baseCount << endl;
-  cout << "New Sum" << edgeSum << endl;
-  cout << "Edge Avg" << edgeAvg << endl;
+  // edgeAvg = UpdateEdgeList(edgeList, edgeSum);
+  // if (edgeAvg > 1.02 * baseCount) {activity = 1;}
+  // else {activity = 0;}
+  // cout << "Base Count" << baseCount << endl;
+  // cout << "New Sum" << edgeSum << endl;
+  // cout << "Edge Avg" << edgeAvg << endl;
   return activity;
 }
 

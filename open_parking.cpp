@@ -82,6 +82,7 @@ int main(int argc, char** argv )
   height = 50;
   vector<SuspAct> alertList;
   Mat baseImg, subImg, cln;
+  int firstSum;
 
   Rect roi(carWindow.tl.x, carWindow.tl.y, carWindow.br.x - carWindow.tl.x, carWindow.br.y - carWindow.tl.y);
   SuspAct act = {0};
@@ -177,17 +178,20 @@ int main(int argc, char** argv )
           } 
         }
         cln = edges.clone();
-        cout << "cloned" << endl;
         baseImg = cln(roi);
-        cout << "base sum " << sum(baseImg) << endl;
-        haveBC = true;
+        //haveBC = true;
       }
 
     cout << "susp start" << endl;
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
 
-    if(justParked)
+    if(justParked and !haveBC)
     {
+      // take second "base" to compare
+      cv::subtract(edges(roi), baseImg, subImg);
+      subImg = abs(subImg);
+      baseCount = (int)cv::sum(edges(roi))[0];
+      haveBC = true;
       // if(loopCount == 0)
       // {
       //   carWindow = CreateWindow(topLeft, width, height, 0);
