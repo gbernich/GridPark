@@ -22,6 +22,7 @@ using namespace std;
 int main(int argc, char** argv )
 {
   struct timespec start,         finish,
+                  start_cam,     finish_cam,
                   start_edges,   finish_edges,
                   start_db,      finish_db,
                   start_parking, finish_parking,
@@ -90,11 +91,13 @@ int main(int argc, char** argv )
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     // Take an image
-    //TakeNewImage();
+    clock_gettime(CLOCK_MONOTONIC, &start_cam);
+    TakeNewImage();
+    clock_gettime(CLOCK_MONOTONIC, &finish_cam);
 
     // Load source image
     clock_gettime(CLOCK_MONOTONIC, &start_edges);
-    sprintf(imgFn, "%s", argv[1]); // img.jpg;
+    sprintf(imgFn, "%s", "img.jpg"); // argv[1]
     src = imread(imgFn, 1);
 
     // Get edges
@@ -189,6 +192,8 @@ int main(int argc, char** argv )
 
     // Capture time
     clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish_cam.tv_sec - start_cam.tv_sec); elapsed += (finish_cam.tv_nsec - start_cam.tv_nsec) / 1000000000.0;
+    cout << "Camera:      " << elapsed * 1000.0 << " ms" << endl;
     elapsed = (finish_edges.tv_sec - start_edges.tv_sec); elapsed += (finish_edges.tv_nsec - start_edges.tv_nsec) / 1000000000.0;
     cout << "Edge Detect: " << elapsed * 1000.0 << " ms" << endl;
     elapsed = (finish_parking.tv_sec - start_parking.tv_sec); elapsed += (finish_parking.tv_nsec - start_parking.tv_nsec) / 1000000000.0;

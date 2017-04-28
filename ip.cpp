@@ -6,6 +6,7 @@
 #include "ip.h"
 #include <unistd.h>
 
+
 int debug = 0;
 
 // Parking Data (for interpolation)
@@ -1393,7 +1394,7 @@ void TakeNewImage()
 
   // Day Time
 //  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
-  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=10%% img.jpg -S 50");
+  sprintf(cmd, "fswebcam -q -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=10%% img.jpg -S 50");
 //  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
 
   // Night Time
@@ -1411,3 +1412,4 @@ void GetLatestImage(char * fn)
     pclose(fp);
 }
 */
+
