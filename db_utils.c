@@ -316,28 +316,29 @@ SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table)
 // Table Purging ///////////////////////////////////////////////////////////////
 void PurgeOldSuspActivity(MYSQL * conn)
 {
+    MYSQL_RES * result;
+    MYSQL_ROW row;
     char query[K_QUERY_STRING_LENGTH];
-    sprintf(query, "SELECT * FROM %s", table);
+    sprintf(query, "SELECT * FROM %s", (char *)K_TBL_SUSP_ACTIVITY);
 
+    int num_entries = 0;
     int id, t0, t1;
 
     if (mysql_query(conn, query)) 
     {
         fprintf(stderr, "%s\n", mysql_error(conn));
-        return NULL;
+        return;
     }
 
     result = mysql_store_result(conn);
     if (result == NULL) 
     {
         fprintf(stderr, "%s\n", mysql_error(conn));
-        return NULL;
+        return;
     }
 
-    num_fields = mysql_num_fields(result);
-
     while ((row = mysql_fetch_row(result))) 
-    { 
+    {
         // Get the needed values
         id = atoi(row[0]);
         t0 = atoi(row[1]);
@@ -357,7 +358,6 @@ void PurgeOldSuspActivity(MYSQL * conn)
 
 void DeleteEntryFromSuspActivity(MYSQL * conn, int id)
 {
-    int id, t0, t1;
     char query[K_QUERY_STRING_LENGTH];
     sprintf(query, "DELETE FROM %s WHERE car_id = %d", (char *)K_TBL_SUSP_ACTIVITY, id);
 
