@@ -59,7 +59,7 @@ int main(int argc, char** argv )
   bool carParked = true;
   bool monitorON = true;
   bool resetCount = false;
-  bool justParked = true;
+  bool justParked = false;
   bool alert = false;
   bool haveBC = false;
   Window carWindow;
@@ -75,6 +75,7 @@ int main(int argc, char** argv )
   topLeft.y = 650;
   width = 165;
   height = 50;
+  vector<SUSP_ACTIVITY_T> alertList;
 
   // testing
   //cout << "interpolate " << Interpolate(3, x_vals) << endl;
@@ -147,9 +148,23 @@ int main(int argc, char** argv )
 
 
     // Suspicious Activity
-/*    #ifdef __arm__  // only on raspberry pi
+    #ifdef __arm__  // only on raspberry pi
       cars = GetParkedCars(conn);
     #endif
+      if(!justParked)
+      {
+        for(int i = 0, i < cars.length; i++)
+        {
+          if(cars[i].susp_activity == 1)
+          {
+            justParked = true;
+            topLeft = cars[i].tl;
+            width = 165;
+            height = 50;
+            mycar = SUSP_ACTIVITY_T(cars[i].id, 0,0, NULL)
+          } 
+        }
+      }
     cout << "susp start" << endl;
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
     if(justParked)
@@ -176,6 +191,11 @@ int main(int argc, char** argv )
       alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow, edgeList);
       clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
       cout << "Alert" << alert << endl;
+      if(alert == 1)
+      {
+        alertList.append(mycar)
+        InsertSuspActivity(alertList, conn)
+      }
     }
  
     loopCount = loopCount + 1;
@@ -184,7 +204,7 @@ int main(int argc, char** argv )
     {
       loopCount = 0;
     }
-*/
+
 //    alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
     cout << "base " << baseCount << endl;
