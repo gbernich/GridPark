@@ -14,6 +14,7 @@ extern "C" {
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 // MYSQL admin /////////////////////////////////////////////////////////////////
 MYSQL * OpenDB(char * dbName)
@@ -310,6 +311,63 @@ SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table)
 
     return head;
 }
+////////////////////////////////////////////////////////////////////////////////
+
+// Table Purging ///////////////////////////////////////////////////////////////
+void PurgeOldSuspActivity(MYSQL * conn)
+{
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "SELECT * FROM %s", table);
+
+    int id, t0, t1;
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return NULL;
+    }
+
+    result = mysql_store_result(conn);
+    if (result == NULL) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return NULL;
+    }
+
+    num_fields = mysql_num_fields(result);
+
+    while ((row = mysql_fetch_row(result))) 
+    { 
+        // Get the needed values
+        id = atoi(row[0]);
+        t0 = atoi(row[1]);
+        t1 = (int)time(NULL); // current time
+
+        // Check if too old, if yes, clear it
+        if(t1 - t0 > K_SUSP_ACTIVITY_PURGE_TIME)
+        {
+            // purge
+            DeleteEntryFromSuspActivity(conn, id);
+        }
+
+    }
+
+    mysql_free_result(result);
+}
+
+void DeleteEntryFromSuspActivity(MYSQL * conn, int id)
+{
+    int id, t0, t1;
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "DELETE FROM %s WHERE car_id = %d", (char *)K_TBL_SUSP_ACTIVITY, id);
+
+    if (mysql_query(conn, query)) 
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return NULL;
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // Experimenting ///////////////////////////////////////////////////////////////

@@ -38,6 +38,9 @@ extern "C" {
 // Global Strings
 #define K_QUERY_STRING_LENGTH   128
 
+// Suspicious Acivity
+#define K_SUSP_ACTIVITY_PURGE_TIME  60 // in seconds
+
 // Experimenting
 #define K_TEST_DB "testdb"
 
@@ -79,6 +82,10 @@ int LockTableForWrite(MYSQL * conn, char * table);
 OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table);
 PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table);
 SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table);
+
+// Table Purging
+void PurgeOldSuspActivity(MYSQL * conn);
+void DeleteEntryFromSuspActivity(MYSQL * conn, int id);
 
 // Experimenting
 int CreateTestEntry(MYSQL * conn, int id, int num);
