@@ -972,7 +972,7 @@ bool DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
   //edgeSum = GetSumOfWindow(image, carWindow, thresh);
   edgeSum = (int)cv::sum(image)[0];
   cout << "          edgeSum " << edgeSum << endl;
-  if (edgeSum > 1.5 * baseCount)
+  if (edgeSum > 1.2 * baseCount)
     return true;
   else
     return false;

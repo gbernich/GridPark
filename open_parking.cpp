@@ -223,6 +223,7 @@ int main(int argc, char** argv )
         {
           #ifdef __arm__
             cout << "                         writing" << endl;
+            alertList.push_back(act);
             InsertSuspActivity(alertList, conn);
           #endif
         }
@@ -235,7 +236,9 @@ int main(int argc, char** argv )
           if (++purgeCount >= K_PURGE_THRESHOLD)
           {
             PurgeAllSuspActivity(conn);
+            alertList.clear();
             purgeCount = 0;
+            pedCount = 0;
             cout << "                       purging" << endl;
           }
         #endif
