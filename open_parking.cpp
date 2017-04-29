@@ -177,13 +177,14 @@ int main(int argc, char** argv )
       cln = edges.clone();
       baseImg = cln(roi);
     }
-      
+
     if(justParked and !haveBC)
     {
       // take second "base" to compare
       cv::subtract(edges(roi), baseImg, subImg);
       subImg = abs(subImg);
       baseCount = (int)cv::sum(edges(roi))[0];
+      cout << "base " << baseCount << endl;
       haveBC = true;
       // if(loopCount == 0)
       // {
