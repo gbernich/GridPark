@@ -178,7 +178,7 @@ int main(int argc, char** argv )
       baseImg = cln(roi);
     }
 
-    if(justParked and !haveBC)
+    else if(justParked and !haveBC)
     {
       // take second "base" to compare
       cv::subtract(edges(roi), baseImg, subImg);
@@ -222,6 +222,7 @@ int main(int argc, char** argv )
         if (++pedCount == K_PED_CONSECUTIVE_DETECTS)
         {
           #ifdef __arm__
+            cout << "                         writing" << endl;
             InsertSuspActivity(alertList, conn);
           #endif
         }
@@ -232,7 +233,11 @@ int main(int argc, char** argv )
       {
         #ifdef __arm__
           if (++purgeCount >= K_PURGE_THRESHOLD)
+          {
             PurgeAllSuspActivity(conn);
+            purgeCount = 0;
+            cout << "                       purging" << endl;
+          }
         #endif
       }
 
