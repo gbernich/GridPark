@@ -172,6 +172,10 @@ int main(int argc, char** argv )
           roi.y = cars[i].tl.y;
           roi.width = cars[i].br.x - cars[i].tl.x;
           roi.height = cars[i].br.y - cars[i].tl.y;
+
+          cout << "          x " << roi.x;
+          cout << "          y " << roi.y;
+
           width = 165;
           height = 50;
           act.car_id = cars[i].id;
@@ -196,7 +200,7 @@ int main(int argc, char** argv )
       // take second "base" to compare
       //cv::subtract(edges(roi), baseImg, subImg);
       //subImg = abs(subImg);
-      PseudoSubtract(edges(roi), baseImg, subImg);
+      subImg = PseudoSubtract(edges(roi), baseImg);
       baseCount = (int)cv::sum(subImg)[0];
       cout << "base " << baseCount << endl;
       haveBC = true;
@@ -231,7 +235,7 @@ int main(int argc, char** argv )
 
       //cv::subtract(edges(roi), baseImg, subImg);
       //subImg = abs(subImg);
-      PseudoSubtract(edges(roi), baseImg, subImg);
+      subImg = PseudoSubtract(edges(roi), baseImg);
       cout << "sub sum " << sum(subImg)[0] << endl;
       imwrite("b_base.jpg", baseImg);
       imwrite("b_sub.jpg", subImg);

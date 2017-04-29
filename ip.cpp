@@ -972,7 +972,7 @@ bool DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
   //edgeSum = GetSumOfWindow(image, carWindow, thresh);
   edgeSum = (int)cv::sum(image)[0];
   cout << "          edgeSum " << edgeSum << endl;
-  if (edgeSum > 1.2 * baseCount)
+  if (edgeSum > K_THRESHOLD_MULTIPLIER * baseCount)
     return true;
   else
     return false;
@@ -1007,7 +1007,7 @@ int UpdateEdgeList(int* edgeList, int newSum)
   return avgSum;
 }
 
-void PseudoSubtract(Mat baseImg, Mat newImg, Mat subImg)
+Mat PseudoSubtract(Mat baseImg, Mat newImg)
 {
   int row, col;
   int x = 0;
@@ -1016,7 +1016,10 @@ void PseudoSubtract(Mat baseImg, Mat newImg, Mat subImg)
   bool baseFlag = false;
 
   // Clear the sub image
-  subImg = Mat(subImg.size().height, subImg.size().width, CV_32F, double(0));
+  Mat subImg = Mat(baseImg.size().height, baseImg.size().width, CV_32F, double(0));
+
+  cout << "width " << subImg.size().width << endl;
+  cout << "height " << subImg.size().height << endl;
 
   // Loop through new image by the sub section interval
   for (row = 0; row < subImg.size().height; row += K_SUB_INTERVAL)
@@ -1037,14 +1040,18 @@ void PseudoSubtract(Mat baseImg, Mat newImg, Mat subImg)
             baseFlag = true;
         }
       }
-
       // Perform the Pseudo Subtract
       if (newFlag ^ baseFlag)
       {
-        subImg.at<float>(row, col) = 1000;
+        subImg.at<float>(row, col) = 100;
       }
+
+      newFlag = false;
+      baseFlag = false;
     }
   }
+
+  return subImg;
 }
 
 Window CreateWindow(Corner topLeft, int width, int height, float theta)
