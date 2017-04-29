@@ -1007,7 +1007,45 @@ int UpdateEdgeList(int* edgeList, int newSum)
   return avgSum;
 }
 
+void PseudoSubtract(Mat baseImg, Mat newImg, Mat subImg)
+{
+  int row, col;
+  int x = 0;
+  int y = 0;
+  bool newFlag  = false;
+  bool baseFlag = false;
 
+  // Clear the sub image
+  subImg = Mat(subImg.size().height, subImg.size().width, CV_32F, double(0));
+
+  // Loop through new image by the sub section interval
+  for (row = 0; row < subImg.size().height; row += K_SUB_INTERVAL)
+  {
+    for (col = 0; col < subImg.size().width; col += K_SUB_INTERVAL)
+    {
+      x = col;
+      y = row;
+
+      // See if there are any edges in window
+      while(x++ < col + K_SUB_INTERVAL)
+      {
+        while (y++ < row + K_SUB_INTERVAL)
+        {
+          if (newImg.at<float>(y, x) > 0)
+            newFlag = true;
+          if (baseImg.at<float>(y, x) > 0)
+            baseFlag = true;
+        }
+      }
+
+      // Perform the Pseudo Subtract
+      if (newFlag ^ baseFlag)
+      {
+        subImg.at<float>(row, col) = 1000;
+      }
+    }
+  }
+}
 
 Window CreateWindow(Corner topLeft, int width, int height, float theta)
 {

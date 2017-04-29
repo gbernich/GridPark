@@ -194,8 +194,9 @@ int main(int argc, char** argv )
     if(justParked and !haveBC and haveBaseImg)
     {
       // take second "base" to compare
-      cv::subtract(edges(roi), baseImg, subImg);
-      subImg = abs(subImg);
+      //cv::subtract(edges(roi), baseImg, subImg);
+      //subImg = abs(subImg);
+      PseudoSubtract(edges(roi), baseImg, subImg);
       baseCount = (int)cv::sum(subImg)[0];
       cout << "base " << baseCount << endl;
       haveBC = true;
@@ -228,8 +229,9 @@ int main(int argc, char** argv )
     {
 //      cout << "haveBC" << endl;
 
-      cv::subtract(edges(roi), baseImg, subImg);
-      subImg = abs(subImg);
+      //cv::subtract(edges(roi), baseImg, subImg);
+      //subImg = abs(subImg);
+      PseudoSubtract(edges(roi), baseImg, subImg);
       cout << "sub sum " << sum(subImg)[0] << endl;
       imwrite("b_base.jpg", baseImg);
       imwrite("b_sub.jpg", subImg);

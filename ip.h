@@ -49,6 +49,7 @@ using namespace std;
 // Suspicious Activity / Pedestrian Detection
 #define K_PURGE_THRESHOLD           4 // technically 3 images, but counter starts at 1
 #define K_PED_CONSECUTIVE_DETECTS   2 // 2 images in a row to alert the user
+#define K_SUB_INTERVAL              3
 
 ///// REGION DIMENSIONS /////
 #define K_NUM_SUBREGIONS    4
@@ -257,6 +258,7 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
 bool DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList);
 int GetBaseCount(Mat image, Window carWindow);
 int UpdateEdgeList(int * edgeList, int edgeSum);
+void PseudoSubtract(Mat baseImg, Mat newImg, Mat subImg);
 
 // Database
 vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * spot_id);
