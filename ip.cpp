@@ -1068,9 +1068,9 @@ vector<OPEN_SPOT_T> FormatSpacesForDB(vector<Opening> spaces, int region, int * 
 
     GetCornersOfSpot(corners, region, spaces.at(i).start);
     spot.corner0  = spaces.at(i).start - 20; // top left x
-    spot.corner1  = GetYPositionOfWindow(region, spaces.at(i).start, 0); // top left y
+    spot.corner1  = GetYPositionOfWindow(region, spaces.at(i).start, 0, spaces.at(i).length); // top left y
     spot.corner2  = spaces.at(i).start + spaces.at(i).length + 20; // bottom right x
-    spot.corner3  = GetYPositionOfWindow(region, spaces.at(i).start, 1); // bottom right y
+    spot.corner3  = GetYPositionOfWindow(region, spaces.at(i).start, 1, spaces.at(i).length); // bottom right y
 
     spaces_db.push_back(spot);
   }
@@ -1178,7 +1178,7 @@ int GetYPositionOfSpot(int regionId, int start)
   return y;
 }
 
-int GetYPositionOfWindow(int regionId, int start, int topBot)
+int GetYPositionOfWindow(int regionId, int start, int topBot, int spotLength)
 {
   int y = 0;
 
@@ -1204,9 +1204,9 @@ int GetYPositionOfWindow(int regionId, int start, int topBot)
   }
 
   if (topBot == 0) // upper
-    return y - 110;
+    return y - (spotLength/2);
   else             // lower
-    return y + 110;
+    return y + (spotLength/2);
 }
 
 // in development
@@ -1398,7 +1398,8 @@ void TakeNewImage()
   //sprintf(fn, "img.jpg", num);
 
   // Get the gamma setting for the camera
-  gamma = GetGamma();
+//  gamma = GetGamma();
+  gamma = 10;
 
   // Day Time
 //  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");

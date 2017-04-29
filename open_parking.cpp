@@ -59,13 +59,14 @@ int main(int argc, char** argv )
   bool justParked = false;
   bool pedDetected = false;
   bool alert = false;
+  bool haveBaseImg = false;
   int  pedCount = 0;
   bool haveBC = false;
   Window carWindow;
-  carWindow.tl.x = 1150;
-  carWindow.tl.y = 900;
-  carWindow.br.x = 1270;
-  carWindow.br.y = 1050;
+  carWindow.tl.x = 830;
+  carWindow.tl.y = 870;
+  carWindow.br.x = 1265;
+  carWindow.br.y = 1040;
 
   int baseCount;
   int bcSum;
@@ -121,7 +122,7 @@ int main(int argc, char** argv )
       sums     = GetSlidingSum(edges, 0, startWin, endWin, regionId);
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin, regionId);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
-//      WriteSlidingWindowFloat((char *)("../matlab/edges.txt"), argv[1], sumsNorm);
+//      WriteSlidingWindowFloat((char *)("../matlab/edges.txt"), " ", sumsNorm);
 //break;
 //      cout << "region " << regionId << endl;
       //for (i = 0; i < openings.size(); i++)
@@ -158,7 +159,8 @@ int main(int argc, char** argv )
     #endif
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
 
-    if(!justParked)
+//    if(!justParked)
+    if (cars.size() > 0)
     {
       for(i = 0; i < cars.size(); i++)
       {
@@ -166,6 +168,10 @@ int main(int argc, char** argv )
         {
           justParked = true;
           topLeft = cars[i].tl;
+          roi.x = cars[i].tl.x;
+          roi.y = cars[i].tl.y;
+          roi.width = cars[i].br.x - cars[i].tl.x;
+          roi.height = cars[i].br.y - cars[i].tl.y;
           width = 165;
           height = 50;
           act.car_id = cars[i].id;
@@ -174,16 +180,23 @@ int main(int argc, char** argv )
         }
         break;
       }
-      cln = edges.clone();
-      baseImg = cln(roi);
+
+//    if (cars.size() == 0)
+//      justParked = false;
+
+    }else {
+      justParked = false;
+      haveBC = false;
+      haveBaseImg = false;
     }
 
-    else if(justParked and !haveBC)
+    //else if(justParked and !haveBC)
+    if(justParked and !haveBC and haveBaseImg)
     {
       // take second "base" to compare
       cv::subtract(edges(roi), baseImg, subImg);
       subImg = abs(subImg);
-      baseCount = (int)cv::sum(edges(roi))[0];
+      baseCount = (int)cv::sum(subImg)[0];
       cout << "base " << baseCount << endl;
       haveBC = true;
       // if(loopCount == 0)
@@ -203,13 +216,24 @@ int main(int argc, char** argv )
       // }
     }
 
+    // Get Base Image
+    if (justParked and !haveBaseImg)
+    {
+      cln = edges.clone();
+      baseImg = cln(roi);
+      haveBaseImg = true;
+    }
+
     if(haveBC)
     {
 //      cout << "haveBC" << endl;
 
       cv::subtract(edges(roi), baseImg, subImg);
       subImg = abs(subImg);
-      cout << "sub sum " << sum(subImg) << endl;
+      cout << "sub sum " << sum(subImg)[0] << endl;
+      imwrite("b_base.jpg", baseImg);
+      imwrite("b_sub.jpg", subImg);
+      imwrite("b_new.jpg", edges(roi));
 
 //      alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, subImg, carWindow, edgeList);
       pedDetected = DetectActivity(subImg, carWindow, baseCount, NULL);
@@ -232,13 +256,13 @@ int main(int argc, char** argv )
       }
       else // no detect, purge DB 
       {
+        pedCount = 0;
         #ifdef __arm__
           if (++purgeCount >= K_PURGE_THRESHOLD)
           {
             PurgeAllSuspActivity(conn);
             alertList.clear();
             purgeCount = 0;
-            pedCount = 0;
             cout << "                       purging" << endl;
           }
         #endif
