@@ -1414,7 +1414,7 @@ void TakeNewImage()
 
 int GetGamma()
 {
-  unsigned int seconds = time(NULL) % (24 * 60 * 60);
+  unsigned int seconds = (time(NULL) - K_GMT_OFFSET_SECONDS) % (24 * 60 * 60);
 
   // We could collect data and interpolate to find a better gamma setting
   // But for now, lets just do daytime and nighttime

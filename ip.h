@@ -38,8 +38,9 @@ using namespace std;
 #define IP_WINDOW_WIDTH     10
 
 // Time of Day
-#define K_SEVEN_AM_SECONDS  25200
-#define K_EIGHT_PM_SECONDS  72000
+#define K_GMT_OFFSET_SECONDS 14400
+#define K_SEVEN_AM_SECONDS   25200
+#define K_EIGHT_PM_SECONDS   72000
 
 // Openings
 #define K_MINIMUM_OPENING_LENGTH      3
