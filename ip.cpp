@@ -1393,12 +1393,16 @@ void WriteOpenings(char * fn, char * imgfn, vector<Opening> openings)
 void TakeNewImage()
 {
   char cmd[160] = {0};
+  int gamma = 0;
   //sprintf(fn, "img_%04u.jpg", num);
   //sprintf(fn, "img.jpg", num);
 
+  // Get the gamma setting for the camera
+  gamma = GetGamma();
+
   // Day Time
 //  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
-  sprintf(cmd, "fswebcam -q -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=60%% img.jpg -S 50");
+  sprintf(cmd, "fswebcam -q -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=%d%% img.jpg -S 50", gamma);
 //  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
 
   // Night Time
@@ -1406,6 +1410,21 @@ void TakeNewImage()
 
   cout << cmd << endl;
   system(cmd);
+}
+
+int GetGamma()
+{
+  unsigned int seconds = time(NULL) % (24 * 60 * 60);
+
+  // We could collect data and interpolate to find a better gamma setting
+  // But for now, lets just do daytime and nighttime
+
+  // Daytime
+  if (K_SEVEN_AM_SECONDS > seconds && seconds < K_EIGHT_PM_SECONDS)
+    return 10;
+  // Nighttime
+  else
+    return 60;
 }
 
 /*

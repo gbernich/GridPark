@@ -13,6 +13,7 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include <time.h>
 #include "common.h"
 
 #ifdef __arm__
@@ -35,6 +36,10 @@ using namespace std;
 
 // Sliding Window
 #define IP_WINDOW_WIDTH     10
+
+// Time of Day
+#define K_SEVEN_AM_SECONDS  25200
+#define K_EIGHT_PM_SECONDS  72000
 
 // Openings
 #define K_MINIMUM_OPENING_LENGTH      3
@@ -271,5 +276,6 @@ void WriteOpenings(char * fn, char * imgfn, vector<Opening> openings);
 
 // System
 void TakeNewImage();
+int GetGamma();
 
 #endif
