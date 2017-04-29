@@ -3,7 +3,7 @@
 // Author:              Garrett Bernichon
 // Function:            To receive data and write it to the necessary
 //                      mySQL database table.
-// Command Line Args:   
+// Command Line Args:   sudo ./recv <ip address of sender> <data type>
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>

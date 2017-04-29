@@ -216,19 +216,8 @@ struct SuspAct
     int length_of_activity;
 };
 
-
-
-Mat GetOptimalCorners(Mat src_gray, int * thresh);
-
 // Edges
 Mat GetEdges(Mat src, int lowThreshold, int ratio, int kernelSize);
-
-int CountMeaningfulEdges(Window win, Mat edges, float minDiff, int edge);
-bool IsOnStartingEdge(ImgPoint pos, Window win, int edge);
-ImgPoint GetNextStartingPoint(ImgPoint currPos, Window win, int edge);
-ImgPoint TraverseEdge(Window win, Mat edges, ImgPoint startPos, int edge);
-ImgPoint GetNextPos(Window win, Mat edges, ImgPoint currPos, ImgPoint* lastPos);
-bool IsInsideWindow(Window win, ImgPoint pos);
 
 // Utilities
 vector<int>     GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWindow, int regionId);
@@ -243,6 +232,7 @@ vector<Opening> GetOpenings(vector<int> leftEdges, vector<int> rightEdges);
 vector<Window>  GetSlidingWindow(Window startWindow, Window endWindow, int imgHeight, int imgWidth, int regionId);
 bool            IsWithinBounds(int imgHeight, int imgWidth, Window win);
 int             Interpolate(int x, vector<xy> data);
+bool            IsInsideWindow(Window win, ImgPoint pos);
 
 Mat     GetSubRegionImage(Mat original, int regionId);
 Window  GetStartWindow(int regionId);
@@ -254,11 +244,7 @@ Window  CreateWindow(Corner topLeft, int width, int height, float theta);
 double  Degrees2Radians(double deg);
 
 //Pedestrian Detection
-bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
-                    int* actCount, int baseCount, Mat image, Window carWindow, int* edgeList);
-bool DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList);
-int GetBaseCount(Mat image, Window carWindow);
-int UpdateEdgeList(int * edgeList, int edgeSum);
+bool DetectActivity(Mat image, int baseCount);
 Mat PseudoSubtract(Mat baseImg, Mat newImg);
 
 // Database

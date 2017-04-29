@@ -3,7 +3,7 @@
 // Author:              Garrett Bernichon
 // Function:            To send data when it is available so the recv process
 //                      can update its mySQL database table.
-// Command Line Args:   
+// Command Line Args:   ./send <data type>
 //-----------------------------------------------------------------------------
 #include <stdio.h>
 #include <string.h>
@@ -149,9 +149,6 @@ int main(int argc, char *argv[])
 
         // Close connection
         close(connfd);
-
-        // Sleep for some time
-//        sleep(1);
     }
 
 

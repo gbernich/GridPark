@@ -31,60 +31,6 @@ static const int beason_sw_win[240] = {665,666,667,668,669,670,671,671,672,673,6
 static const int cooksie_nw_win[125] = {609,608,607,606,605,605,604,603,602,601,600,600,599,598,597,596,595,595,594,593,592,591,590,590,589,588,587,586,585,585,584,583,582,581,580,580,579,578,577,576,575,575,574,573,572,571,570,570,569,568,567,566,565,565,564,563,562,561,560,560,558,557,556,555,553,552,551,550,548,547,546,545,544,542,541,540,539,537,536,535,534,532,531,530,529,528,526,525,524,523,521,520,519,518,516,515,514,513,512,510,509,508,507,505,504,503,502,500,499,498,497,496,494,493,492,491,489,488,487,486,484,483,482,481,480};
 
 
-// Corner Detection ////////////////////////////////////////////////////////////
-Mat GetOptimalCorners(Mat src, int * thresh)
-{
-  vector<Corner> corners, corners_tmp;
-  Corner currCorner;
-  Mat dst, dst_norm, dst_norm_scaled;
-  dst = Mat::zeros( src.size(), CV_32FC1 );
-  int iters = 0;
-
-  // Detector parameters
-  int blockSize = 2;
-  int apertureSize = 3;
-  double k = 0.04;
-
-  /// Detecting corners
-  cornerHarris( src, dst, blockSize, apertureSize, k, BORDER_DEFAULT );
-
-  /// Normalizing
-  normalize( dst, dst_norm, 0, 255, NORM_MINMAX, CV_32FC1, Mat() );
-  convertScaleAbs( dst_norm, dst_norm_scaled );
-
-  do {
-    corners = corners_tmp;
-    corners_tmp.clear();
-
-    for( int j = 0; j < dst_norm.rows ; j++ ) {
-      for( int i = 0; i < dst_norm.cols; i++ ) {
-        if( (int) dst_norm.at<float>(j,i) > *thresh )
-        {
-          currCorner.x = i;
-          currCorner.y = j;
-          corners_tmp.push_back(currCorner);
-        }
-      }
-    }
-    iters++;
-    (*thresh)--;
-  } while (corners_tmp.size() < IP_CORNERS_FOUND_SATISFIED);
-
-  (*thresh)++;
-  return dst_norm;  
-
-  // // Get the last good corner vector
-  // if (iters == 1)
-  //    corners = corners_tmp;
-
-  // // Debugging
-  // printf("Thresh = %d, corners = %lu\n", *thresh+1, corners.size());
-
-  // // Set up the threshold for the next iteration
-  // *thresh += 1 + IP_CORNERS_NEXT_THRESH_DIFF;
-
-  // return corners;
-}
 
 // Edge Detection //////////////////////////////////////////////////////////////
 Mat GetEdges(Mat src, int lowThreshold, int ratio, int kernelSize)
@@ -98,213 +44,8 @@ Mat GetEdges(Mat src, int lowThreshold, int ratio, int kernelSize)
     Canny(blurred, edges, lowThreshold, lowThreshold * ratio, kernelSize);
 
     normalize(edges, edges_norm, 0, 255, NORM_MINMAX, CV_32FC1, Mat());
-    //convertScaleAbs( edges_norm, dst_norm_scaled );
-
-    /// Using Canny's output as a mask, we display our result
-    // dst = Scalar::all(0);
-
-    // src.copyTo( dst, edges);
-    // imshow( window_name, egdes );
 
     return edges_norm;
-}
-
-int CountMeaningfulEdges(Window win, Mat edges, float minDiff, int edge)
-{
-  ImgPoint currPos, startPos, endPos;
-
-  if (edge == K_LEFT_EDGE){
-    startPos.x = win.tl.x;
-    startPos.y = win.tl.y;
-  }
-  else{
-    startPos.x = win.tl.x + win.width * cos(Degrees2Radians(win.theta));
-    startPos.y = win.tl.y + win.width * sin(Degrees2Radians(win.theta));
-  }
-  
-  currPos = startPos;
-  int count = 0;
-
-  //printf("1\n");
-  // Start at the top left of the window
-  // and move down the edge of the window
-  while (currPos.x != -1)
-  {
-    //printf("2\n");
-    // If there is an edge, traverse it
-    if (edges.at<float>(currPos.y, currPos.x) > 0) 
-    {
-      //printf("3\n");
-      endPos = TraverseEdge(win, edges, currPos, edge);
-      if (endPos.x != -1){
-        //cout << "start " << currPos.x << " " << currPos.y << endl;
-        //cout << "end " << endPos.x << " " << endPos.y << endl;
-
-        if (IsOnStartingEdge(endPos, win, edge))
-        {
-          // cout << "start " << currPos.y << " end " << endPos.y << endl;
-          // if ((float)(endPos.y - currPos.y) >= minDiff * (float)(win.br.y - win.tl.y))
-          // printf("dist = %f\n", GetDistance(currPos, endPos));
-          if (GetDistance(currPos, endPos) >= minDiff * (float)(win.height))
-          //if (GetDistance(currPos, endPos) >= 2)
-          {
-            count++;
-            //cout << "counted, dist " << GetDistance(currPos, endPos) << endl;
-          }
-        }
-      }
-    }
-
-    // Move along the window edge
-    currPos = GetNextStartingPoint(currPos, win, edge);
-  }
-  //cout << count << endl;
-  return count;
-}
-
-bool IsOnStartingEdge(ImgPoint pos, Window win, int edge)
-{
-  if (edge == K_LEFT_EDGE){
-    //printf("expected %d, actual %d\n", (int)((float)win.tl.x + (pos.y - win.tl.y) * tan(Degrees2Radians(win.theta))),pos.x);
-    if (pos.x == (int)((float)win.tl.x + (pos.y - win.tl.y) * tan(Degrees2Radians(win.theta))))
-      return true;
-  }else{
-    if (pos.x == (int)((float)win.tr.x + (pos.y - win.tr.y) * tan(Degrees2Radians(win.theta))))
-      return true;
-  }
-
-  return false;
-}
-
-ImgPoint GetNextStartingPoint(ImgPoint currPos, Window win, int edge)
-{
-  ImgPoint nextPos;
-  nextPos.y = currPos.y + 1;
-
-  if (edge == K_LEFT_EDGE){
-    nextPos.x = win.tl.x + (nextPos.y - win.tl.y) * tan(Degrees2Radians(win.theta));
-    if (nextPos.y > win.bl.y)
-    {
-      nextPos.x = -1;
-      nextPos.y = -1;
-    }
-  }else{
-    nextPos.x = win.tr.x + (nextPos.y - win.tr.y) * tan(Degrees2Radians(win.theta));
-    if (nextPos.y > win.br.y)
-    {
-      nextPos.x = -1;
-      nextPos.y = -1;
-    }
-  }
-  //printf("start x %d, y %d\n", nextPos.x, nextPos.y);
-  return nextPos;
-}
-
-ImgPoint TraverseEdge(Window win, Mat edges, ImgPoint startPos, int edge)
-{
-  int front = 0;
-  int edgeLength = 0;
-  ImgPoint lastPos[9] = {{-2,-2}};
-  ImgPoint currPos = startPos;
-  lastPos[front++] = currPos;
-  ImgPoint nextPos = GetNextPos(win, edges, currPos, lastPos);
-  if (nextPos.x == -1)
-    currPos = nextPos;
-  //printf("4\n");
-  while (nextPos.x != -1)
-  {
-    //printf("5\n");
-    //lastPos.push_front(currPos);
-    currPos = nextPos;
-
-    // if ((currPos.x == win.tl.x && edge == K_LEFT_EDGE) ||
-    //     (currPos.x == win.br.x && edge == K_RIGHT_EDGE))
-    if (IsOnStartingEdge(currPos, win, edge))
-      break;
-    nextPos = GetNextPos(win, edges, currPos, lastPos);
-    
-    if(edgeLength++ >= K_MAX_EDGE_LENGTH) // prevent infinite loops
-    {
-      currPos.x = -1;
-      currPos.y = -1;
-      break;
-    }
-
-    lastPos[front++] = currPos;
-    if (front > 8)
-      front = 0;
-    //cout << nextPos.x << " " << nextPos.y << endl;
-  }
-  //printf("finished edge, length %d\n", edgeLength);
-
-  return currPos;
-}
-
-ImgPoint GetNextPos(Window win, Mat edges, ImgPoint currPos, ImgPoint* lastPos)
-{
-  ImgPoint nextPos, tryPos;
-  int attemptedPos[3][3] = {{0, 0, 0}, {0, 1, 0}, {0, 0, 0}}; // only for vertical
-  int xDiff, yDiff;
-
-  // Mark last positions so that we don't go in a circle forever
-  for(int i = 0; i < 9; i++)
-  {
-    xDiff = (lastPos[i].x - currPos.x) + 1;
-    yDiff = (lastPos[i].y - currPos.y) + 1;
-    if (0 <= xDiff && xDiff <= 2 && 0 <= yDiff && yDiff <= 2)
-      attemptedPos[yDiff][xDiff] = 1;
-  }
-
-  // Init to null
-  nextPos.x = -1;
-  nextPos.y = -1;
-
-  for (int j = 2; j >= 0; j--){
-    for (int i = 0; i <= 2; i++){
-      tryPos.x = currPos.x + i - 1;
-      tryPos.y = currPos.y + j - 1;
-      if( attemptedPos[j][i] == 0 &&
-          edges.at<float>(tryPos.y, tryPos.x) > 0 &&
-          IsInsideWindow(win, tryPos))
-      {
-        nextPos = tryPos;
-        j = -1; i = 3; break;
-      }
-    }
-  }
-  //if(nextPos.x == -1)
-    //printf("GetNext is null\n");
-  return nextPos;
-
-}
-
-bool IsInsideWindow(Window win, ImgPoint pos)
-{  
-  float top, bottom, left, right;
-
-  // if theta ~0.0 then treat as a vertical rectangle
-  if (-0.0001 <= win.theta && win.theta <= 0.0001)
-  {
-    if (win.tl.x <= pos.x && pos.x <= win.br.x &&
-        win.tl.y <= pos.y && pos.y <= win.br.y)
-      return true;
-    else
-      return false; 
-  }
-
-  // Create a slope for each edge
-  top     = (float)(win.tr.y - win.tl.y)/(float)(win.tr.x - win.tl.x);
-  bottom  = (float)(win.br.y - win.bl.y)/(float)(win.br.x - win.bl.x);
-  left    = (float)(win.bl.y - win.tl.y)/(float)(win.bl.x - win.tl.x);
-  right   = (float)(win.br.y - win.tr.y)/(float)(win.br.x - win.tr.x);
-  
-  // might only work for theta > 0
-  if (pos.y < win.tl.y + top    * (pos.x - win.tl.x))  { return false; }
-  if (pos.y > win.bl.y + bottom * (pos.x - win.bl.x))  { return false; }
-  if (pos.y > win.tl.y + left   * (pos.x - win.tl.x))  { return false; }
-  if (pos.y < win.tr.y + right  * (pos.x - win.tr.x))  { return false; }
-
-  return true;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -324,11 +65,10 @@ vector<int> GetSlidingSum(Mat img, int thresh, Window startWindow, Window endWin
   for (i = 0; i < windows.size(); i++)
   {
     win = windows.at(i);
-
     sum = GetSumOfWindow(img, windows.at(i), thresh);
-
     sums.push_back(sum);
   }
+
   return sums;
 }
 
@@ -346,11 +86,10 @@ vector<float> GetNormalizedSlidingSum(Mat img, int thresh, Window startWindow, W
   for (i = 0; i < windows.size(); i++)
   {
     win = windows.at(i);
-
     sum = GetSumOfWindow(img, windows.at(i), thresh);
-
     sums.push_back(sum / (float)windows.at(i).height);
   }
+
   return sums;
 }
 
@@ -385,8 +124,6 @@ int GetSumOfWindow(Mat img, Window win, int thresh)
       x++;
     }
 
-
-
     // Update y position
     y++;
 
@@ -397,25 +134,25 @@ int GetSumOfWindow(Mat img, Window win, int thresh)
   return sum;
 }
 
-vector<int> GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, float minDiff, int edge, int regionId)
-{
-  vector<Window> windows;
-  Window win;
-  vector<int> sums;
-  int sum, i, x, y = 0;
-  int pixel;
+// vector<int> GetSlidingEdges(Mat edges, Window startWindow, Window endWindow, float minDiff, int edge, int regionId)
+// {
+//   vector<Window> windows;
+//   Window win;
+//   vector<int> sums;
+//   int sum, i, x, y = 0;
+//   int pixel;
 
-  windows = GetSlidingWindow(startWindow, endWindow, edges.rows, edges.cols, regionId);
-  //printf("window size %lu\n", windows.size());
-  // Sum
-  for (i = 0; i < windows.size(); i++)
-  {
-    win = windows.at(i);
-    sum = CountMeaningfulEdges(win, edges, minDiff, edge);    
-    sums.push_back(sum);
-  }
-  return sums;
-}
+//   windows = GetSlidingWindow(startWindow, endWindow, edges.rows, edges.cols, regionId);
+//   //printf("window size %lu\n", windows.size());
+//   // Sum
+//   for (i = 0; i < windows.size(); i++)
+//   {
+//     win = windows.at(i);
+//     sum = CountMeaningfulEdges(win, edges, minDiff, edge);    
+//     sums.push_back(sum);
+//   }
+//   return sums;
+// }
 
 vector<Opening> GetOpeningsFromSums(vector<int> sums, int regionId)
 {
@@ -669,21 +406,15 @@ vector<Window> GetSlidingWindow(Window startWindow, Window endWindow, int imgHei
         tly += dy0;
         theta += dtheta;
         height += dheight;
-        //printf("%d %d %f %d\n", (int)tlx, (int)tly, theta, (int)height);
         
         // convert back to integers to save window
         tmp.x = tlx;
         tmp.y = ydata[i++];//tly;
         currWindow = CreateWindow(tmp, startWindow.width, height, theta);
-        // printf("%d %d   %d %d   %d %d   %d %d\n",
-        //   currWindow.tl.x, currWindow.tl.y,
-        //   currWindow.tr.x, currWindow.tr.y,
-        //   currWindow.bl.x, currWindow.bl.y,
-        //   currWindow.br.x, currWindow.br.y);
 
         stepCount--;
     }
-    //printf("length %lu\n", windows.size());
+
     return windows;
 }
 
@@ -733,6 +464,36 @@ int Interpolate(int x, vector<xy> data)
   }
 
   return -1;
+}
+
+
+bool IsInsideWindow(Window win, ImgPoint pos)
+{  
+  float top, bottom, left, right;
+
+  // if theta ~0.0 then treat as a vertical rectangle
+  if (-0.0001 <= win.theta && win.theta <= 0.0001)
+  {
+    if (win.tl.x <= pos.x && pos.x <= win.br.x &&
+        win.tl.y <= pos.y && pos.y <= win.br.y)
+      return true;
+    else
+      return false; 
+  }
+
+  // Create a slope for each edge
+  top     = (float)(win.tr.y - win.tl.y)/(float)(win.tr.x - win.tl.x);
+  bottom  = (float)(win.br.y - win.bl.y)/(float)(win.br.x - win.bl.x);
+  left    = (float)(win.bl.y - win.tl.y)/(float)(win.bl.x - win.tl.x);
+  right   = (float)(win.br.y - win.tr.y)/(float)(win.br.x - win.tr.x);
+  
+  // might only work for theta > 0
+  if (pos.y < win.tl.y + top    * (pos.x - win.tl.x))  { return false; }
+  if (pos.y > win.bl.y + bottom * (pos.x - win.bl.x))  { return false; }
+  if (pos.y > win.tl.y + left   * (pos.x - win.tl.x))  { return false; }
+  if (pos.y < win.tr.y + right  * (pos.x - win.tr.x))  { return false; }
+
+  return true;
 }
 
 Mat GetSubRegionImage(Mat original, int regionId)
@@ -940,71 +701,20 @@ float GetDistance(ImgPoint a, ImgPoint b)
 {
   float xDiff = (float)a.x - (float)b.x;
   float yDiff = (float)a.y - (float)b.y;
-  //printf("xDiff %f, yDiff %f\n", xDiff,yDiff);
+
   return sqrt(pow(xDiff, 2) + pow(yDiff, 2));
 }
 
-bool RunSusActivity(bool carParked, bool monitorON, bool resetCount, 
-  int* actCount, int baseCount, Mat image, Window carWindow, int* edgeList)
-{
-  int sus_thresh = 5;
-  int new_detect = 0;
-  bool alert = false;
-
-  if(carParked && monitorON)
-  {
-    if(resetCount){*actCount = 0;}
-    new_detect = (int)DetectActivity(image, carWindow, baseCount, edgeList);
-    *actCount = *actCount + new_detect;
-    if(*actCount > sus_thresh) {alert = true;}
-    return alert;
-  }
-  else
-  {
-    return alert;
-  }
-}
-
-bool DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
+bool DetectActivity(Mat image, int baseCount)//, int* edgeList)
 {
   int edgeSum = 0;
 
-  //edgeSum = GetSumOfWindow(image, carWindow, thresh);
   edgeSum = (int)cv::sum(image)[0];
   cout << "          edgeSum " << edgeSum << endl;
   if (edgeSum > K_THRESHOLD_MULTIPLIER * baseCount)
     return true;
   else
     return false;
-  // edgeAvg = UpdateEdgeList(edgeList, edgeSum);
-  // if (edgeAvg > 1.02 * baseCount) {activity = 1;}
-  // else {activity = 0;}
-  // cout << "Base Count" << baseCount << endl;
-  // cout << "New Sum" << edgeSum << endl;
-  // cout << "Edge Avg" << edgeAvg << endl;
-  // return activity;
-}
-
-int GetBaseCount(Mat image, Window carWindow)
-{
-  int edgeSum;
-  int thresh = 0;
-
-  edgeSum = GetSumOfWindow(image, carWindow, thresh);
-  return edgeSum;
-}
-
-int UpdateEdgeList(int* edgeList, int newSum)
-{
-  int avgSum;
-  for(int i=9; i > 0; i--)
-  {
-    edgeList[i] = edgeList[i-1];
-  }
-  edgeList[0] = newSum;
-  avgSum = (edgeList[0] + edgeList[1] + edgeList[2] + edgeList[3] + edgeList[4] 
-    + edgeList[5] + edgeList[6] + edgeList[7] + edgeList[8] + edgeList[9])/10;
-  return avgSum;
 }
 
 Mat PseudoSubtract(Mat baseImg, Mat newImg)
@@ -1077,15 +787,6 @@ Window CreateWindow(Corner topLeft, int width, int height, float theta)
   // bottom right
   win.br.x = topLeft.x + (int)(height * sin(Degrees2Radians(theta))) + (int)(width * cos(Degrees2Radians(theta)));
   win.br.y = topLeft.y + (int)(height * cos(Degrees2Radians(theta))) + (int)(width * sin(Degrees2Radians(theta)));
-
-  // printf("CreateWindow %d %d   %d %d   %d %d   %d %d\n",
-  //         win.tl.x, win.tl.y,
-  //         win.tr.x, win.tr.y,
-  //         win.bl.x, win.bl.y,
-  //         win.br.x, win.br.y);
-  // printf("%d %d   %d   %d   %f\n",
-  //         topLeft.x, topLeft.y,
-  //         width, height, theta);
 
   return win;
 }
@@ -1163,19 +864,9 @@ int GetXPositionOfSpot(int regionId, int start)
     break;
   case (K_COOKSIE_NW_ID):
     x = 33000 / img_width;
-    // lengthOfSub = 500;
-    // regionStart = 487;
-    // withinSub = (start - K_COOKSIE_NW_WIN_START_TP_X) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X);
-    // x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
-    // x *= 100;
     break;
   case (K_COOKSIE_SW_ID):
     x = 39000 / img_width;
-    // lengthOfSub = 500;
-    // regionStart = 487;
-    // withinSub = (start - K_COOKSIE_SW_WIN_START_TP_X) / (float)(K_COOKSIE_SW_WIN_END_TP_X - K_COOKSIE_SW_WIN_START_TP_X);
-    // x = (lengthOfSub / img_width) * withinSub + (regionStart / img_width);
-    // x *= 100;
     break;
   }
   return x;
@@ -1210,9 +901,6 @@ int GetYPositionOfSpot(int regionId, int start)
     regionEnd = 490;
     pseudoStart = (K_COOKSIE_NW_WIN_START_TP_X - start) * (K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X) + K_COOKSIE_NW_WIN_START_TP_Y;
     withinSub = (pseudoStart - K_COOKSIE_NW_WIN_START_TP_Y) / (float)(K_COOKSIE_NW_WIN_END_TP_Y - K_COOKSIE_NW_WIN_START_TP_Y);
-//    lengthOfSub = K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X;
-//    regionEnd = K_COOKSIE_NW_WIN_END_TP_Y;
-//    withinSub = (start - K_COOKSIE_NW_WIN_START_TP_X) / (float)(K_COOKSIE_NW_WIN_END_TP_X - K_COOKSIE_NW_WIN_START_TP_X);
     y = (lengthOfSub / img_height) * withinSub + (regionEnd / img_height);
     y *= 100;
     break;
@@ -1291,11 +979,6 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
   int i;
   char query[120] = {0};
 
-  // Lock table
-//  cout << "before lock" << endl;
-//  WaitForLockForWrite(conn, (char*)K_TBL_OPEN_PARKING);
-//  cout << "got lock" << endl;
-
   // Clear table
   ClearTable(conn, (char*)K_TBL_OPEN_PARKING);
   cout << "cleared table" << endl;
@@ -1313,18 +996,11 @@ void InsertOpenParking(vector<OPEN_SPOT_T> spaces_db, MYSQL * conn)
       spaces_db.at(i).corner2,
       spaces_db.at(i).corner3
     );
-//    printf("%s\n", query);
+
     if(InsertEntry(conn, query))
       cout << "error inserting" << endl;
   }
   cout << "made insertions (parking)" << endl;
-
-  // Unlock table
-//  if (UnlockTable(conn, (char*)K_TBL_OPEN_PARKING))
-//      cout << "could not unlock" << endl;
-//  else
-//      cout << "unlocked table" << endl;
-
 }
 
 vector<ParkedCar> GetParkedCars(MYSQL * conn)
@@ -1439,20 +1115,13 @@ void TakeNewImage()
 {
   char cmd[160] = {0};
   int gamma = 0;
-  //sprintf(fn, "img_%04u.jpg", num);
-  //sprintf(fn, "img.jpg", num);
 
   // Get the gamma setting for the camera
 //  gamma = GetGamma();
   gamma = 10;
 
   // Day Time
-//  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
   sprintf(cmd, "fswebcam -q -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=%d%% img.jpg -S 50", gamma);
-//  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
-
-  // Night Time
-  //sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=100%% -s contrast=100%% -s gamma=70%% img.jpg -S 10");
 
   cout << cmd << endl;
   system(cmd);
@@ -1472,13 +1141,4 @@ int GetGamma()
   else
     return 60;
 }
-
-/*
-void GetLatestImage(char * fn)
-{
-    FILE *fp = popen("ls | grep img_ | tail -2 | head -1", "r");
-    fscanf(fp, "%s", fn);
-    pclose(fp);
-}
-*/
 
