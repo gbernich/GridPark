@@ -85,6 +85,7 @@ SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table);
 
 // Table Purging
 void PurgeOldSuspActivity(MYSQL * conn);
+void PurgeAllSuspActivity(MYSQL * conn);
 void DeleteEntryFromSuspActivity(MYSQL * conn, int id);
 
 // Experimenting

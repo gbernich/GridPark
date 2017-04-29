@@ -973,7 +973,8 @@ int DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
 
   //edgeSum = GetSumOfWindow(image, carWindow, thresh);
   edgeSum = (int)cv::sum(image)[0];
-  if (edgeSum > 50000) {activity = 1;}
+  cout << "          edgeSum " << edgeSum << endl;
+  if (edgeSum > 1.5 * baseCount) {activity = 1;}
   else {activity = 0;}
   // edgeAvg = UpdateEdgeList(edgeList, edgeSum);
   // if (edgeAvg > 1.02 * baseCount) {activity = 1;}
@@ -1397,7 +1398,7 @@ void TakeNewImage()
 
   // Day Time
 //  sprintf(cmd, "fswebcam -r 1920x1080 -s brightness=auto -s contrast=auto -s gamma=auto img_`date +%Y%m%d%H%M%S`.jpg -S 30");
-  sprintf(cmd, "fswebcam -q -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=10%% img.jpg -S 50");
+  sprintf(cmd, "fswebcam -q -r 1920x1080 -s brightness=60%% -s contrast=80%% -s gamma=60%% img.jpg -S 50");
 //  sprintf(cmd, "fswebcam -r 1920x1080 img.jpg -S 50");
 
   // Night Time

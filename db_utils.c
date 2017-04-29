@@ -356,6 +356,24 @@ void PurgeOldSuspActivity(MYSQL * conn)
     mysql_free_result(result);
 }
 
+
+void PurgeAllSuspActivity(MYSQL * conn)
+{
+    MYSQL_RES * result;
+    MYSQL_ROW row;
+    char query[K_QUERY_STRING_LENGTH];
+    sprintf(query, "TRUNCATE %s", (char *)K_TBL_SUSP_ACTIVITY);
+
+    int num_entries = 0;
+    int id, t0, t1;
+
+    if (mysql_query(conn, query))
+    {
+        fprintf(stderr, "%s\n", mysql_error(conn));
+        return;
+    }
+}
+
 void DeleteEntryFromSuspActivity(MYSQL * conn, int id)
 {
     char query[K_QUERY_STRING_LENGTH];

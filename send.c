@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
         close(connfd);
 
         // Sleep for some time
-        sleep(1);
+//        sleep(1);
     }
 
 

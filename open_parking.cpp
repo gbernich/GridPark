@@ -16,9 +16,6 @@ extern "C" {
 
 using namespace std;
 
-//static xy x_vals_init[] = {{1, 0}, {2, 10}, {4, 25}, {6, 40}};
-//static vector<xy> x_vals(x_vals_init, x_vals_init + sizeof(x_vals_init) / sizeof(xy));
-
 int main(int argc, char** argv )
 {
   struct timespec start,         finish,
@@ -60,7 +57,7 @@ int main(int argc, char** argv )
   bool monitorON = true;
   bool resetCount = false;
   bool justParked = false;
-  bool alert = false;
+  int  alert = 0;
   bool haveBC = false;
   Window carWindow;
   carWindow.tl.x = 1150;
@@ -72,7 +69,7 @@ int main(int argc, char** argv )
   int bcSum;
   int bcAvg;
   int actCount = 0;
-  int loopCount = 0;
+  int loopCount = 1;
   int width;
   int height;
   Corner topLeft;
@@ -86,10 +83,6 @@ int main(int argc, char** argv )
 
   Rect roi(carWindow.tl.x, carWindow.tl.y, carWindow.br.x - carWindow.tl.x, carWindow.br.y - carWindow.tl.y);
   SuspAct act = {0};
-
-  // testing
-  //cout << "interpolate " << Interpolate(3, x_vals) << endl;
-  //cout << "interpolate " << Interpolate(5, x_vals) << endl;
 
   #ifdef __arm__
     MYSQL * conn = OpenDB((char*)K_DB);
@@ -126,16 +119,16 @@ int main(int argc, char** argv )
       sums     = GetSlidingSum(edges, 0, startWin, endWin, regionId);
       sumsNorm = GetNormalizedSlidingSum(edges, 0, startWin, endWin, regionId);
       openings = GetOpeningsFromSumsNormalized(sumsNorm, regionId);
-      WriteSlidingWindowFloat((char *)("../matlab/edges.txt"), argv[1], sumsNorm);
+//      WriteSlidingWindowFloat((char *)("../matlab/edges.txt"), argv[1], sumsNorm);
 //break;
-      cout << "region " << regionId << endl;
+//      cout << "region " << regionId << endl;
       //for (i = 0; i < openings.size(); i++)
       //  cout << "opening at " << openings.at(i).start << " " << openings.at(i).length << endl;
 
 
       spaces = GetOpenParkingSpaces(openings, regionId);
-      for (i = 0; i < spaces.size(); i++)
-        cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
+//      for (i = 0; i < spaces.size(); i++)
+//        cout << "space at " << spaces.at(i).start << " " << spaces.at(i).length << endl;
 
       if (spaces.size() > 0)
       {
@@ -161,6 +154,7 @@ int main(int argc, char** argv )
     #ifdef __arm__  // only on raspberry pi
       cars = GetParkedCars(conn);
     #endif
+    clock_gettime(CLOCK_MONOTONIC, &start_suspact);
 
       if(!justParked)
       {
@@ -175,15 +169,14 @@ int main(int argc, char** argv )
             act.car_id = cars[i].id;
             act.time_of_detect = 0;
             act.length_of_activity = 0;
-          } 
+          }
         }
         cln = edges.clone();
         baseImg = cln(roi);
         //haveBC = true;
       }
 
-    cout << "susp start" << endl;
-    clock_gettime(CLOCK_MONOTONIC, &start_suspact);
+//    cout << "susp start" << endl;
 
     if(justParked and !haveBC)
     {
@@ -211,7 +204,7 @@ int main(int argc, char** argv )
 
     if(haveBC)
     {
-      cout << "haveBC" << endl;
+//      cout << "haveBC" << endl;
 
       cv::subtract(edges(roi), baseImg, subImg);
       subImg = abs(subImg);
@@ -220,29 +213,33 @@ int main(int argc, char** argv )
 //      imwrite("./testimg/new.jpg", edges(roi));
 //      imwrite("./testimg/sub.jpg", subImg);
 
-      alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, subImg, carWindow, edgeList);
-      clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
-      cout << "Alert" << alert << endl;
+//      alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, subImg, carWindow, edgeList);
+      alert = DetectActivity(subImg, carWindow, baseCount, NULL);
+      cout << "Alert " << alert << endl;
       if(alert == 1)
       {
         alertList.push_back(act);
         #ifdef __arm__
           InsertSuspActivity(alertList, conn);
         #endif
+        alert = 0;
+        loopCount = 1; //start counting
       }
     }
 
-    loopCount = loopCount + 1;
-    cout << "Loop Count" << loopCount << endl;
-    if(loopCount > 10)
-    {
-      loopCount = 0;
-    }
+    // loop count is set to 1 when there is an alert, so count up
+    if (loopCount > 0)
+        loopCount++;
+
+    // stop at a value to purge the database, so that the system
+    // can send a new alert
+    if (loopCount == 4)
+        PurgeAllSuspActivity(conn);
 
 //    alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
-    cout << "base " << baseCount << endl;
-    cout << alert << endl;
+//    cout << "base " << baseCount << endl;
+//    cout << alert << endl;
 
     // Capture time
     clock_gettime(CLOCK_MONOTONIC, &finish);
@@ -260,11 +257,11 @@ int main(int argc, char** argv )
     cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
 
     // Save edges image for DEBUG USE ONLY (REMOVE THIS)
-    imwrite("./testimg/edges.jpg", edges);
+//    imwrite("./testimg/edges.jpg", edges);
 
     // Go to sleep
 //    break; // for development lets only run the loop once
-    sleep(5);
+//    sleep(5);
   }
 
   #ifdef __arm__
