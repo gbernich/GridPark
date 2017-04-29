@@ -153,7 +153,6 @@ int UnlockTable(MYSQL * conn, char * table)
 
 int TableIsLocked(MYSQL * conn, char * table)
 {
-    int i = 0;
     MYSQL_ROW row = {0};
     int result_int = 0;
     MYSQL_RES * result = NULL;
@@ -199,7 +198,6 @@ int TableIsLocked(MYSQL * conn, char * table)
 OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
 {
     OPEN_SPOT_T * head = NULL;
-    int i;
     MYSQL_ROW row;
     MYSQL_RES * result;
     char query[K_QUERY_STRING_LENGTH];
@@ -232,7 +230,6 @@ OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
 PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table)
 {
     PARKED_CAR_T * head = NULL;
-    int i;
     MYSQL_ROW row;
     MYSQL_RES * result;
     char query[K_QUERY_STRING_LENGTH];
@@ -265,7 +262,6 @@ PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table)
 SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table)
 {
     SUSP_ACTIVITY_T * head = NULL;
-    int i;
     MYSQL_ROW row;
     MYSQL_RES * result;
     char query[K_QUERY_STRING_LENGTH];
@@ -303,7 +299,6 @@ void PurgeOldSuspActivity(MYSQL * conn)
     char query[K_QUERY_STRING_LENGTH];
     sprintf(query, "SELECT * FROM %s", (char *)K_TBL_SUSP_ACTIVITY);
 
-    int num_entries = 0;
     int id, t0, t1;
 
     if (mysql_query(conn, query)) 
