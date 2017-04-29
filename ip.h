@@ -40,6 +40,10 @@ using namespace std;
 #define K_MINIMUM_OPENING_LENGTH      3
 #define K_SUMS_THRESHOLD_CONSECUTIVE  1//5
 
+// Suspicious Activity / Pedestrian Detection
+#define K_PURGE_THRESHOLD           4 // technically 3 images, but counter starts at 1
+#define K_PED_CONSECUTIVE_DETECTS   2 // 2 images in a row to alert the user
+
 ///// REGION DIMENSIONS /////
 #define K_NUM_SUBREGIONS    4
 
@@ -244,7 +248,7 @@ double  Degrees2Radians(double deg);
 //Pedestrian Detection
 bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
                     int* actCount, int baseCount, Mat image, Window carWindow, int* edgeList);
-int DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList);
+bool DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList);
 int GetBaseCount(Mat image, Window carWindow);
 int UpdateEdgeList(int * edgeList, int edgeSum);
 

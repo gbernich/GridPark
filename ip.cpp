@@ -953,8 +953,8 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
 
   if(carParked && monitorON)
   {
-    if(resetCount) {*actCount = 0;}
-    new_detect = DetectActivity(image, carWindow, baseCount, edgeList);
+    if(resetCount){*actCount = 0;}
+    new_detect = (int)DetectActivity(image, carWindow, baseCount, edgeList);
     *actCount = *actCount + new_detect;
     if(*actCount > sus_thresh) {alert = true;}
     return alert;
@@ -965,24 +965,24 @@ bool RunSusActivity(bool carParked, bool monitorON, bool resetCount,
   }
 }
 
-int DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
+bool DetectActivity(Mat image, Window carWindow, int baseCount, int* edgeList)
 {
-  int edgeSum, edgeAvg;
-  int activity;
-  int thresh = 0;
+  int edgeSum = 0;
 
   //edgeSum = GetSumOfWindow(image, carWindow, thresh);
   edgeSum = (int)cv::sum(image)[0];
   cout << "          edgeSum " << edgeSum << endl;
-  if (edgeSum > 1.5 * baseCount) {activity = 1;}
-  else {activity = 0;}
+  if (edgeSum > 1.5 * baseCount)
+    return true;
+  else
+    return false;
   // edgeAvg = UpdateEdgeList(edgeList, edgeSum);
   // if (edgeAvg > 1.02 * baseCount) {activity = 1;}
   // else {activity = 0;}
   // cout << "Base Count" << baseCount << endl;
   // cout << "New Sum" << edgeSum << endl;
   // cout << "Edge Avg" << edgeAvg << endl;
-  return activity;
+  // return activity;
 }
 
 int GetBaseCount(Mat image, Window carWindow)

@@ -57,7 +57,9 @@ int main(int argc, char** argv )
   bool monitorON = true;
   bool resetCount = false;
   bool justParked = false;
-  int  alert = 0;
+  bool pedDetected = false;
+  bool alert = false;
+  int  pedCount = 0;
   bool haveBC = false;
   Window carWindow;
   carWindow.tl.x = 1150;
@@ -214,15 +216,27 @@ int main(int argc, char** argv )
 //      imwrite("./testimg/sub.jpg", subImg);
 
 //      alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, subImg, carWindow, edgeList);
-      alert = DetectActivity(subImg, carWindow, baseCount, NULL);
-      cout << "Alert " << alert << endl;
-      if(alert == 1)
+      pedDetected = DetectActivity(subImg, carWindow, baseCount, NULL);
+      cout << "Detected Ped " << pedDetected << endl;
+
+      // if Pedestrian is detected, increment count
+      if (pedDetected)
+      {
+        if (++pedCount == K_PED_CONSECUTIVE_DETECTS)
+        {
+          alert = true;
+          pedCount = 0;
+        }
+        pedDetected = false;
+      }
+
+      if(alert)
       {
         alertList.push_back(act);
         #ifdef __arm__
           InsertSuspActivity(alertList, conn);
         #endif
-        alert = 0;
+        alert = false;
         loopCount = 1; //start counting
       }
     }
@@ -233,8 +247,10 @@ int main(int argc, char** argv )
 
     // stop at a value to purge the database, so that the system
     // can send a new alert
-    if (loopCount == 4)
+    #ifdef __arm__
+      if (loopCount == 4)
         PurgeAllSuspActivity(conn);
+    #endif
 
 //    alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
