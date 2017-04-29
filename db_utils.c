@@ -155,7 +155,6 @@ int TableIsLocked(MYSQL * conn, char * table)
 {
     int i = 0;
     MYSQL_ROW row = {0};
-    int num_fields = 0;
     int result_int = 0;
     MYSQL_RES * result = NULL;
     char query[K_QUERY_STRING_LENGTH] = {0};
@@ -177,17 +176,9 @@ int TableIsLocked(MYSQL * conn, char * table)
         printf("%s\n", mysql_error(conn));
         return 1;
     }
-    printf("here3\n");
-
-    num_fields = mysql_num_fields(result);
 
     while ((row = mysql_fetch_row(result))) 
     { 
-        /*for(i = 0; i < num_fields; i++) 
-        { 
-          printf("%s %d ", row[i] ? row[K_LOCK_INDEX] : "NULL", i); 
-        } 
-        printf("\n");*/ 
         sprintf(result_char, "%s", row[K_LOCK_INDEX]);
         break;
     }
@@ -210,7 +201,6 @@ OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
     OPEN_SPOT_T * head = NULL;
     int i;
     MYSQL_ROW row;
-    int num_fields;
     MYSQL_RES * result;
     char query[K_QUERY_STRING_LENGTH];
     sprintf(query, "SELECT * FROM %s", table);
@@ -227,8 +217,6 @@ OPEN_SPOT_T * GetOpenSpots(MYSQL * conn, char * table)
         fprintf(stderr, "%s\n", mysql_error(conn));
         return NULL;
     }
-
-    num_fields = mysql_num_fields(result);
 
     while ((row = mysql_fetch_row(result))) 
     { 
@@ -246,7 +234,6 @@ PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table)
     PARKED_CAR_T * head = NULL;
     int i;
     MYSQL_ROW row;
-    int num_fields;
     MYSQL_RES * result;
     char query[K_QUERY_STRING_LENGTH];
     sprintf(query, "SELECT * FROM %s", table);
@@ -263,8 +250,6 @@ PARKED_CAR_T * GetParkedCars(MYSQL * conn, char * table)
         fprintf(stderr, "%s\n", mysql_error(conn));
         return NULL;
     }
-
-    num_fields = mysql_num_fields(result);
 
     while ((row = mysql_fetch_row(result))) 
     { 
@@ -282,7 +267,6 @@ SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table)
     SUSP_ACTIVITY_T * head = NULL;
     int i;
     MYSQL_ROW row;
-    int num_fields;
     MYSQL_RES * result;
     char query[K_QUERY_STRING_LENGTH];
     sprintf(query, "SELECT * FROM %s", table);
@@ -299,8 +283,6 @@ SUSP_ACTIVITY_T * GetSuspActivity(MYSQL * conn, char * table)
         fprintf(stderr, "%s\n", mysql_error(conn));
         return NULL;
     }
-
-    num_fields = mysql_num_fields(result);
 
     while ((row = mysql_fetch_row(result))) 
     { 
@@ -359,13 +341,9 @@ void PurgeOldSuspActivity(MYSQL * conn)
 
 void PurgeAllSuspActivity(MYSQL * conn)
 {
-    MYSQL_RES * result;
-    MYSQL_ROW row;
     char query[K_QUERY_STRING_LENGTH];
-    sprintf(query, "TRUNCATE %s", (char *)K_TBL_SUSP_ACTIVITY);
 
-    int num_entries = 0;
-    int id, t0, t1;
+    sprintf(query, "TRUNCATE %s", (char *)K_TBL_SUSP_ACTIVITY);
 
     if (mysql_query(conn, query))
     {
@@ -382,7 +360,7 @@ void DeleteEntryFromSuspActivity(MYSQL * conn, int id)
     if (mysql_query(conn, query)) 
     {
         fprintf(stderr, "%s\n", mysql_error(conn));
-        return NULL;
+        return;
     }
 }
 
