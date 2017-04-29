@@ -71,7 +71,7 @@ int main(int argc, char** argv )
   int bcSum;
   int bcAvg;
   int actCount = 0;
-  int loopCount = 1;
+  int purgeCount = 0;
   int width;
   int height;
   Corner topLeft;
@@ -158,28 +158,26 @@ int main(int argc, char** argv )
     #endif
     clock_gettime(CLOCK_MONOTONIC, &start_suspact);
 
-      if(!justParked)
+    if(!justParked)
+    {
+      for(i = 0; i < cars.size(); i++)
       {
-        for(i = 0; i < cars.size(); i++)
+        if(cars[i].susp_activity == 1)
         {
-          if(cars[i].susp_activity == 1)
-          {
-            justParked = true;
-            topLeft = cars[i].tl;
-            width = 165;
-            height = 50;
-            act.car_id = cars[i].id;
-            act.time_of_detect = 0;
-            act.length_of_activity = 0;
-          }
+          justParked = true;
+          topLeft = cars[i].tl;
+          width = 165;
+          height = 50;
+          act.car_id = cars[i].id;
+          act.time_of_detect = 0;
+          act.length_of_activity = 0;
         }
-        cln = edges.clone();
-        baseImg = cln(roi);
-        //haveBC = true;
+        break;
       }
-
-//    cout << "susp start" << endl;
-
+      cln = edges.clone();
+      baseImg = cln(roi);
+    }
+      
     if(justParked and !haveBC)
     {
       // take second "base" to compare
@@ -211,46 +209,55 @@ int main(int argc, char** argv )
       cv::subtract(edges(roi), baseImg, subImg);
       subImg = abs(subImg);
       cout << "sub sum " << sum(subImg) << endl;
-//      imwrite("./testimg/base.jpg", baseImg);
-//      imwrite("./testimg/new.jpg", edges(roi));
-//      imwrite("./testimg/sub.jpg", subImg);
 
 //      alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, subImg, carWindow, edgeList);
       pedDetected = DetectActivity(subImg, carWindow, baseCount, NULL);
       cout << "Detected Ped " << pedDetected << endl;
 
       // if Pedestrian is detected, increment count
+      // only write to DB once, until it purges
       if (pedDetected)
       {
         if (++pedCount == K_PED_CONSECUTIVE_DETECTS)
         {
-          alert = true;
-          pedCount = 0;
+          #ifdef __arm__
+            InsertSuspActivity(alertList, conn);
+          #endif
         }
+        purgeCount  = 0;
         pedDetected = false;
       }
-
-      if(alert)
+      else // no detect, purge DB 
       {
-        alertList.push_back(act);
         #ifdef __arm__
-          InsertSuspActivity(alertList, conn);
+          if (++purgeCount >= K_PURGE_THRESHOLD)
+            PurgeAllSuspActivity(conn);
         #endif
-        alert = false;
-        loopCount = 1; //start counting
       }
+
+      // if(alert)
+      // {
+      //   alertList.push_back(act);
+      //   #ifdef __arm__
+      //     InsertSuspActivity(alertList, conn);
+      //   #endif
+      //   alert = false;
+      //   loopCount = 1; //start counting
+      // }
     }
 
     // loop count is set to 1 when there is an alert, so count up
-    if (loopCount > 0)
-        loopCount++;
+    //if (loopCount > 0)
+    //    loopCount++;
 
     // stop at a value to purge the database, so that the system
     // can send a new alert
-    #ifdef __arm__
-      if (loopCount == 4)
-        PurgeAllSuspActivity(conn);
-    #endif
+    //#ifdef __arm__
+    //  if (loopCount == K_PURGE_THRESHOLD)
+    //  {
+    //    PurgeAllSuspActivity(conn);
+    //  }
+    //#endif
 
 //    alert = RunSusActivity(carParked, monitorON, resetCount, &actCount, baseCount, edges, carWindow);
     clock_gettime(CLOCK_MONOTONIC, &finish_suspact);
@@ -259,7 +266,7 @@ int main(int argc, char** argv )
 
     // Capture time
     clock_gettime(CLOCK_MONOTONIC, &finish);
-    elapsed = (finish_cam.tv_sec - start_cam.tv_sec); elapsed += (finish_cam.tv_nsec - start_cam.tv_nsec) / 1000000000.0;
+/*    elapsed = (finish_cam.tv_sec - start_cam.tv_sec); elapsed += (finish_cam.tv_nsec - start_cam.tv_nsec) / 1000000000.0;
     cout << "Camera:      " << elapsed * 1000.0 << " ms" << endl;
     elapsed = (finish_edges.tv_sec - start_edges.tv_sec); elapsed += (finish_edges.tv_nsec - start_edges.tv_nsec) / 1000000000.0;
     cout << "Edge Detect: " << elapsed * 1000.0 << " ms" << endl;
@@ -268,7 +275,7 @@ int main(int argc, char** argv )
     elapsed = (finish_suspact.tv_sec - start_suspact.tv_sec); elapsed += (finish_suspact.tv_nsec - start_suspact.tv_nsec) / 1000000000.0;
     cout << "Suspicious:  " << elapsed * 1000.0 << " ms" << endl;
     elapsed = (finish_db.tv_sec - start_db.tv_sec); elapsed += (finish_db.tv_nsec - start_db.tv_nsec) / 1000000000.0;
-    cout << "Database:    " << elapsed * 1000.0 << " ms" << endl;
+    cout << "Database:    " << elapsed * 1000.0 << " ms" << endl; */
     elapsed = (finish.tv_sec - start.tv_sec); elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
     cout << "Total:       " << elapsed * 1000.0 << " ms" << endl;
 
