@@ -732,32 +732,29 @@ Mat PseudoSubtract(Mat baseImg, Mat newImg)
   cout << "height " << subImg.size().height << endl;
 
   // Loop through new image by the sub section interval
-  for (row = 0; row < subImg.size().height; row += K_SUB_INTERVAL)
+  for (y = 1; y < subImg.size().height-1; y += 1)
   {
-    for (col = 0; col < subImg.size().width; col += K_SUB_INTERVAL)
+    for (x = 1; x < subImg.size().width-1; x += 1)
     {
-      x = col;
-      y = row;
-
-      // See if there are any edges in window
-      while(x++ < col + K_SUB_INTERVAL)
+      // See if there is and edge
+      if (newImg.at<float>(y, x) > 0)
       {
-        while (y++ < row + K_SUB_INTERVAL)
-        {
-          if (newImg.at<float>(y, x) > 0)
-            newFlag = true;
-          if (baseImg.at<float>(y, x) > 0)
-            baseFlag = true;
-        }
+         // Look in the base image for surrounding pixels
+         if (
+             baseImg.at<float>(y+1, x-1) < 1 &&
+             baseImg.at<float>(y,   x-1) < 1 &&
+             baseImg.at<float>(y-1, x-1) < 1 &&
+             baseImg.at<float>(y+1, x) < 1 &&
+             baseImg.at<float>(y,   x) < 1 &&
+             baseImg.at<float>(y-1, x) < 1 &&
+             baseImg.at<float>(y+1, x+1) < 1 &&
+             baseImg.at<float>(y,   x+1) < 1 &&
+             baseImg.at<float>(y-1, x+1) < 1
+            )
+          {
+            subImg.at<float>(y, x) = newImg.at<float>(y,x);
+          }
       }
-      // Perform the Pseudo Subtract
-      if (newFlag ^ baseFlag)
-      {
-        subImg.at<float>(row, col) = 100;
-      }
-
-      newFlag = false;
-      baseFlag = false;
     }
   }
 

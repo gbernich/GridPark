@@ -168,7 +168,7 @@ int main(int argc, char** argv )
     if(justParked and !haveBC and haveBaseImg)
     {
       // take second "base" to compare
-      subImg = PseudoSubtract(edges(roi), baseImg);
+      subImg = PseudoSubtract(baseImg, edges(roi));
       baseCount = (int)cv::sum(subImg)[0];
       cout << "base " << baseCount << endl;
       haveBC = true;
@@ -185,11 +185,11 @@ int main(int argc, char** argv )
     // This is the case where we have the base image, and the threshold set
     if(haveBC)
     {
-      subImg = PseudoSubtract(edges(roi), baseImg);
+      subImg = PseudoSubtract(baseImg, edges(roi));
       cout << "sub sum " << sum(subImg)[0] << endl;
-      //imwrite("b_base.jpg", baseImg);
-      //imwrite("b_sub.jpg", subImg);
-      //imwrite("b_new.jpg", edges(roi));
+      imwrite("b_base.jpg", baseImg);
+      imwrite("b_sub.jpg", subImg);
+      imwrite("b_new.jpg", edges(roi));
 
       pedDetected = DetectActivity(subImg, baseCount);
       cout << "Detected Ped " << pedDetected << endl;
@@ -204,6 +204,7 @@ int main(int argc, char** argv )
             cout << "              writing" << endl;
             alertList.push_back(act);
             InsertSuspActivity(alertList, conn);
+            return 0;
           #endif
         }
         purgeCount  = 0;
@@ -242,7 +243,8 @@ int main(int argc, char** argv )
 }
 
 // For timing individual functions
-/*    elapsed = (finish_cam.tv_sec - start_cam.tv_sec); elapsed += (finish_cam.tv_nsec - start_cam.tv_nsec) / 1000000000.0;
+/*    ela
+psed = (finish_cam.tv_sec - start_cam.tv_sec); elapsed += (finish_cam.tv_nsec - start_cam.tv_nsec) / 1000000000.0;
     cout << "Camera:      " << elapsed * 1000.0 << " ms" << endl;
     elapsed = (finish_edges.tv_sec - start_edges.tv_sec); elapsed += (finish_edges.tv_nsec - start_edges.tv_nsec) / 1000000000.0;
     cout << "Edge Detect: " << elapsed * 1000.0 << " ms" << endl;
