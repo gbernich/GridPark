@@ -204,7 +204,6 @@ int main(int argc, char** argv )
             cout << "              writing" << endl;
             alertList.push_back(act);
             InsertSuspActivity(alertList, conn);
-            return 0;
           #endif
         }
         purgeCount  = 0;
